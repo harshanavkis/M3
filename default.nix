@@ -10,6 +10,11 @@ let
     ncurses
     libpng
     hdf5
+    mpfr
+    gmp
+    libmpc
+    isl
+    zstd
   ];
 
   ld = writeShellScriptBin "ld" ''
@@ -32,6 +37,8 @@ in gcc7Stdenv.mkDerivation rec {
     export CC=cc CXX=c++ LD=ld
     export PATH=${ld}/bin:${cxx}/bin:${cc}/bin:$PATH
   '';
+
+  hardeningDisable = [ "format" ];
 
   nativeBuildInputs = [
     python3.pkgs.pyyaml

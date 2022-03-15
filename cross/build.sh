@@ -34,10 +34,10 @@ else
     REBUILD=0
 fi
 
-/bin/echo -e "\e[1mDownloading binutils, gcc, and gdb...\e[0m"
+echo -e "\e[1mDownloading binutils, gcc, and gdb...\e[0m"
 
 BINVER=2.32
-GCCVER=10.1.0
+GCCVER=10.3.0
 GDBVER=10.1
 
 BINARCH=binutils-$BINVER.tar.bz2
@@ -89,7 +89,7 @@ mkdir -p "$BUILD/gcc" "$BUILD/binutils" "$BUILD/gdb"
 # binutils
 if $BUILD_BINUTILS; then
     if [ $REBUILD -eq 1 ] || [ ! -d "$SRC/binutils" ]; then
-        /bin/echo -e "\e[1mUnpacking binutils...\e[0m"
+        echo -e "\e[1mUnpacking binutils...\e[0m"
         bunzip2 < "$BINARCH" | tar -C "$SRC" -xf -
         mv "$SRC/binutils-$BINVER" "$SRC/binutils"
         if [ -f "$ARCH/binutils.diff" ]; then
@@ -98,11 +98,11 @@ if $BUILD_BINUTILS; then
     fi
     cd "$BUILD/binutils"
     if [ $REBUILD -eq 1 ] || [ ! -f "$BUILD/binutils/Makefile" ]; then
-        /bin/echo -e "\e[1mConfiguring binutils...\e[0m"
+        echo -e "\e[1mConfiguring binutils...\e[0m"
         CC=$BUILD_CC "$SRC/binutils/configure" \
             "--target=$TARGET" "--prefix=$PREFIX" --disable-nls --disable-werror
     fi
-    /bin/echo -e "\e[1mBuilding binutils...\e[0m"
+    echo -e "\e[1mBuilding binutils...\e[0m"
     make "$MAKE_ARGS" all && make install
     cd "$ROOT"
 fi
@@ -126,7 +126,7 @@ includes+=" -I$ROOT/../src/libs/musl/m3/include/$ARCH"
 export PATH=$PREFIX/bin:$PATH
 if $BUILD_GCC; then
     if [ $REBUILD -eq 1 ] || [ ! -d "$SRC/gcc" ]; then
-        /bin/echo -e "\e[1mUnpacking gcc...\e[0m"
+        echo -e "\e[1mUnpacking gcc...\e[0m"
         gunzip < "$GCCARCH" | tar -C "$SRC" -xf -
         mv "$SRC/gcc-$GCCVER" "$SRC/gcc"
         if [ -f "$ARCH/gcc.diff" ]; then
@@ -135,17 +135,17 @@ if $BUILD_GCC; then
     fi
     cd "$BUILD/gcc"
     if [ $REBUILD -eq 1 ] || [ ! -f "$BUILD/gcc/Makefile" ]; then
-        /bin/echo -e "\e[1mConfiguring gcc...\e[0m"
+        echo -e "\e[1mConfiguring gcc...\e[0m"
         CC=$BUILD_CC CFLAGS_FOR_TARGET="$BUILD_FLAGS $includes" \
             "$SRC/gcc/configure" "--target=$TARGET" "--prefix=$PREFIX" --disable-nls \
               --enable-languages=c,c++ --disable-linker-build-id --disable-shared
     fi
-    /bin/echo -e "\e[1mBuilding gcc...\e[0m"
+    echo -e "\e[1mBuilding gcc...\e[0m"
     make "$MAKE_ARGS" all-gcc && make install-gcc
     ln -sf "$DIST/bin/$TARGET-gcc" "$DIST/bin/$TARGET-cc"
 
     # now build libgcc
-    /bin/echo -e "\e[1mBuilding libgcc...\e[0m"
+    echo -e "\e[1mBuilding libgcc...\e[0m"
     make "$MAKE_ARGS" all-target-libgcc && make install-target-libgcc
     cd "$ROOT"
 
@@ -160,15 +160,16 @@ if $BUILD_CPP; then
     cd "$BUILD/gcc/libstdc++-v3"
 
     if [ $REBUILD -eq 1 ] || [ ! -f Makefile ]; then
-        /bin/echo -e "\e[1mConfiguring libstdc++...\e[0m"
+        echo -e "\e[1mConfiguring libstdc++...\e[0m"
         # pretend that we're using newlib
         CPP=$TARGET-cpp CFLAGS=$BUILD_FLAGS CXXFLAGS=$BUILD_FLAGS CPPFLAGS=$includes \
             "$SRC/gcc/libstdc++-v3/configure" "--host=$TARGET" "--prefix=$PREFIX" \
             --disable-nls --with-newlib --enable-shared=no --disable-tls \
-            --disable-multilib
+            --disable-multilib CC=$DIST/bin/$TARGET-gcc AR=$DIST/bin/$TARGET-ar \
+	    RANLIB=$DIST/bin/$TARGET-ranlib CXX=$DIST/bin/$TARGET"-g++"
     fi
 
-    /bin/echo -e "\e[1mBuilding libsupc++ and libstdc++...\e[0m"
+    echo -e "\e[1mBuilding libsupc++ and libstdc++...\e[0m"
     make "$MAKE_ARGS" && make install
 
     cd include
@@ -180,7 +181,7 @@ fi
 # gdb
 if $BUILD_GDB; then
     if [ $REBUILD -eq 1 ] || [ ! -d "$SRC/gdb" ]; then
-        /bin/echo -e "\e[1mUnpacking gdb...\e[0m"
+        echo -e "\e[1mUnpacking gdb...\e[0m"
         gunzip < "$GDBARCH" | tar -C "$SRC" -xf -
         mv "$SRC/gdb-$GDBVER" "$SRC/gdb"
         if [ -f "$ARCH/gdb.diff" ]; then
@@ -191,17 +192,17 @@ if $BUILD_GDB; then
     cd "$BUILD/gdb"
 
     if [ $REBUILD -eq 1 ] || [ ! -f Makefile ]; then
-        /bin/echo -e "\e[1mConfiguring gdb...\e[0m"
+        echo -e "\e[1mConfiguring gdb...\e[0m"
         "$SRC/gdb/configure" "--target=$TARGET" "--prefix=$PREFIX" --with-python=yes \
           --disable-nls --disable-werror --disable-gas --disable-binutils \
           --disable-ld --disable-gprof \
           --enable-tui
     fi
 
-    /bin/echo -e "\e[1mBuilding gdb...\e[0m"
+    echo -e "\e[1mBuilding gdb...\e[0m"
     make "$MAKE_ARGS" && make install
 fi
 
 if [ "$ARCH" = "riscv" ]; then
-    cp "$DIST"/lib/rv64imafdc/lp64d/lib* "$DIST/lib"
+    cp "$DIST"/lib/gcc/$TARGET/$GCCVER/rv64imafdc/lp64d/lib* "$DIST/lib"
 fi
