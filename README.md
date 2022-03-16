@@ -31,6 +31,8 @@ If you setup the project on a new (ubuntu) machine make sure to have at least th
         m4 libboost-all-dev libssl-dev libgmp3-dev libmpfr-dev \
         libmpc-dev libncurses5-dev texinfo ninja-build libxml2-utils
 
+We also support building the system using a nix-shell, with dependencies loaded as defined in the default.nix file. Additionally, these packages can be loaded automagically using direnv.
+
 Afterwards, pull in the submodules:
 
     $ git submodule update --init src/libs/musl src/libs/flac src/libs/leveldb
@@ -41,7 +43,7 @@ The submodule in `platform/gem5` needs to be pulled in and built:
 
     $ git submodule update --init platform/gem5
     $ cd platform/gem5
-    $ scons build/X86/gem5.opt
+    $ scons -j$(nproc) build/RISCV/gem5.opt
 
 Note that you can specify the number of threads to use for building in the last command via, for example, `-j8`.
 
@@ -78,13 +80,13 @@ M³ is primarily written in Rust and requires some nightly features of Rust. The
 
 Before you build M³, you should choose your target platform, the build mode, and the ISA by exporting the corresponding environment variables. For example:
 
-    $ export M3_BUILD=release M3_TARGET=gem5 M3_ISA=riscv
+    $ export M3_BUILD=release M3_TARGET=gem5 M3_ISA=riscv LD_LIBRARY_PATH=build/cross-riscv/lib/
 
 Now, M³ can be built by using the script `b`:
 
     $ ./b
 
-### 7. Running
+### 6. Running
 
 On all platforms, scenarios can be run by starting the desired boot script in the directory `boot`, e.g.:
 

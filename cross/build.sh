@@ -37,7 +37,7 @@ fi
 echo -e "\e[1mDownloading binutils, gcc, and gdb...\e[0m"
 
 BINVER=2.32
-GCCVER=10.3.0
+GCCVER=10.1.0
 GDBVER=10.1
 
 BINARCH=binutils-$BINVER.tar.bz2
@@ -176,6 +176,10 @@ if $BUILD_CPP; then
     make "$MAKE_ARGS" && make install-headers
 
     cd "$ROOT"
+fi
+
+if [ "$ARCH" = "riscv" ]; then
+    cp "$DIST"/lib/rv64imafdc/lp64d/libs*.a "$DIST/lib"
 fi
 
 # gdb
