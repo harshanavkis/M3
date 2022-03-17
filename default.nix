@@ -41,6 +41,8 @@ let
     extensions = [
       "rust-src" # required to compile the core library
       "llvm-tools-preview"
+      "rust-analyzer-preview"
+      "rustfmt-preview"
     ];
   };
 
