@@ -12,10 +12,10 @@
 	url = https://github.com/Barkhausen-Institut/m3-leveldb
 [submodule "src/libs/flac"]
 	path = src/libs/flac
-	url = ../m3-flac.git
+	url = https://github.com/Barkhausen-Institut/M3-flac
 [submodule "src/libs/llvmprofile"]
 	path = src/libs/llvmprofile
-	url = ../m3-llvmprofile.git
+	url = https://github.com/Barkhausen-Institut/M3-llvmprofile
 [submodule "src/apps/bsdutils"]
 	path = src/apps/bsdutils
-	url = ../m3-bsdcoreutils.git
+	url = https://github.com/Barkhausen-Institut/M3-BSDCoreUtils
