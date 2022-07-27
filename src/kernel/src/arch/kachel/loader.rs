@@ -150,6 +150,7 @@ fn load_segment_async(
         ))
     }
     else {
+        // TODO: Figure out how to securely copy this
         ktcu::copy(
             // destination
             act.tile_id(),
@@ -164,6 +165,8 @@ fn load_segment_async(
 
 fn load_mod_async(act: &Activity, bm: &kif::boot::Mod) -> Result<usize, Error> {
     let mod_addr = GlobAddr::new(bm.addr);
+
+    // TODO: Figure out which key to use when loading modules
     let hdr: elf::Ehdr = read_from_mod(bm, 0)?;
 
     if hdr.ident[0] != b'\x7F'
@@ -179,6 +182,7 @@ fn load_mod_async(act: &Activity, bm: &kif::boot::Mod) -> Result<usize, Error> {
     let mut off = hdr.phoff;
     for _ in 0..hdr.phnum {
         // load program header
+        // TODO: Figure out which key to use when loading modules
         let phdr: elf::Phdr = read_from_mod(bm, off as goff)?;
         off += hdr.phentsize as usize;
 
@@ -267,6 +271,8 @@ fn write_arguments(addr: goff, tile: tcu::TileId, args: &[&str]) -> usize {
         argoff += arg.len() + 1;
     }
 
+    // TODO: Figure out how to write these arguments correctly
+    // Probably use the target tile's attestation key
     ktcu::write_mem(
         tile,
         off as goff,

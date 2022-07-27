@@ -23,11 +23,11 @@ use base::mem::GlobAddr;
 use base::mem::MsgBuf;
 use base::quota;
 use base::rc::{Rc, SRc, Weak};
-use base::tcu::{self, ActId, EpId, TileId};
+use base::tcu::{self, ActId, EpId, TileId, EP_KEY};
 use core::cmp;
 
 use crate::cap::{EPObject, EPQuota, MGateObject, RGateObject, SGateObject, TileObject};
-use crate::ktcu;
+use crate::ktcu::{self, config_remote_ep_key};
 use crate::platform;
 use crate::tiles::INVAL_ID;
 
@@ -97,6 +97,10 @@ impl TileMux {
     fn init(&mut self) {
         use base::cfg;
 
+        // Configure the send endpoint's key
+        // TODO: Use correct key corresponding to the rgate
+        config_remote_ep_key(self.tile_id(), tcu::KPEX_SEP, &EP_KEY).unwrap();
+
         // configure send EP
         ktcu::config_remote_ep(self.tile_id(), tcu::KPEX_SEP, |regs| {
             ktcu::config_send(
@@ -110,6 +114,10 @@ impl TileMux {
             );
         })
         .unwrap();
+
+        // Configure the send endpoint's key
+        // TODO: Use correct key corresponding to the rgate
+        config_remote_ep_key(self.tile_id(), tcu::KPEX_REP, &EP_KEY).unwrap();
 
         // configure receive EP
         let mut rbuf = platform::rbuf_tilemux(self.tile_id());
@@ -125,6 +133,10 @@ impl TileMux {
         })
         .unwrap();
         rbuf += 1 << cfg::KPEX_RBUF_ORD;
+
+        // Configure the send endpoint's key
+        // TODO: Use correct key corresponding to the rgate
+        config_remote_ep_key(self.tile_id(), tcu::TMSIDE_REP, &EP_KEY).unwrap();
 
         // configure upcall EP
         ktcu::config_remote_ep(self.tile_id(), tcu::TMSIDE_REP, |regs| {
@@ -226,6 +238,10 @@ impl TileMux {
 
         klog!(EPS, "Tile{}:EP{} = {:?}", self.tile_id(), ep, obj);
 
+        // Configure the send endpoint's key
+        // TODO: Use correct key corresponding to the rgate
+        config_remote_ep_key(self.tile_id(), ep, &EP_KEY)?;
+
         ktcu::config_remote_ep(self.tile_id(), ep, |regs| {
             let act = self.ep_activity_id(act);
             let (rpe, rep) = rgate.location().unwrap();
@@ -249,6 +265,10 @@ impl TileMux {
         obj: &SRc<RGateObject>,
     ) -> Result<(), Error> {
         klog!(EPS, "Tile{}:EP{} = {:?}", self.tile_id(), ep, obj);
+
+        // Configure the receive endpoint's key
+        // TODO: Use correct receive endpoint key
+        config_remote_ep_key(self.tile_id(), ep, &EP_KEY)?;
 
         ktcu::config_remote_ep(self.tile_id(), ep, |regs| {
             let act = self.ep_activity_id(act);
@@ -279,6 +299,10 @@ impl TileMux {
         else {
             klog!(EPS, "Tile{}:EP{} = {:?}", self.tile_id(), ep, obj);
         }
+
+        // Configure the memory endpoint's key
+        // TODO: Use correct receive endpoint key
+        config_remote_ep_key(self.tile_id(), ep, &EP_KEY)?;
 
         ktcu::config_remote_ep(self.tile_id(), ep, |regs| {
             let act = self.ep_activity_id(act);

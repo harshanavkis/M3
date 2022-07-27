@@ -18,20 +18,21 @@
 
 pub static DEF: bool = true;
 pub static ERR: bool = true;
-pub static EPS: bool = false;
-pub static SYSC: bool = false;
+pub static EPS: bool = true;
+pub static SYSC: bool = true;
 pub static CAPS: bool = false;
 pub static MEM: bool = false;
 pub static KMEM: bool = false;
 pub static SERV: bool = false;
 pub static SQUEUE: bool = false;
 pub static ACTIVITIES: bool = false;
+pub static KEY_EXCHG: bool = true;
 #[cfg(not(target_vendor = "host"))]
 pub static TMC: bool = false;
 pub static TILES: bool = false;
 pub static UPCALLS: bool = false;
 pub static SLAB: bool = false;
-pub static KTCU: bool = false;
+pub static KTCU: bool = true;
 
 #[macro_export]
 macro_rules! klog {

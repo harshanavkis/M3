@@ -154,6 +154,7 @@ pub struct RGateObject {
     order: u32,
     msg_order: u32,
     serial: bool,
+    // TODO: Include an endpoint key
 }
 
 impl RGateObject {
@@ -310,6 +311,7 @@ pub struct MGateObject {
     mem: mem::Allocation,
     perms: kif::Perm,
     derived: bool,
+    // TODO: Include key for memory endpoint
 }
 
 impl MGateObject {

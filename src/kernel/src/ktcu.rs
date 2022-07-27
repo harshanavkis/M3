@@ -19,8 +19,8 @@ use base::goff;
 use base::kif;
 use base::mem;
 use base::tcu::{
-    EpId, Header, Label, Message, Reg, TileId, AVAIL_EPS, EP_REGS, PMEM_PROT_EPS, TCU,
-    UNLIM_CREDITS,
+    EpId, EpKey, Header, Label, Message, Reg, TileId, ATTEST_KEY, AVAIL_EPS, EP_REGS,
+    PMEM_PROT_EPS, TCU, UNLIM_CREDITS,
 };
 
 use crate::tiles::KERNEL_ID;
@@ -53,12 +53,58 @@ where
     write_ep_remote(tile, ep, &regs)
 }
 
-pub fn recv_msgs(ep: EpId, buf: goff, ord: u32, msg_ord: u32) -> Result<(), Error> {
+pub fn config_local_ep_key(ep: EpId, ep_key: &EpKey) {
+    klog!(
+        KEY_EXCHG,
+        "Configure key at local EP: {}, key: {}:{}:{}:{}",
+        ep,
+        ep_key[0],
+        ep_key[1],
+        ep_key[2],
+        ep_key[3]
+    );
+    TCU::set_ep_key(ep, ep_key);
+}
+
+pub fn config_remote_ep_key(tile: TileId, ep: EpId, ep_key: &EpKey) -> Result<(), Error> {
+    // TODO: Configure this to use the target tile's attestation key
+    klog!(
+        KEY_EXCHG,
+        "Configure key at remote tile: {}, EP: {}, key: {}:{}:{}:{}",
+        tile,
+        ep,
+        ep_key[0],
+        ep_key[1],
+        ep_key[2],
+        ep_key[3]
+    );
+    config_local_ep_key(KTMP_EP, &ATTEST_KEY);
+
+    for (i, r) in ep_key.iter().enumerate() {
+        try_write_slice(tile, (TCU::ep_key_addr(ep) + i * 8) as goff, &[*r]).unwrap();
+    }
+    Ok(())
+}
+
+pub fn config_remote_reply_ep_key(tile: TileId, ep: EpId, ep_key: &EpKey) -> Result<(), Error> {
+    // TODO: Configure this to use the target tile's attestation key
+    config_local_ep_key(KTMP_EP, &ATTEST_KEY);
+
+    for (i, r) in ep_key.iter().enumerate() {
+        try_write_slice(tile, (TCU::reply_ep_key_addr(ep) + i * 8) as goff, &[*r])?;
+    }
+    Ok(())
+}
+
+pub fn recv_msgs(ep: EpId, buf: goff, ord: u32, msg_ord: u32, ep_key: &EpKey) -> Result<(), Error> {
     static REPS: StaticCell<EpId> = StaticCell::new(8);
 
     if REPS.get() + (1 << (ord - msg_ord)) > AVAIL_EPS {
         return Err(Error::new(Code::NoSpace));
     }
+
+    // Configure the receive endpoint with the ep_key
+    config_local_ep_key(ep, ep_key);
 
     let (buf, phys) = rbuf_addrs(buf);
     config_local_ep(ep, |regs| {
@@ -89,7 +135,17 @@ pub fn send_to(
     msg: &mem::MsgBuf,
     rpl_lbl: Label,
     rpl_ep: EpId,
+    ep_key: &EpKey,
+    rpl_ep_key: &EpKey,
+    tile_key: &EpKey,
 ) -> Result<(), Error> {
+    // Configure the reply EP key at the remote tile
+    // TODO: Although this approach is simple it uses more hardware resources
+    config_remote_reply_ep_key(tile, ep, rpl_ep_key);
+
+    // Set the local endpoint key to the target receive endpoint's key
+    config_local_ep_key(KTMP_EP, ep_key);
+
     config_local_ep(KTMP_EP, |regs| {
         // don't calculate the msg order here, because it can take some time and it doesn't really
         // matter what we set here assuming that it's large enough.
@@ -108,6 +164,7 @@ pub fn send_to(
 }
 
 pub fn reply(ep: EpId, reply: &mem::MsgBuf, msg: &Message) -> Result<(), Error> {
+    // Key is used transparently by the ICU depending on the ep id
     let msg_off = TCU::msg_to_offset(RBUFS.borrow()[ep as usize], msg);
     TCU::reply(ep, reply, msg_off)
 }
@@ -142,6 +199,8 @@ pub fn try_read_slice<T>(tile: TileId, addr: goff, data: &mut [T]) -> Result<(),
 
 #[cfg(not(target_vendor = "host"))]
 pub fn try_read_mem(tile: TileId, addr: goff, data: *mut u8, size: usize) -> Result<(), Error> {
+    // TODO: Configure KTMP_EP key in the higher functions
+
     config_local_ep(KTMP_EP, |regs| {
         config_mem(regs, KERNEL_ID, tile, addr, size, kif::Perm::R);
     });
@@ -167,6 +226,7 @@ pub fn write_mem(tile: TileId, addr: goff, data: *const u8, size: usize) {
 }
 
 pub fn try_write_mem(tile: TileId, addr: goff, data: *const u8, size: usize) -> Result<(), Error> {
+    // The KTMP_EP key is configured in the functions that call this one
     config_local_ep(KTMP_EP, |regs| {
         config_mem(regs, KERNEL_ID, tile, addr, size, kif::Perm::W);
     });

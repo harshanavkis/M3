@@ -37,6 +37,8 @@ use crate::tmif;
 pub type Reg = u64;
 /// An endpoint id
 pub type EpId = u16;
+/// An endpoint key
+pub type EpKey = [u64; 4];
 /// A TCU label used in send EPs
 pub type Label = u32;
 /// A tile id
@@ -99,12 +101,20 @@ pub const UNLIM_CREDITS: u32 = 0x3F;
 
 /// The base address of the TCU's MMIO area
 pub const MMIO_ADDR: usize = 0xF000_0000;
+/// The size of the TCU register region
+pub const TCU_REG_SIZE: usize = cfg::PAGE_SIZE * 2;
+/// The size of the ICU's keystore
+pub const MMIO_ICU_KEYS: usize = cfg::PAGE_SIZE * 2;
+/// The size of the ICU's reply keystore
+pub const MMIO_ICU_REPLY_KEYS: usize = cfg::PAGE_SIZE * 2;
 /// The size of the TCU's MMIO area
-pub const MMIO_SIZE: usize = cfg::PAGE_SIZE * 2;
+pub const MMIO_SIZE: usize = TCU_REG_SIZE + MMIO_ICU_KEYS + MMIO_ICU_REPLY_KEYS;
 /// The base address of the TCU's private MMIO area
 pub const MMIO_PRIV_ADDR: usize = MMIO_ADDR + MMIO_SIZE;
 /// The size of the TCU's private MMIO area (including config space on HW)
 pub const MMIO_PRIV_SIZE: usize = cfg::PAGE_SIZE * 2;
+/// The size of the key used by the ICU
+pub const ICU_KEY_SIZE: u16 = 32;
 
 /// The number of external registers
 pub const EXT_REGS: usize = 2;
@@ -114,6 +124,13 @@ pub const UNPRIV_REGS: usize = 5;
 pub const EP_REGS: usize = 3;
 /// The number of PRINT registers
 pub const PRINT_REGS: usize = 32;
+
+/// Dummy attestation key per tile
+pub const ATTEST_KEY: [u64; 4] = [2; 4];
+/// Dummy secure communication key per endpoint
+pub const EP_KEY: [u64; 4] = [1; 4];
+/// Empty key for erasing endpoint keys
+pub const ERASE_KEY: [u64; 4] = [0; 4];
 
 int_enum! {
     /// The external registers
@@ -968,6 +985,16 @@ impl TCU {
         }
     }
 
+    /// Configures the given endpoint's key
+    pub fn set_ep_key(ep: EpId, ep_key: &EpKey) {
+        let addr = Self::ep_key_addr(ep);
+        for (i, r) in ep_key.iter().enumerate() {
+            unsafe {
+                arch::cpu::write8b(addr + i * mem::size_of::<Reg>(), *r);
+            }
+        }
+    }
+
     /// Returns the MMIO address for the given external register
     pub fn ext_reg_addr(reg: ExtReg) -> usize {
         MMIO_ADDR + reg.val as usize * 8
@@ -976,5 +1003,20 @@ impl TCU {
     /// Returns the MMIO address of the given endpoint registers
     pub fn ep_regs_addr(ep: EpId) -> usize {
         MMIO_ADDR + (EXT_REGS + UNPRIV_REGS + EP_REGS * ep as usize) * 8
+    }
+
+    /// Returns the MMIO address of the target ICU's attestation key
+    pub fn tile_key_addr() -> usize {
+        MMIO_ADDR + TCU_REG_SIZE
+    }
+
+    /// Returns the MMIO address of the endpoint's key in the keystore
+    pub fn ep_key_addr(ep: EpId) -> usize {
+        MMIO_ADDR + (TCU_REG_SIZE + ICU_KEY_SIZE as usize) + (ep * ICU_KEY_SIZE) as usize
+    }
+
+    /// Returns the MMIO address of the receive endpoint's reply key in the keystore
+    pub fn reply_ep_key_addr(ep: EpId) -> usize {
+        MMIO_ADDR + (TCU_REG_SIZE + MMIO_ICU_KEYS) + (ep * ICU_KEY_SIZE) as usize
     }
 }

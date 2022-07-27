@@ -21,7 +21,7 @@ use base::mem::GlobAddr;
 use base::tcu::*;
 
 use crate::arch;
-use crate::ktcu;
+use crate::ktcu::{self, config_local_ep_key, KTMP_EP};
 use crate::platform;
 
 pub const KPEX_EP: EpId = PMEM_PROT_EPS as EpId + 3;
@@ -40,6 +40,11 @@ pub fn rbuf_addrs(virt: goff) -> (goff, goff) {
 }
 
 pub fn deprivilege_tile(tile: TileId) -> Result<(), Error> {
+    // This occurs after attestation
+    // Since we read the FEATURES register we need to use the tile's attestation key
+    // TODO: Switch to correct attestation key
+    config_local_ep_key(KTMP_EP, &ATTEST_KEY);
+
     let mut features: u64 = ktcu::try_read_obj(tile, TCU::ext_reg_addr(ExtReg::FEATURES) as goff)?;
     features &= !1;
     ktcu::try_write_slice(tile, TCU::ext_reg_addr(ExtReg::FEATURES) as goff, &[
@@ -92,6 +97,9 @@ pub fn glob_to_phys_remote(tile: TileId, glob: GlobAddr, flags: PageFlags) -> Re
 }
 
 pub fn read_ep_remote(tile: TileId, ep: EpId, regs: &mut [Reg]) -> Result<(), Error> {
+    // Configure the KTMP_EP to use the target tile's attestation key
+    config_local_ep_key(KTMP_EP, &ATTEST_KEY);
+
     for i in 0..regs.len() {
         ktcu::try_read_slice(
             tile,
@@ -103,6 +111,10 @@ pub fn read_ep_remote(tile: TileId, ep: EpId, regs: &mut [Reg]) -> Result<(), Er
 }
 
 pub fn write_ep_remote(tile: TileId, ep: EpId, regs: &[Reg]) -> Result<(), Error> {
+    // Since we write to endpoint region at the target ICU we use the target tile's attestation key
+    // TODO: Pick the right attestation key
+    config_local_ep_key(KTMP_EP, &ATTEST_KEY);
+
     for (i, r) in regs.iter().enumerate() {
         ktcu::try_write_slice(tile, (TCU::ep_regs_addr(ep) + i * 8) as goff, &[*r])?;
     }
@@ -110,6 +122,31 @@ pub fn write_ep_remote(tile: TileId, ep: EpId, regs: &[Reg]) -> Result<(), Error
 }
 
 pub fn invalidate_ep_remote(tile: TileId, ep: EpId, force: bool) -> Result<u32, Error> {
+    // Erase the receive and reply endpoint keys
+    config_local_ep_key(KTMP_EP, &ATTEST_KEY);
+    klog!(
+        KEY_EXCHG,
+        "Erase endpoint key at Tile: {}, Endpoint: {}, Key: {}:{}:{}:{}",
+        tile,
+        ep,
+        ERASE_KEY[0],
+        ERASE_KEY[1],
+        ERASE_KEY[2],
+        ERASE_KEY[3]
+    );
+    ktcu::try_write_slice(tile, TCU::ep_key_addr(ep) as u64, &ERASE_KEY)?;
+    klog!(
+        KEY_EXCHG,
+        "Erase  reply endpoint key at Tile: {}, Endpoint: {}, Key: {}:{}:{}:{}",
+        tile,
+        ep,
+        ERASE_KEY[0],
+        ERASE_KEY[1],
+        ERASE_KEY[2],
+        ERASE_KEY[3]
+    );
+    ktcu::try_write_slice(tile, TCU::reply_ep_key_addr(ep) as u64, &ERASE_KEY)?;
+
     let reg = ExtCmdOpCode::INV_EP.val | ((ep as Reg) << 9) as Reg | ((force as Reg) << 25);
     do_ext_cmd(tile, reg).map(|unread| unread as u32)
 }
@@ -149,6 +186,10 @@ pub fn inv_reply_remote(
 }
 
 fn do_ext_cmd(tile: TileId, cmd: Reg) -> Result<Reg, Error> {
+    // Since we read the EXT_CMD register we need to use the tile's attestation key
+    // TODO: Use the correct target tile's attestation key
+    config_local_ep_key(KTMP_EP, &ATTEST_KEY);
+
     let addr = TCU::ext_reg_addr(ExtReg::EXT_CMD) as goff;
     ktcu::try_write_slice(tile, addr, &[cmd])?;
 

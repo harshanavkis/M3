@@ -40,11 +40,11 @@ pub const LOG_SUBSYS: bool = true;
 /// Logs child operations
 pub const LOG_CHILD: bool = false;
 /// Logs gate operations
-pub const LOG_GATE: bool = false;
+pub const LOG_GATE: bool = true;
 /// Logs semaphore operations
 pub const LOG_SEM: bool = false;
 /// Logs service operations
-pub const LOG_SERV: bool = false;
+pub const LOG_SERV: bool = true;
 /// Logs sendqueue operations
 pub const LOG_SQUEUE: bool = false;
 /// Logs memory operations

@@ -19,7 +19,7 @@ use base::col::VecDeque;
 use base::errors::{Code, Error};
 use base::mem::MsgBuf;
 use base::msgqueue::{MsgQueue, MsgSender};
-use base::tcu::{self, ActId, TileId};
+use base::tcu::{self, ActId, TileId, ATTEST_KEY, EP_KEY};
 
 use crate::ktcu;
 
@@ -88,6 +88,7 @@ impl MsgSender<MetaData> for KTCUSender {
     fn send(&mut self, meta: MetaData, msg: &MsgBuf) -> Result<(), Error> {
         klog!(SQUEUE, "SendQueue[{:?}]: sending msg", self.id);
 
+        // TODO: Use the right meta.rep and KSRV_EP key
         ktcu::send_to(
             self.tile,
             meta.rep,
@@ -95,6 +96,9 @@ impl MsgSender<MetaData> for KTCUSender {
             msg,
             self.rpl_lbl,
             ktcu::KSRV_EP,
+            &EP_KEY,
+            &EP_KEY,
+            &ATTEST_KEY,
         )?;
 
         self.cur_event = Some(get_event(meta.id));

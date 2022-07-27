@@ -20,6 +20,7 @@ use base::io;
 use base::kif::TileDesc;
 use base::machine;
 use base::math;
+use base::tcu::EP_KEY;
 
 use core::ptr;
 
@@ -71,16 +72,37 @@ fn create_rbufs() {
     };
 
     // TODO add second syscall REP
-    ktcu::recv_msgs(ktcu::KSYS_EP, rbuf as goff, sysc_rbuf_size, sysc_slot_size)
-        .expect("Unable to config syscall REP");
+    // TODO: Configure with correct key from the keystore
+    ktcu::recv_msgs(
+        ktcu::KSYS_EP,
+        rbuf as goff,
+        sysc_rbuf_size,
+        sysc_slot_size,
+        &EP_KEY,
+    )
+    .expect("Unable to config syscall REP");
     rbuf += 1 << sysc_rbuf_size as usize;
 
-    ktcu::recv_msgs(ktcu::KSRV_EP, rbuf as goff, serv_rbuf_size, serv_slot_size)
-        .expect("Unable to config service REP");
+    // TODO: Configure with correct key from the keystore
+    ktcu::recv_msgs(
+        ktcu::KSRV_EP,
+        rbuf as goff,
+        serv_rbuf_size,
+        serv_slot_size,
+        &EP_KEY,
+    )
+    .expect("Unable to config service REP");
     rbuf += 1 << serv_rbuf_size as usize;
 
-    ktcu::recv_msgs(ktcu::KPEX_EP, rbuf as goff, tm_rbuf_size, tm_slot_size)
-        .expect("Unable to config tilemux REP");
+    // TODO: Configure with correct key from the keystore
+    ktcu::recv_msgs(
+        ktcu::KPEX_EP,
+        rbuf as goff,
+        tm_rbuf_size,
+        tm_slot_size,
+        &EP_KEY,
+    )
+    .expect("Unable to config tilemux REP");
 }
 
 fn extend_heap() {

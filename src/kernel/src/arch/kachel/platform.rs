@@ -35,21 +35,26 @@ pub fn init(_args: &[String]) -> platform::KEnv {
     // read kernel env
     let addr = GlobAddr::new(envdata::get().kenv);
     let mut offset = addr.offset();
+
+    // TODO: Decide how to securely read in the boot information
     let info: boot::Info = ktcu::read_obj(addr.tile(), offset);
     offset += size_of::<boot::Info>() as goff;
 
     // read boot modules
     let mut mods: Vec<boot::Mod> = vec![boot::Mod::default(); info.mod_count as usize];
+    // TODO: Decide how to securely read this information
     ktcu::read_slice(addr.tile(), offset, &mut mods);
     offset += info.mod_count as goff * size_of::<boot::Mod>() as goff;
 
     // read tiles
     let mut tiles: Vec<TileDesc> = vec![TileDesc::default(); info.tile_count as usize];
+    // TODO: Decide how to securely read this information
     ktcu::read_slice(addr.tile(), offset, &mut tiles);
     offset += info.tile_count as goff * size_of::<TileDesc>() as goff;
 
     // read memory regions
     let mut mems: Vec<boot::Mem> = vec![boot::Mem::default(); info.mem_count as usize];
+    // TODO: Decide how to securely read this information
     ktcu::read_slice(addr.tile(), offset, &mut mems);
 
     // build new info for user tiles
@@ -89,6 +94,7 @@ pub fn init(_args: &[String]) -> platform::KEnv {
                     MemMod::new(MemType::KERNEL, i as TileId, used, args::get().kmem as goff);
                 used += args::get().kmem as goff;
                 // configure EP to give us access to this range of physical memory
+                // TODO: First configure the attestation key of the target tile as the KTMP_EP key
                 ktcu::config_local_ep(1, |regs| {
                     ktcu::config_mem(
                         regs,
@@ -154,15 +160,18 @@ pub fn init(_args: &[String]) -> platform::KEnv {
     let mut uoffset = addr.offset();
     uinfo.tile_count = utiles.len() as u64;
     uinfo.mem_count = umems.len() as u64;
+    // TODO: Decide how to securely write this information
     ktcu::write_slice(addr.tile(), uoffset, &[uinfo]);
     uoffset += size_of::<boot::Info>() as goff;
     uoffset += info.mod_count as goff * size_of::<boot::Mod>() as goff;
 
     // write-back user tiles
+    // TODO: Decide how to securely write this information
     ktcu::write_slice(addr.tile(), uoffset, &utiles);
     uoffset += uinfo.tile_count as goff * size_of::<boot::Tile>() as goff;
 
     // write-back user memory regions
+    // TODO: Decide how to securely write this information
     ktcu::write_slice(addr.tile(), uoffset, &umems);
 
     platform::KEnv::new(info, addr, mods, tiles)
@@ -173,6 +182,7 @@ pub fn init_serial(dest: Option<(TileId, EpId)>) {
         let (tile, ep) = dest.unwrap_or((0, 0));
         let serial = GlobAddr::new(envdata::get().kenv + 16 * 1024 * 1024);
         let tile_modid = TCU::tileid_to_nocid(tile);
+        // TODO: Figure out what location this points at to pick a key
         ktcu::write_slice(serial.tile(), serial.offset(), &[
             tile_modid as u64,
             ep as u64,
@@ -181,6 +191,7 @@ pub fn init_serial(dest: Option<(TileId, EpId)>) {
     else if let Some(ser_tile) = user_tiles().find(|i| tile_desc(*i).isa() == TileISA::SERIAL_DEV)
     {
         if let Some((tile, ep)) = dest {
+            // TODO: Figure out key exchange process config_remote_ep_key
             ktcu::config_remote_ep(ser_tile, 4, |regs| {
                 let act = kif::tilemux::ACT_ID as ActId;
                 ktcu::config_send(regs, act, 0, tile, ep, cfg::SERIAL_BUF_ORD, UNLIM_CREDITS);
