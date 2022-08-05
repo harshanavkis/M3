@@ -105,10 +105,10 @@ pub const MMIO_ADDR: usize = 0xF000_0000;
 pub const TCU_REG_SIZE: usize = cfg::PAGE_SIZE * 2;
 /// The size of the ICU's keystore
 pub const MMIO_ICU_KEYS: usize = cfg::PAGE_SIZE * 2;
-/// The size of the ICU's reply keystore
-pub const MMIO_ICU_REPLY_KEYS: usize = cfg::PAGE_SIZE * 2;
+/// The size of the ICU's attestation data region
+pub const MMIO_ICU_ATTEST: usize = cfg::PAGE_SIZE;
 /// The size of the TCU's MMIO area
-pub const MMIO_SIZE: usize = TCU_REG_SIZE + MMIO_ICU_KEYS + MMIO_ICU_REPLY_KEYS;
+pub const MMIO_SIZE: usize = TCU_REG_SIZE + MMIO_ICU_KEYS + MMIO_ICU_ATTEST;
 /// The base address of the TCU's private MMIO area
 pub const MMIO_PRIV_ADDR: usize = MMIO_ADDR + MMIO_SIZE;
 /// The size of the TCU's private MMIO area (including config space on HW)
@@ -868,12 +868,12 @@ impl TCU {
     }
 
     fn read_priv_reg(reg: PrivReg) -> Reg {
-        Self::read_reg(((cfg::PAGE_SIZE * 2) / mem::size_of::<Reg>()) + reg.val as usize)
+        Self::read_reg(((cfg::PAGE_SIZE * 5) / mem::size_of::<Reg>()) + reg.val as usize)
     }
 
     fn write_priv_reg(reg: PrivReg, val: Reg) {
         Self::write_reg(
-            ((cfg::PAGE_SIZE * 2) / mem::size_of::<Reg>()) + reg.val as usize,
+            ((cfg::PAGE_SIZE * 5) / mem::size_of::<Reg>()) + reg.val as usize,
             val,
         )
     }
@@ -1015,8 +1015,8 @@ impl TCU {
         MMIO_ADDR + (TCU_REG_SIZE + ICU_KEY_SIZE as usize) + (ep * ICU_KEY_SIZE) as usize
     }
 
-    /// Returns the MMIO address of the receive endpoint's reply key in the keystore
-    pub fn reply_ep_key_addr(ep: EpId) -> usize {
-        MMIO_ADDR + (TCU_REG_SIZE + MMIO_ICU_KEYS) + (ep * ICU_KEY_SIZE) as usize
+    /// Returns the MMIO address of the attestation region
+    pub fn attest_addr() -> usize {
+        MMIO_ADDR + (TCU_REG_SIZE + MMIO_ICU_KEYS)
     }
 }
