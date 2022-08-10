@@ -86,16 +86,6 @@ pub fn config_remote_ep_key(tile: TileId, ep: EpId, ep_key: &EpKey) -> Result<()
     Ok(())
 }
 
-pub fn config_remote_reply_ep_key(tile: TileId, ep: EpId, ep_key: &EpKey) -> Result<(), Error> {
-    // TODO: Configure this to use the target tile's attestation key
-    config_local_ep_key(KTMP_EP, &ATTEST_KEY);
-
-    for (i, r) in ep_key.iter().enumerate() {
-        try_write_slice(tile, (TCU::reply_ep_key_addr(ep) + i * 8) as goff, &[*r])?;
-    }
-    Ok(())
-}
-
 pub fn recv_msgs(ep: EpId, buf: goff, ord: u32, msg_ord: u32, ep_key: &EpKey) -> Result<(), Error> {
     static REPS: StaticCell<EpId> = StaticCell::new(8);
 
@@ -139,10 +129,6 @@ pub fn send_to(
     rpl_ep_key: &EpKey,
     tile_key: &EpKey,
 ) -> Result<(), Error> {
-    // Configure the reply EP key at the remote tile
-    // TODO: Although this approach is simple it uses more hardware resources
-    config_remote_reply_ep_key(tile, ep, rpl_ep_key);
-
     // Set the local endpoint key to the target receive endpoint's key
     config_local_ep_key(KTMP_EP, ep_key);
 

@@ -227,6 +227,12 @@ int_enum! {
         const ACK_MSG       = 0x6;
         /// Puts the CU to sleep
         const SLEEP         = 0x7;
+        /// Generates a random nonce
+        const GEN_RAND      = 0x8;
+        /// Generates ECDSA signatures
+        const GEN_SIGN      = 0x9;
+        /// Verifies ECDSA signatures
+        const VER_SIGN      = 0xA;
     }
 }
 
@@ -261,6 +267,8 @@ int_enum! {
         const INV_EP      = 1;
         /// Reset the CU
         const RESET       = 2;
+        /// Attest the ICU
+        const ATTEST      = 3;
     }
 }
 
@@ -645,6 +653,66 @@ impl TCU {
         Self::write_unpriv_reg(
             UnprivReg::COMMAND,
             Self::build_cmd(0, CmdOpCode::SLEEP, ep as u64),
+        );
+        Self::get_error()
+    }
+
+    /// Uses the ICU to generate a 16 byte random nonce
+    ///
+    /// dest: contains the generated random number
+    #[inline(always)]
+    pub fn gen_random(dest: *mut u8) -> Result<(), Error> {
+        loop {
+            Self::write_unpriv_reg(
+                UnprivReg::DATA,
+                Self::build_data(dest as usize, 16 as usize),
+            );
+
+            Self::write_unpriv_reg(
+                UnprivReg::COMMAND,
+                Self::build_cmd(0, CmdOpCode::GEN_RAND, 0),
+            );
+            if let Err(e) = Self::get_error() {
+                if e.code() == Code::TranslationFault {
+                    Self::handle_xlate_fault(dest as usize, Perm::W);
+                    // retry the access
+                    continue;
+                }
+                else {
+                    return Err(e);
+                }
+            }
+            return Ok(());
+        }
+    }
+
+    /// Uses the ICU to generate ECDSA signatures using P-256 curve
+    ///
+    /// src_size: 32 bytes plus data size
+    /// src     :  private key plus data combination
+    /// dest    : contains final signature
+    #[inline(always)]
+    pub fn gen_ecdsa_sign(src_size: usize, src: *const u8, dest: *mut u8) -> Result<(), Error> {
+        Self::write_unpriv_reg(UnprivReg::DATA, Self::build_data(src as usize, src_size));
+
+        Self::write_unpriv_reg(
+            UnprivReg::COMMAND,
+            Self::build_cmd(0, CmdOpCode::GEN_SIGN, dest as u64),
+        );
+        Self::get_error()
+    }
+
+    /// Uses the ICU to verify ECDSA signatures using the CA public key burnt into hardware
+    ///
+    /// msg_size: 32 bytes plus data size
+    /// msg     : message | 64 byte signature | public key
+    #[inline(always)]
+    pub fn verify_ecdsa_sign(msg_size: usize, msg: *const u8) -> Result<(), Error> {
+        Self::write_unpriv_reg(UnprivReg::DATA, Self::build_data(msg as usize, msg_size));
+
+        Self::write_unpriv_reg(
+            UnprivReg::COMMAND,
+            Self::build_cmd(0, CmdOpCode::VER_SIGN, 0),
         );
         Self::get_error()
     }

@@ -121,6 +121,11 @@ pub fn write_ep_remote(tile: TileId, ep: EpId, regs: &[Reg]) -> Result<(), Error
     Ok(())
 }
 
+pub fn attest_tile_remote(tile: TileId, arg: u64) -> Result<(), Error> {
+    let reg = ExtCmdOpCode::ATTEST.val | ((0 as Reg) << 9) as Reg;
+    do_ext_cmd(tile, reg).map(|_| ())
+}
+
 pub fn invalidate_ep_remote(tile: TileId, ep: EpId, force: bool) -> Result<u32, Error> {
     // Erase the receive and reply endpoint keys
     config_local_ep_key(KTMP_EP, &ATTEST_KEY);
@@ -135,17 +140,6 @@ pub fn invalidate_ep_remote(tile: TileId, ep: EpId, force: bool) -> Result<u32, 
         ERASE_KEY[3]
     );
     ktcu::try_write_slice(tile, TCU::ep_key_addr(ep) as u64, &ERASE_KEY)?;
-    klog!(
-        KEY_EXCHG,
-        "Erase  reply endpoint key at Tile: {}, Endpoint: {}, Key: {}:{}:{}:{}",
-        tile,
-        ep,
-        ERASE_KEY[0],
-        ERASE_KEY[1],
-        ERASE_KEY[2],
-        ERASE_KEY[3]
-    );
-    ktcu::try_write_slice(tile, TCU::reply_ep_key_addr(ep) as u64, &ERASE_KEY)?;
 
     let reg = ExtCmdOpCode::INV_EP.val | ((ep as Reg) << 9) as Reg | ((force as Reg) << 25);
     do_ext_cmd(tile, reg).map(|unread| unread as u32)

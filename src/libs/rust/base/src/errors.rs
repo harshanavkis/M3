@@ -94,6 +94,8 @@ pub enum Code {
     InvChecksum,
     SocketClosed,
     ConnectionFailed,
+    // Attestation
+    AttestFailed,
 }
 
 impl Default for Code {
