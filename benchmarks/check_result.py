@@ -54,8 +54,8 @@ class Result:
 
 re_test   = re.compile('^Testing "(.*?)" in (.*?):$')
 re_failed = re.compile('^!\s+([^:]+):(\d+)\s+(.*?) FAILED$')
-re_perf   = re.compile('^.*!\s+([^:]+):(\d+)\s+PERF\s+"(.*?)": ([\d\.]+) (\S+?) \(\+/\- ([0-9\-\.]+) with (\d+) runs\)$')
-re_shdn   = re.compile('^.*\[(PE0:\S+\s*@\s*\d+|\S+\s*@\d+)\].*Shutting down$')
+re_perf   = re.compile('^.*!\s+([^:]+):(\d+)\s+PERF\s+"(.*?)": (\d+) (\S+) \(\+/\- ([0-9\-\.]+) cycles with (\d+) runs\)$')
+re_shdn   = re.compile('^.*\[(T0:\S+\s*@\s*\d+|\S+\s*@\d+)\].*Shutting down$')
 re_fsck   = re.compile('^.*(m3fsck:.*)$')
 re_exit   = re.compile('^.*Child .*? exited with exitcode \d+$')
 re_panic  = re.compile('^.*PANIC at(.*)$')

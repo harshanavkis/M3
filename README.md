@@ -80,7 +80,7 @@ M³ is primarily written in Rust and requires some nightly features of Rust. The
 
 Before you build M³, you should choose your target platform, the build mode, and the ISA by exporting the corresponding environment variables. For example:
 
-    $ export M3_BUILD=release M3_TARGET=gem5 M3_ISA=riscv LD_LIBRARY_PATH=build/cross-riscv/lib/
+    $ export M3_BUILD=release M3_TARGET=gem5 M3_ISA=riscv LD_LIBRARY_PATH=build/cross-riscv/lib/ M3_FS=bench.img
 
 Now, M³ can be built by using the script `b`:
 

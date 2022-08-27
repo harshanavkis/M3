@@ -100,6 +100,13 @@ build_params_gem5() {
     M3_GEM5_CPUFREQ=${M3_GEM5_CPUFREQ:-1GHz}
     M3_GEM5_MEMFREQ=${M3_GEM5_MEMFREQ:-333MHz}
     M3_GEM5_CFG=${M3_GEM5_CFG:-config/default.py}
+    M3_ENCR_LATENCY=${M3_ENCR_LATENCY:-0}
+    M3_INT_TRA_LATENCY=${M3_INT_TRA_LATENCY:-0}
+    M3_PAR_PIPE=${M3_PAR_PIPE:-0}
+    M3_RNG_LATENCY=${M3_RNG_LATENCY:-0}
+    M3_SIGN_LATENCY=${M3_SIGN_LATENCY:-0}
+    M3_SIGN_VER_LATENCY=${M3_SIGN_VER_LATENCY:-0}
+
     export M3_GEM5_TILES=$M3_CORES
     export M3_GEM5_FS=$build/$M3_FS
     export M3_GEM5_IDE_DRIVE=$M3_HDD_PATH
@@ -118,6 +125,9 @@ build_params_gem5() {
         echo -n " $M3_GEM5_CFG --cpu-type $M3_GEM5_CPU --isa $M3_ISA"
         echo -n " --cmd \"$cmd\" --mods \"$mods\""
         echo -n " --cpu-clock=$M3_GEM5_CPUFREQ --sys-clock=$M3_GEM5_MEMFREQ"
+        echo -n " --encr-latency=$M3_ENCR_LATENCY --par-pipe=$M3_PAR_PIPE"
+        echo -n " --int-transfer-latency=$M3_INT_TRA_LATENCY --rng-latency=$M3_RNG_LATENCY"
+        echo -n " --sign-latency=$M3_SIGN_LATENCY --sign-ver-latency=$M3_SIGN_VER_LATENCY"
         if [ "$M3_GEM5_PAUSE" != "" ]; then
             echo -n " --pausetile=$M3_GEM5_PAUSE"
         fi
