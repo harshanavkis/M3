@@ -59,24 +59,24 @@ def run_gem5(exp, out_file):
 
     return perf_res
 
-def run_ipc_non_secure(exp_res_path):
+def run_remote_ipc_non_secure(exp_res_path):
     generate_env_vars()
 
     # record experiment data i.e kernel and application logs
-    out_file = os.path.join(exp_res_path, "ipc-non-secure.log")
+    out_file = os.path.join(exp_res_path, "remote-ipc-non-secure.log")
 
-    perf_res = run_gem5("ipc", out_file)
+    perf_res = run_gem5("remote-ipc", out_file)
     perf_res["encr_latency"] = 0
 
     return perf_res
 
-def run_ipc_secure(exp_res_path):
+def run_remote_ipc_secure(exp_res_path):
     generate_env_vars(encr_latency="15")
 
     # record experiment data i.e kernel and application logs
-    out_file = os.path.join(exp_res_path, "ipc-secure.log")
+    out_file = os.path.join(exp_res_path, "remote-ipc-secure.log")
 
-    perf_res = run_gem5("ipc", out_file)
+    perf_res = run_gem5("remote-ipc", out_file)
     perf_res["encr_latency"] = 15
 
     return perf_res
@@ -99,8 +99,8 @@ def main():
         )
 
     benchmark_list = {
-        "ipc-non-secure": run_ipc_non_secure,
-        "ipc-secure": run_ipc_secure
+        "remote-ipc-non-secure": run_remote_ipc_non_secure,
+        "remote-ipc-secure": run_remote_ipc_secure
     }
 
     for b, f in benchmark_list.items():

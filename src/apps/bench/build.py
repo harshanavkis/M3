@@ -8,6 +8,7 @@ dirs = [
     'hashmuxbenchs',
     'imgproc',
     'ipc',
+    'ripc',
     'loadgen',
     'netlat',
     'rustbenchs',

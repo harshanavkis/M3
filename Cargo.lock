@@ -308,6 +308,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "ripc"
+version = "0.1.0"
+dependencies = [
+ "m3",
+]
+
+[[package]]
 name = "root"
 version = "0.1.0"
 dependencies = [
