@@ -122,7 +122,12 @@ pub fn write_ep_remote(tile: TileId, ep: EpId, regs: &[Reg]) -> Result<(), Error
 }
 
 pub fn attest_tile_remote(tile: TileId, arg: u64) -> Result<(), Error> {
-    let reg = ExtCmdOpCode::ATTEST.val | ((0 as Reg) << 9) as Reg;
+    let reg = ExtCmdOpCode::ATTEST.val | ((arg as Reg) << 9) as Reg;
+    do_ext_cmd(tile, reg).map(|_| ())
+}
+
+pub fn gen_key_tile_remote(tile: TileId) -> Result<(), Error> {
+    let reg = ExtCmdOpCode::GEN_KEY.val as Reg;
     do_ext_cmd(tile, reg).map(|_| ())
 }
 

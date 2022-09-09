@@ -269,6 +269,8 @@ int_enum! {
         const RESET       = 2;
         /// Attest the ICU
         const ATTEST      = 3;
+        /// Generate shared attestation key
+        const GEN_KEY     = 4;
     }
 }
 
