@@ -5,6 +5,7 @@ members = [
     "src/apps/bench/ipc",
     "src/apps/bench/ripc",
     "src/apps/bench/bencrmgate",
+    "src/apps/bench/encrsyscall",
     "src/apps/bench/netlat",
     "src/apps/bench/rustbenchs",
     "src/apps/bench/rustnetbenchs",

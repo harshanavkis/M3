@@ -10,6 +10,7 @@ dirs = [
     'ipc',
     'ripc',
     'bencrmgate',
+    'encrsyscall',
     'loadgen',
     'netlat',
     'rustbenchs',

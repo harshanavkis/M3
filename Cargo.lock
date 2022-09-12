@@ -62,6 +62,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "encrsyscall"
+version = "0.1.0"
+dependencies = [
+ "m3",
+]
+
+[[package]]
 name = "fs"
 version = "0.1.0"
 dependencies = [
