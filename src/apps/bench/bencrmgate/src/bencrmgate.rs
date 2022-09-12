@@ -2,7 +2,7 @@
  * Copyright (C) 2018 Nils Asmussen <nils@os.inf.tu-dresden.de>
  * Economic rights: Technische Universitaet Dresden (Germany)
  *
- * Copyright (C) 2019-2022 Nils Asmussen, Barkhausen Institut
+ * Copyright (C) 2019-2021 Nils Asmussen, Barkhausen Institut
  *
  * This file is part of M3 (Microkernel-based SysteM for Heterogeneous Manycores).
  *
@@ -18,21 +18,8 @@
 
 #![no_std]
 
-mod bboxlist;
-mod bdlist;
+#[path = "../../rustbenchs/src/bencrmgate.rs"]
 mod bencrmgate;
-mod bipc;
-mod bmemmap;
-mod bmgate;
-mod bpipe;
-mod bregfile;
-mod bremote_ipc;
-mod bstream;
-mod bsyscall;
-#[cfg(not(target_vendor = "host"))]
-mod btilemux;
-mod btreap;
-mod btreemap;
 
 use m3::test::{DefaultWvTester, WvTester};
 use m3::{println, wv_run_suite};
@@ -40,21 +27,6 @@ use m3::{println, wv_run_suite};
 #[no_mangle]
 pub fn main() -> i32 {
     let mut tester = DefaultWvTester::default();
-    wv_run_suite!(tester, bboxlist::run);
-    wv_run_suite!(tester, bdlist::run);
-    wv_run_suite!(tester, bmemmap::run);
-    wv_run_suite!(tester, bmgate::run);
-    wv_run_suite!(tester, bipc::run);
-    wv_run_suite!(tester, bremote_ipc::run);
     wv_run_suite!(tester, bencrmgate::run);
-    #[cfg(not(target_vendor = "host"))]
-    wv_run_suite!(tester, btilemux::run);
-    wv_run_suite!(tester, bpipe::run);
-    wv_run_suite!(tester, bregfile::run);
-    wv_run_suite!(tester, bstream::run);
-    wv_run_suite!(tester, bsyscall::run);
-    wv_run_suite!(tester, btreap::run);
-    wv_run_suite!(tester, btreemap::run);
-    println!("{}", tester);
     0
 }

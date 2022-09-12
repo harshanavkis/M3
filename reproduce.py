@@ -81,6 +81,28 @@ def run_remote_ipc_secure(exp_res_path):
 
     return perf_res
 
+def run_read_write_non_secure(exp_res_path):
+    generate_env_vars()
+
+    # record experiment data i.e kernel and application logs
+    out_file = os.path.join(exp_res_path, "read_write_non_secure.log")
+
+    perf_res = run_gem5("encr-mgate", out_file)
+    perf_res["encr_latency"] = 0
+
+    return perf_res
+
+def run_read_write_secure(exp_res_path):
+    generate_env_vars(encr_latency="15")
+
+    # record experiment data i.e kernel and application logs
+    out_file = os.path.join(exp_res_path, "read_write_secure.log")
+
+    perf_res = run_gem5("encr-mgate", out_file)
+    perf_res["encr_latency"] = 15
+
+    return perf_res
+
 def main():
     # Used to resume experiments if the script stops unexpectedly
     with open("snapshot.json", "w+") as f:
@@ -100,7 +122,9 @@ def main():
 
     benchmark_list = {
         "remote-ipc-non-secure": run_remote_ipc_non_secure,
-        "remote-ipc-secure": run_remote_ipc_secure
+        "remote-ipc-secure": run_remote_ipc_secure,
+        "read-write-non-secure": run_read_write_non_secure,
+        "read-write-secure": run_read_write_secure
     }
 
     for b, f in benchmark_list.items():

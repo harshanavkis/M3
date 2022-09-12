@@ -9,6 +9,7 @@ dirs = [
     'imgproc',
     'ipc',
     'ripc',
+    'bencrmgate',
     'loadgen',
     'netlat',
     'rustbenchs',
