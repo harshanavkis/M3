@@ -96,6 +96,9 @@ in gcc7Stdenv.mkDerivation rec {
   nativeBuildInputs = [
     python3.pkgs.pyyaml
     python3.pkgs.pandas
+    python3.pkgs.seaborn
+    python3.pkgs.matplotlib
+    python3.pkgs.scipy
     git
     gdb
     scons

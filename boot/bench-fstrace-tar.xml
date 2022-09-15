@@ -1,0 +1,26 @@
+<config>
+    <kernel args="kernel -f $fs.path" />
+    <dom>
+        <app args="root">
+            <dom>
+                <app args="m3fs mem $fs.size" daemon="1">
+                    <serv name="m3fs" />
+                    <physmem addr="0" size="$fs.size" />
+                </app>
+            </dom>
+            <dom>
+                <app args="pager $fs.size">
+                    <sess name="m3fs" />
+                    <physmem addr="0" size="$fs.size" perm="r" />
+                    <tiles type="core" count="1" />
+                    <dom>
+                        <app args="/bin/fstrace-m3fs -n 4 -u 2 tar">
+                            <mount fs="m3fs" path="/" />
+                            <tiles type="core" count="1" />
+                        </app>
+                    </dom>
+                </app>
+            </dom>
+        </app>
+    </dom>
+</config>
