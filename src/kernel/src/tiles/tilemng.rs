@@ -93,6 +93,13 @@ fn deprivilege_tiles() {
         // Take away kernel privileges from other tiles
         ktcu::deprivilege_tile(tile).expect("Unable to deprivilege tile");
     }
+
+    let mem = crate::mem::borrow_mut();
+
+    for m in mem.mods() {
+        // Attest memory tile
+        attest_tile(m.addr().tile(), &kern_chain_info);
+    }
 }
 
 const CERT_LEN: u64 = 128;
