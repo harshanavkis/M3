@@ -14,7 +14,7 @@
                     <physmem addr="0" size="$fs.size" perm="r" />
                     <tiles type="core" count="1" />
                     <dom>
-                        <app args="/bin/fstrace-m3fs -n 4 -u 2 tar">
+                        <app args="/bin/fstrace-m3fs -d -n 1 -u 0 -v tar">
                             <mount fs="m3fs" path="/" />
                             <tiles type="core" count="1" />
                         </app>
