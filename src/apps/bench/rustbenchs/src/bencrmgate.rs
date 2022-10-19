@@ -55,7 +55,7 @@ fn read512(_t: &mut dyn WvTester) {
     let buf = &mut BUF.borrow_mut()[..512];
     let mgate = MemGate::new(SIZE, kif::Perm::R).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "read 2 MiB with 512B buf",
@@ -73,7 +73,7 @@ fn read1024(_t: &mut dyn WvTester) {
     let buf = &mut BUF.borrow_mut()[..1024];
     let mgate = MemGate::new(SIZE, kif::Perm::R).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "read 2 MiB with 1K buf",
@@ -91,7 +91,7 @@ fn read2048(_t: &mut dyn WvTester) {
     let buf = &mut BUF.borrow_mut()[..2048];
     let mgate = MemGate::new(SIZE, kif::Perm::R).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "read 2 MiB with 2K buf",
@@ -109,7 +109,7 @@ fn read4096(_t: &mut dyn WvTester) {
     let buf = &mut BUF.borrow_mut()[..4096];
     let mgate = MemGate::new(SIZE, kif::Perm::R).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "read 2 MiB with 4K buf",
@@ -127,7 +127,7 @@ fn read8192(_t: &mut dyn WvTester) {
     let buf = &mut BUF.borrow_mut()[..8192];
     let mgate = MemGate::new(SIZE, kif::Perm::R).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "read 2 MiB with 8K buf",
@@ -235,7 +235,7 @@ fn write512(_t: &mut dyn WvTester) {
     let buf = &BUF.borrow()[..512];
     let mgate = MemGate::new(SIZE, kif::Perm::W).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "write 2 MiB with 512B buf",
@@ -253,7 +253,7 @@ fn write1024(_t: &mut dyn WvTester) {
     let buf = &BUF.borrow()[..1024];
     let mgate = MemGate::new(SIZE, kif::Perm::W).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "write 2 MiB with 1K buf",
@@ -271,7 +271,7 @@ fn write2048(_t: &mut dyn WvTester) {
     let buf = &BUF.borrow()[..2048];
     let mgate = MemGate::new(SIZE, kif::Perm::W).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "write 2 MiB with 2K buf",
@@ -289,7 +289,7 @@ fn write4096(_t: &mut dyn WvTester) {
     let buf = &BUF.borrow()[..4096];
     let mgate = MemGate::new(SIZE, kif::Perm::W).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "write 2 MiB with 4K buf",
@@ -307,7 +307,7 @@ fn write8192(_t: &mut dyn WvTester) {
     let buf = &BUF.borrow()[..8192];
     let mgate = MemGate::new(SIZE, kif::Perm::W).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(1).warmup(0);
+    let mut prof = Profiler::default().repeats(5).warmup(1);
 
     wv_perf!(
         "write 2 MiB with 8K buf",
