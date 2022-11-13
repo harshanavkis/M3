@@ -233,6 +233,8 @@ int_enum! {
         const GEN_SIGN      = 0x9;
         /// Verifies ECDSA signatures
         const VER_SIGN      = 0xA;
+        /// Notify local ICU of attestation completion
+        const ATT_DONE      = 0xB;
     }
 }
 
@@ -700,6 +702,16 @@ impl TCU {
         Self::write_unpriv_reg(
             UnprivReg::COMMAND,
             Self::build_cmd(0, CmdOpCode::GEN_SIGN, dest as u64),
+        );
+        Self::get_error()
+    }
+
+    /// Notifies local ICU that the attestation has been completed
+    #[inline(always)]
+    pub fn att_done() -> Result<(), Error> {
+        Self::write_unpriv_reg(
+            UnprivReg::COMMAND,
+            Self::build_cmd(0, CmdOpCode::ATT_DONE, 0),
         );
         Self::get_error()
     }

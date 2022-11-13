@@ -59,23 +59,23 @@ fn deprivilege_tiles() {
     for tile in platform::user_tiles() {
         // Generate a random nonce
         if let Ok(_) = generate_random_nonce(&mut kern_nonce) {
-            klog!(DEF, "generate random nonce ok");
+            // klog!(DEF, "generate random nonce ok");
             kern_chain_info.nonce = kern_nonce;
         }
         else {
-            klog!(DEF, "generate random nonce Err");
+            // klog!(DEF, "generate random nonce Err");
             kern_chain_info.nonce = [2 as u8; 16];
         }
-        klog!(DEF, "Generated nonce: {:?}", kern_chain_info.nonce);
+        // klog!(DEF, "Generated nonce: {:?}", kern_chain_info.nonce);
 
         // Generate an ecdsa signature
         let mut dummy_signature: [u8; 64] = [0; 64];
         let mut dummy_priv_key: [u8; 32] = [0; 32];
         let sign_data = generate_signature_data(&dummy_priv_key, &kern_nonce);
         if let Err(_) = generate_ecdsa_signature(&sign_data, &mut dummy_signature) {
-            klog!(DEF, "generate ecdsa sign err");
+            // klog!(DEF, "generate ecdsa sign err");
         }
-        klog!(DEF, "Generated ecdsa sign: {:?}", dummy_signature);
+        // klog!(DEF, "Generated ecdsa sign: {:?}", dummy_signature);
 
         // Verify ecdsa signature
         let dummy_msg: [u8; 16] = [0 as u8; 16];
@@ -83,7 +83,8 @@ fn deprivilege_tiles() {
         let dummy_signature: [u8; 64] = [0 as u8; 64];
         let verif_data = generate_verif_data(&dummy_msg, &dummy_signature, &dummy_pub_key);
         match verify_ecdsa_signature(16, &dummy_signature) {
-            Ok(_) => klog!(DEF, "ECDSA signature verification successful!"),
+            // Ok(_) => klog!(DEF, "ECDSA signature verification successful!"),
+            Ok(_) => (),
             Err(_) => klog!(DEF, "ECDSA signature verification not successful"),
         };
 
@@ -91,6 +92,7 @@ fn deprivilege_tiles() {
         attest_tile(tile, &kern_chain_info);
 
         // Take away kernel privileges from other tiles
+        // TODO: Move this after kernel has configure local ICU to be attested
         ktcu::deprivilege_tile(tile).expect("Unable to deprivilege tile");
     }
 
@@ -100,6 +102,8 @@ fn deprivilege_tiles() {
         // Attest memory tile
         attest_tile(m.addr().tile(), &kern_chain_info);
     }
+
+    att_done();
 }
 
 const CERT_LEN: u64 = 128;
@@ -166,6 +170,11 @@ fn verify_ecdsa_signature(msg_len: usize, src: &[u8]) -> Result<(), Error> {
     Ok(())
 }
 
+fn att_done() -> Result<(), Error> {
+    base::tcu::TCU::att_done()?;
+    Ok(())
+}
+
 fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
     klog!(DEF, "Attesting tile: {}", tile);
 
@@ -220,9 +229,9 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
 
     // Use Tcu::wait_for_msg to sleep until a message arrives
     tcu::TCU::sleep().unwrap();
-    klog!(DEF, "Kernel woken up!");
+    //klog!(DEF, "Kernel woken up!");
     if let Some(msg) = crate::ktcu::fetch_msg(crate::ktcu::KPEX_EP) {
-        klog!(DEF, "Attestation message arrived: {:?}", msg);
+        // klog!(DEF, "Attestation message arrived: {:?}", msg);
         crate::ktcu::ack_msg(crate::ktcu::KPEX_EP, msg);
     }
 
@@ -251,7 +260,8 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
 
     // Verify ICU public key
     match verify_ecdsa_signature(64, &verif_data) {
-        Ok(_) => klog!(DEF, "ICU cert ECDSA signature verification successful!"),
+        //Ok(_) => klog!(DEF, "ICU cert ECDSA signature verification successful!"),
+        Ok(_) => (),
         Err(_) => klog!(DEF, "ICU cert ECDSA signature verification not successful"),
     };
 
@@ -264,7 +274,8 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
 
     // Verify ICU signed nonce
     match verify_ecdsa_signature(16, &verif_data) {
-        Ok(_) => klog!(DEF, "ICU nonce ECDSA signature verification successful!"),
+        // Ok(_) => klog!(DEF, "ICU nonce ECDSA signature verification successful!"),
+        Ok(_) => (),
         Err(_) => klog!(DEF, "ICU nonce ECDSA signature verification not successful"),
     };
 
@@ -276,7 +287,7 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
         klog!(DEF, "generate ecdsa sign err");
     }
 
-    klog!(DEF, "Writing signed ICU challenge to ICU");
+    // klog!(DEF, "Writing signed ICU challenge to ICU");
     // Write chain to remote ICU
     crate::ktcu::write_mem(
         tile,
@@ -299,13 +310,15 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
 
     // Wait for ICU to acknowledge the key exchange
     tcu::TCU::sleep().unwrap();
-    klog!(DEF, "Kernel woken up!");
+    // klog!(DEF, "Kernel woken up!");
     if let Some(msg) = crate::ktcu::fetch_msg(crate::ktcu::KPEX_EP) {
-        klog!(DEF, "Key generated at remote ICU: {:?}", msg);
+        // klog!(DEF, "Key generated at remote ICU: {:?}", msg);
         crate::ktcu::ack_msg(crate::ktcu::KPEX_EP, msg);
     }
 
     crate::ktcu::invalidate_ep_remote(tile, tcu::KPEX_SEP, true).unwrap();
+
+    klog!(DEF, "Attestation complete: {}", tile);
 
     Ok(())
 }
