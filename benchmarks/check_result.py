@@ -4,7 +4,7 @@
 
 import re
 import sys
-from scipy.stats import gmean
+from scipy.stats import geom
 
 class PerfResult:
     def __init__(self, name, time, unit, variance, runs):
@@ -123,20 +123,22 @@ def parse_apps_output(file):
                 cycle_list.append(line.strip().split(" ")[-2])
     
     cycle_list = [int(i) for i in cycle_list]
-    cycle_list = cycle_list[2:]
+    # cycle_list = cycle_list[2:]
     
     # TODO: return variance
-    return gmean(cycle_list)
+    # return gmean(cycle_list)
+    return cycle_list[0]
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: {} <file>".format(sys.argv[0]))
         sys.exit(1)
 
-    # res = parse_output(sys.argv[1])
-    # for failed in res.failures:
-    #     print("  {} \033[1mfailed\033[0m".format(failed), file=sys.stderr)
+    res = parse_output(sys.argv[1])
+    # print(res)
+    for failed in res.failures:
+        print("  {} \033[1mfailed\033[0m".format(failed), file=sys.stderr)
     
-    print(parse_apps_output(sys.argv[1]))
+    # print(parse_apps_output(sys.argv[1]))
 
     sys.exit(0 if res.failed_tests == 0 else 1)
