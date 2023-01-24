@@ -17,6 +17,7 @@ use base::cell::{LazyStaticRefCell, RefMut};
 use base::col::Vec;
 use base::errors::Error;
 use base::tcu::{ActId, EpId, TileId, KPEX_SEP};
+use base::time::{CycleInstant, Duration};
 use base::{cfg, kif, tcu};
 
 use crate::arch::ktcu::{self, KPEX_EP};
@@ -178,6 +179,9 @@ fn att_done() -> Result<(), Error> {
 fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
     klog!(DEF, "Attesting tile: {}", tile);
 
+    // Start cycle counter
+    let start_cycles = CycleInstant::now();
+
     // Write nonce to remote ICU
     crate::ktcu::write_mem(
         tile,
@@ -318,7 +322,14 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
 
     crate::ktcu::invalidate_ep_remote(tile, tcu::KPEX_SEP, true).unwrap();
 
-    klog!(DEF, "Attestation complete: {}", tile);
+    let end_cycles = start_cycles.elapsed();
+
+    klog!(
+        DEF,
+        "Attestation complete: {}, {} cycles",
+        tile,
+        end_cycles.as_raw()
+    );
 
     Ok(())
 }
