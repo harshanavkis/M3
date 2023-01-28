@@ -28,10 +28,18 @@ use m3::tcu;
 use m3::time::{CycleDuration, CycleInstant, Duration};
 use m3::{env, reply_vmsg};
 use m3::{log, println, vec};
+use core::cmp;
+use m3::cell::StaticRefCell;
+use m3::mem::AlignedBuf;
+use m3::io::{Read, Write};
+use m3::wv_assert_ok;
+use m3::vfs::{OpenFlags, VFS};
 
 const LOG_MSGS: bool = true;
 const LOG_MEM: bool = true;
 const LOG_COMP: bool = true;
+
+static BUF: StaticRefCell<AlignedBuf<4096>> = StaticRefCell::new(AlignedBuf::new_zeroed());
 
 fn create_reply_gate(ctrl_msg_size: usize) -> Result<RecvGate, Error> {
     RecvGate::new_with(
@@ -101,116 +109,65 @@ impl Node {
 
 fn client(args: &[&str]) {
     if args.len() != 5 {
-        panic!("Usage: {} <ctrl-msg-size> <all-compute> <runs>", args[0]);
+        panic!("Usage: {} <ctrl-msg-size> <data-size> <runs>", args[0]);
     }
 
     let ctrl_msg_size = args[2]
         .parse::<usize>()
         .expect("Unable to parse control message size");
-    let compute_time = args[3]
-        .parse::<u64>()
+    let data_size = args[3]
+        .parse::<usize>()
         .expect("Unable to parse compute time");
     let runs = args[4]
         .parse::<u64>()
         .expect("Unable to parse number of runs");
 
-    let node = Node::new("client".to_string(), ctrl_msg_size, 0);
+    let node = Node::new("client".to_string(), ctrl_msg_size, data_size);
 
     let mut reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
-    reply_gate.activate();
-    let mut sgate = SendGate::new_named("req").expect("Unable to create named SendGate req");
+    reply_gate.activate().unwrap();
+    let mut sgate = SendGate::new_named("gpu").expect("Unable to create named SendGate req");
+
+    let mem_gate = if data_size > 0 {
+        Some(MemGate::new(data_size, Perm::W).expect("Unable to create memory gate"))
+    }
+    else {
+        None
+    };
+
+    let mut gpu_rgate = RecvGate::new_named("gpures").expect("Unable to create named RecvGate gpures");
+    gpu_rgate.activate().unwrap();
 
     for _ in 0..runs {
         let start = CycleInstant::now();
 
-        node.call_and_ack("frontend", &sgate, &reply_gate)
+        if let Some(ref mg) = mem_gate {
+            let start = CycleInstant::now();
+            node.write_to("gpu", mg, data_size)
+                .expect("Writing data failed");
+            let duration = CycleInstant::now().duration_since(start);
+            println!("xfer: {:?}", duration);
+        }
+
+        node.call_and_ack("gpu", &sgate, &reply_gate)
             .expect("Request failed");
-
-        let duration = CycleInstant::now().duration_since(start);
-        // compensate for running on a 100MHz core (in contrast to the computing computes that run
-        // on a 80MHz core).
-        // let duration = ((duration.as_raw() as f64) * 0.8) as u64;
-        println!("total: {:?}", duration);
-        println!("compute: {:?}", compute_time);
-    }
-}
-
-fn frontend(args: &[&str]) {
-    if args.len() != 3 {
-        panic!("Usage: {} <ctrl-msg-size>", args[0]);
-    }
-
-    let ctrl_msg_size = args[2]
-        .parse::<usize>()
-        .expect("Unable to parse control message size");
-
-    let node = Node::new("frontend".to_string(), ctrl_msg_size, 0);
-
-    let fs_sgate = SendGate::new_named("fs").expect("Unable to create named SendGate fs");
-    let storage_sgate =
-        SendGate::new_named("storage").expect("Unable to create named SendGate storage");
-    let mut gpu_rgate =
-        RecvGate::new_named("gpures").expect("Unable to create named RecvGate gpures");
-    gpu_rgate.activate().unwrap();
-
-    let mut reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
-
-    reply_gate.activate().unwrap();
-
-    let mut req_rgate = RecvGate::new_named("req").expect("Unable to create named RecvGate req");
-    req_rgate.activate().unwrap();
-    loop {
-        let mut request = node
-            .receive_request("client", &req_rgate)
-            .expect("Receiving request failed");
-
-        node.call_and_ack("fs", &fs_sgate, &reply_gate)
-            .expect("fs request failed");
-
-        node.call_and_ack("storage", &storage_sgate, &reply_gate)
-            .expect("storage request failed");
 
         let mut gpu_res = node
             .receive_request("gpu", &gpu_rgate)
             .expect("Receiving GPU result failed");
         reply_vmsg!(gpu_res, 0).expect("Reply to GPU failed");
 
-        node.send_reply("client", &mut request)
-            .expect("Reply to client failed");
-    }
-}
-
-fn fs(args: &[&str]) {
-    if args.len() != 4 {
-        panic!("Usage: {} <ctrl-msg-size> <compute-millis>", args[0]);
-    }
-
-    let ctrl_msg_size = args[2]
-        .parse::<usize>()
-        .expect("Unable to parse control message size");
-    let compute_time = args[3]
-        .parse::<u64>()
-        .expect("Unable to parse compute time");
-
-    let node = Node::new("fs".to_string(), ctrl_msg_size, 0);
-
-    let mut req_rgate = RecvGate::new_named("fs").expect("Unable to create named RecvGate fs");
-    req_rgate.activate().unwrap();
-    loop {
-        let mut request = node
-            .receive_request("frontend", &req_rgate)
-            .expect("Receiving request failed");
-
-        node.compute_for(CycleDuration::from_raw(compute_time));
-
-        node.send_reply("frontend", &mut request)
-            .expect("Reply to frontend failed");
+        let duration = CycleInstant::now().duration_since(start);
+        // compensate for running on a 100MHz core (in contrast to the computing computes that run
+        // on a 80MHz core).
+        // let duration = ((duration.as_raw() as f64) * 0.8) as u64;
+        println!("total: {:?}", duration);
     }
 }
 
 fn gpu(args: &[&str]) {
-    if args.len() != 4 {
-        panic!("Usage: {} <ctrl-msg-size> <compute-millis>", args[0]);
+    if args.len() != 6 {
+        panic!("Usage: {} <ctrl-msg-size> <compute-millis> <read-in-size> <write-out-size>", args[0]);
     }
 
     let ctrl_msg_size = args[2]
@@ -219,8 +176,16 @@ fn gpu(args: &[&str]) {
     let compute_time = args[3]
         .parse::<u64>()
         .expect("Unable to parse compute time");
+    let read_in_size = args[4]
+        .parse::<usize>()
+        .expect("Unable to parse control message size");
+    let write_out_size = args[5]
+        .parse::<usize>()
+        .expect("Unable to parse control message size");
 
-    let node = Node::new("gpu".to_string(), ctrl_msg_size, 0);
+    let node = Node::new("gpu".to_string(), ctrl_msg_size, cmp::max(read_in_size, write_out_size));
+
+    let buf = &mut BUF.borrow_mut()[..];
 
     let res_sgate = SendGate::new_named("gpures").expect("Unable to create named SendGate gpures");
 
@@ -232,69 +197,40 @@ fn gpu(args: &[&str]) {
     req_rgate.activate().unwrap();
     loop {
         let mut request = node
-            .receive_request("storage", &req_rgate)
+            .receive_request("client", &req_rgate)
             .expect("Receiving request failed");
-        reply_vmsg!(request, 0).expect("Reply to storage failed");
+        reply_vmsg!(request, 0).expect("Reply to client failed");
 
-        node.compute_for(CycleDuration::from_raw(compute_time));
+        if read_in_size != 0 {
+            let mut file = wv_assert_ok!(VFS::open("/data/4096k.txt", OpenFlags::R));
+            let mut amount = 0;
 
-        node.call_and_ack("frontend", &res_sgate, &reply_gate)
-            .expect("GPU-result send failed");
-    }
-}
+            while read_in_size > amount {
+                // TODO: Change this to exact amount
+                let read_amount = wv_assert_ok!(file.read(buf));
 
-fn storage(args: &[&str]) {
-    if args.len() != 5 {
-        panic!(
-            "Usage: {} <ctrl-msg-size> <data-size> <compute-millis>",
-            args[0]
-        );
-    }
-
-    let ctrl_msg_size = args[2]
-        .parse::<usize>()
-        .expect("Unable to parse control message size");
-    let data_size = args[3].parse::<usize>().expect("Unable to parse data size");
-    let compute_time = args[4]
-        .parse::<u64>()
-        .expect("Unable to parse compute time");
-
-    let node = Node::new("storage".to_string(), ctrl_msg_size, data_size);
-
-    let mem_gate = if data_size > 0 {
-        Some(MemGate::new(data_size, Perm::W).expect("Unable to create memory gate"))
-    }
-    else {
-        None
-    };
-
-    let gpu_sgate = SendGate::new_named("gpu").expect("Unable to create named SendGate gpu");
-
-    let mut reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
-
-    reply_gate.activate().unwrap();
-
-    let mut req_rgate =
-        RecvGate::new_named("storage").expect("Unable to create named RecvGate storage");
-    req_rgate.activate().unwrap();
-    loop {
-        let mut request = node
-            .receive_request("frontend", &req_rgate)
-            .expect("Receiving request failed");
-        reply_vmsg!(request, 0).expect("Reply to frontend failed");
-
-        node.compute_for(CycleDuration::from_raw(compute_time));
-
-        if let Some(ref mg) = mem_gate {
-            let start = CycleInstant::now();
-            node.write_to("gpu", mg, data_size)
-                .expect("Writing data failed");
-            let duration = CycleInstant::now().duration_since(start);
-            println!("xfer: {:?}", duration);
+                amount += read_amount;
+            }
         }
 
-        node.call_and_ack("gpu", &gpu_sgate, &reply_gate)
-            .expect("GPU request failed");
+        node.compute_for(CycleDuration::from_raw(compute_time));
+
+        if write_out_size != 0 {
+            let mut file = wv_assert_ok!(VFS::open("/results", OpenFlags::W | OpenFlags::CREATE | OpenFlags::TRUNC));
+            let mut amount = 0;
+
+            // loop {
+                // TODO: Change this to exact amount
+                let write_amount = wv_assert_ok!(file.write(buf));
+
+                if write_amount == 0 {
+                    break;
+                }
+            // }
+        }
+
+        node.call_and_ack("client", &res_sgate, &reply_gate)
+            .expect("GPU-result send failed");
     }
 }
 
@@ -304,10 +240,7 @@ pub fn main() -> Result<(), Error> {
 
     match args[1] {
         "client" => client(&args),
-        "frontend" => frontend(&args),
-        "fs" => fs(&args),
         "gpu" => gpu(&args),
-        "storage" => storage(&args),
         s => panic!("unexpected component {}", s),
     }
 
