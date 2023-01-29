@@ -1,0 +1,35 @@
+<config>
+    <kernel args="kernel -f $fs.path" />
+    <dom>
+        <app args="root">
+            <dom>
+                <app args="m3fs mem $fs.size" daemon="1">
+                    <serv name="m3fs" />
+                    <physmem addr="0" size="$fs.size" />
+                </app>
+            </dom>
+            <dom>
+                <app args="pager $fs.size">
+                    <sess name="m3fs" />
+                    <physmem addr="0" size="$fs.size" perm="r" />
+                    <tiles type="boom|core" count="2" />
+                    <dom tile="boom|core">
+                        <app args="/bin/facever gpu 256 4418452 0 640" daemon="1">
+                        <mount fs="m3fs" path="/" />
+                        <rgate name="gpu" msgsize="512" slots="1" />
+                        <sgate name="gpures" />
+                        <tiles type="core" count="1" />
+                        </app>
+                    </dom>
+                    <dom tile="boom|core">
+                        <app args="/bin/facever client 256 3072 1">
+                            <sgate name="gpu" />
+                            <rgate name="gpures" msgsize="512" slots="1" />
+                            <tiles type="core" count="1" />
+                        </app>
+                    </dom>
+                </app>
+            </dom>
+        </app>
+    </dom>
+</config>

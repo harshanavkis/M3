@@ -34,6 +34,7 @@ use m3::mem::AlignedBuf;
 use m3::io::{Read, Write};
 use m3::wv_assert_ok;
 use m3::vfs::{OpenFlags, VFS};
+use m3::format;
 
 const LOG_MSGS: bool = true;
 const LOG_MEM: bool = true;
@@ -124,9 +125,13 @@ fn client(args: &[&str]) {
 
     let node = Node::new("client".to_string(), ctrl_msg_size, data_size);
 
-    let mut reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
-    reply_gate.activate().unwrap();
-    let mut sgate = SendGate::new_named("gpu").expect("Unable to create named SendGate req");
+    let mut mlacc1_reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
+    mlacc1_reply_gate.activate().unwrap();
+    let mut sgate_mlacc1 = SendGate::new_named("mlacc-1-req").expect("Unable to create named SendGate mlacc-1");
+
+    let mut mlacc2_reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
+    mlacc2_reply_gate.activate().unwrap();
+    let mut sgate_mlacc2 = SendGate::new_named("mlacc-2-req").expect("Unable to create named SendGate mlacc-2");
 
     let mem_gate = if data_size > 0 {
         Some(MemGate::new(data_size, Perm::W).expect("Unable to create memory gate"))
@@ -135,27 +140,46 @@ fn client(args: &[&str]) {
         None
     };
 
-    let mut gpu_rgate = RecvGate::new_named("gpures").expect("Unable to create named RecvGate gpures");
-    gpu_rgate.activate().unwrap();
+    let mut mlacc1_rgate = RecvGate::new_named("mlacc-1").expect("Unable to create named RecvGate mlacc-1");
+    mlacc1_rgate.activate().unwrap();
+
+    let mut mlacc2_rgate = RecvGate::new_named("mlacc-2").expect("Unable to create named RecvGate mlacc-2");
+    mlacc2_rgate.activate().unwrap();
 
     for _ in 0..runs {
         let start = CycleInstant::now();
 
         if let Some(ref mg) = mem_gate {
             let start = CycleInstant::now();
-            node.write_to("gpu", mg, data_size)
+            node.write_to("mlacc-1", mg, data_size)
                 .expect("Writing data failed");
             let duration = CycleInstant::now().duration_since(start);
             // println!("xfer: {:?}", duration);
         }
 
-        node.call_and_ack("gpu", &sgate, &reply_gate)
+        if let Some(ref mg) = mem_gate {
+            let start = CycleInstant::now();
+            node.write_to("mlacc-2", mg, data_size)
+                .expect("Writing data failed");
+            let duration = CycleInstant::now().duration_since(start);
+            // println!("xfer: {:?}", duration);
+        }
+
+        node.call_and_ack("mlacc-1", &sgate_mlacc1, &mlacc1_reply_gate)
+            .expect("Request failed");
+        
+        node.call_and_ack("mlacc-2", &sgate_mlacc2, &mlacc2_reply_gate)
             .expect("Request failed");
 
-        let mut gpu_res = node
-            .receive_request("gpu", &gpu_rgate)
+        let mut mlacc1_rep_gate = node
+            .receive_request("mlacc-1", &mlacc1_rgate)
             .expect("Receiving GPU result failed");
-        reply_vmsg!(gpu_res, 0).expect("Reply to GPU failed");
+        reply_vmsg!(mlacc1_rep_gate, 0).expect("Reply to GPU failed");
+
+        let mut mlacc2_rep_gate = node
+            .receive_request("mlacc-2", &mlacc2_rgate)
+            .expect("Receiving GPU result failed");
+        reply_vmsg!(mlacc2_rep_gate, 0).expect("Reply to GPU failed");
 
         let duration = CycleInstant::now().duration_since(start);
         // compensate for running on a 100MHz core (in contrast to the computing computes that run
@@ -165,9 +189,9 @@ fn client(args: &[&str]) {
     }
 }
 
-fn gpu(args: &[&str]) {
-    if args.len() != 6 {
-        panic!("Usage: {} <ctrl-msg-size> <compute-millis> <read-in-size> <write-out-size>", args[0]);
+fn mlacc(args: &[&str]) {
+    if args.len() != 7 {
+        panic!("Usage: {} <ctrl-msg-size> <compute-millis> <read-in-size> <write-out-size> <id>", args[0]);
     }
 
     let ctrl_msg_size = args[2]
@@ -178,22 +202,23 @@ fn gpu(args: &[&str]) {
         .expect("Unable to parse compute time");
     let read_in_size = args[4]
         .parse::<usize>()
-        .expect("Unable to parse control message size");
+        .expect("Unable to parse read in size");
     let write_out_size = args[5]
         .parse::<usize>()
-        .expect("Unable to parse control message size");
+        .expect("Unable to parse write out size");
+    let acc_id = args[6];
 
-    let node = Node::new("gpu".to_string(), ctrl_msg_size, cmp::max(read_in_size, write_out_size));
+    let node = Node::new(format!("mlacc-{}",acc_id).to_string(), ctrl_msg_size, cmp::max(read_in_size, write_out_size));
 
     let buf = &mut BUF.borrow_mut()[..];
 
-    let res_sgate = SendGate::new_named("gpures").expect("Unable to create named SendGate gpures");
+    let res_sgate = SendGate::new_named(&format!("mlacc-{}",acc_id).to_string()).expect("Unable to create named SendGate mlacc");
 
     let mut reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
 
     reply_gate.activate().unwrap();
 
-    let mut req_rgate = RecvGate::new_named("gpu").expect("Unable to create named RecvGate gpu");
+    let mut req_rgate = RecvGate::new_named(&format!("mlacc-{}-req",acc_id).to_string()).expect("Unable to create named RecvGate mlacc");
     req_rgate.activate().unwrap();
     loop {
         let mut request = node
@@ -230,7 +255,7 @@ fn gpu(args: &[&str]) {
         }
 
         node.call_and_ack("client", &res_sgate, &reply_gate)
-            .expect("GPU-result send failed");
+            .expect("ml-acc-result send failed");
     }
 }
 
@@ -240,7 +265,7 @@ pub fn main() -> Result<(), Error> {
 
     match args[1] {
         "client" => client(&args),
-        "gpu" => gpu(&args),
+        "mlacc" => mlacc(&args),
         s => panic!("unexpected component {}", s),
     }
 

@@ -1,0 +1,45 @@
+<config>
+    <kernel args="kernel -f $fs.path" />
+    <dom>
+        <app args="root">
+            <dom>
+                <app args="m3fs mem $fs.size" daemon="1">
+                    <serv name="m3fs" />
+                    <physmem addr="0" size="$fs.size" />
+                </app>
+            </dom>
+            <dom>
+                <app args="pager $fs.size">
+                    <sess name="m3fs" />
+                    <physmem addr="0" size="$fs.size" perm="r" />
+                    <tiles type="boom|core" count="3" />
+                    <dom tile="boom|core">
+                        <app args="/bin/distinf mlacc 256 3515443 0 640 1" daemon="1">
+                        <mount fs="m3fs" path="/" />
+                        <rgate name="mlacc-1-req" msgsize="512" slots="1" />
+                        <sgate name="mlacc-1" />
+                        <tiles type="core" count="1" />
+                        </app>
+                    </dom>
+                    <dom tile="boom|core">
+                        <app args="/bin/distinf mlacc 256 3515443 0 640 2" daemon="1">
+                        <mount fs="m3fs" path="/" />
+                        <rgate name="mlacc-2-req" msgsize="512" slots="1" />
+                        <sgate name="mlacc-2" />
+                        <tiles type="core" count="1" />
+                        </app>
+                    </dom>
+                    <dom tile="boom|core">
+                        <app args="/bin/distinf client 256 3072 1">
+                            <sgate name="mlacc-1-req" />
+                            <rgate name="mlacc-1" msgsize="512" slots="2" />
+                            <sgate name="mlacc-2-req" />
+                            <rgate name="mlacc-2" msgsize="512" slots="2" />
+                            <tiles type="core" count="1" />
+                        </app>
+                    </dom>
+                </app>
+            </dom>
+        </app>
+    </dom>
+</config>
