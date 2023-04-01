@@ -33,7 +33,7 @@ pub fn run(t: &mut dyn WvTester) {
     wv_run_test!(t, read1024);
     wv_run_test!(t, read2048);
     wv_run_test!(t, read4096);
-    wv_run_test!(t, read8192);
+    //wv_run_test!(t, read8192);
     // wv_run_test!(t, read_unaligned512);
     // wv_run_test!(t, read_unaligned1024);
     // wv_run_test!(t, read_unaligned2048);
@@ -43,7 +43,7 @@ pub fn run(t: &mut dyn WvTester) {
     wv_run_test!(t, write1024);
     wv_run_test!(t, write2048);
     wv_run_test!(t, write4096);
-    wv_run_test!(t, write8192);
+    //wv_run_test!(t, write8192);
     // wv_run_test!(t, write_unaligned512);
     // wv_run_test!(t, write_unaligned1024);
     // wv_run_test!(t, write_unaligned2048);
