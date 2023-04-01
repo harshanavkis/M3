@@ -45,6 +45,7 @@ pub use base::{
 
 pub mod cap;
 pub mod crypto;
+pub mod dataflow;
 pub mod server;
 pub mod session;
 pub mod syscalls;

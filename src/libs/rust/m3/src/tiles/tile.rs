@@ -139,6 +139,10 @@ impl Tile {
         Err(Error::new(Code::NotFound))
     }
 
+    pub fn get_with_props(desc: &str, id_hash: &[u32], share: bool) -> Result<Rc<Self>, Error> {
+        Self::get(desc)
+    }
+
     /// Derives a new tile object from `self` with a subset of the resources, removing them from
     /// `self`
     ///

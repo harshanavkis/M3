@@ -96,6 +96,9 @@ pub enum Code {
     ConnectionFailed,
     // Attestation
     AttestFailed,
+    // Security
+    IdentityMatchFail,
+    ExclusiveAccessFail,
 }
 
 impl Default for Code {

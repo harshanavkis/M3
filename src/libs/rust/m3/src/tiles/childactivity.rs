@@ -285,11 +285,16 @@ impl ChildActivity {
     /// the functions completeness or to stop it.
     pub fn run(self, func: fn() -> i32) -> Result<RunningProgramActivity, Error> {
         let args = env::args().collect::<Vec<_>>();
+        println!("childactivity.rs: {}", args[0]);
         let file = VFS::open(args[0], OpenFlags::RX | OpenFlags::NEW_SESS)?;
         let mut mapper = DefaultMapper::new(self.tile_desc().has_virtmem());
 
         let func_addr = func as *const () as usize;
         self.do_exec_file(&mut mapper, file.into_generic(), &args, Some(func_addr))
+    }
+
+    pub fn secure_run(self, func: fn() -> i32) -> Result<RunningProgramActivity, Error> {
+        Self::run(self, func)
     }
 
     /// Executes the given program and arguments with `self`.

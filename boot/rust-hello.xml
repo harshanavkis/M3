@@ -1,9 +1,25 @@
 <config>
-    <kernel args="kernel" />
+    <kernel args="kernel -f $fs.path" />
     <dom>
-        <app args="root">
+        <app args="root -s">
             <dom>
-                <app args="rusthello" />
+                <app args="m3fs mem $fs.size" daemon="1">
+                    <serv name="m3fs" />
+                    <physmem addr="0" size="$fs.size" />
+                </app>
+            </dom>
+            <dom>
+                <app args="pager $fs.size">
+                    <sess name="m3fs" />
+                    <physmem addr="0" size="$fs.size" perm="r" />
+                    <tiles type="boom|core" count="1" />
+                    <dom tile="boom|core">
+                        <app args="/bin/rusthello" time="1s">
+                            <mount fs="m3fs" path="/" />
+                            <tiles type="boom|core" count="1" />
+                        </app>
+                    </dom>
+                </app>
             </dom>
         </app>
     </dom>

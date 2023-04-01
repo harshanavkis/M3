@@ -336,6 +336,16 @@ impl Message {
             slice::from_raw_parts(ptr, (self.header.length / 8) as usize)
         }
     }
+
+    /// Returns the message data as a slice of u8's
+    pub fn as_bytes(&self) -> &[u8] {
+        // safety: we trust the TCU
+        unsafe {
+            #[allow(clippy::cast_ptr_alignment)]
+            let ptr = self.data.as_ptr() as *const u8;
+            slice::from_raw_parts(ptr, (self.header.length / 1) as usize)
+        }
+    }
 }
 
 /// The TCU interface
