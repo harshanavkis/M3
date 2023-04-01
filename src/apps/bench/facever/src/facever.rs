@@ -18,220 +18,358 @@
 
 #![no_std]
 
-use m3::col::{String, ToString, Vec};
-use m3::com::{recv_msg, GateIStream, MemGate, RGateArgs, RecvGate, SendGate};
-use m3::errors::Error;
-use m3::kif::Perm;
-use m3::math::next_log2;
-use m3::mem::{size_of, MsgBuf};
-use m3::tcu;
-use m3::time::{CycleDuration, CycleInstant, Duration};
-use m3::{env, reply_vmsg};
-use m3::{log, println, vec};
 use core::cmp;
 use m3::cell::StaticRefCell;
+use m3::col::{String, ToString, Vec};
+use m3::com::{recv_msg, GateIStream, MemGate, RGateArgs, RecvGate, SGateArgs, SendGate};
+use m3::errors::Error;
+use m3::io::{self, Read, Write};
+use m3::kif;
+use m3::kif::Perm;
+use m3::math::next_log2;
 use m3::mem::AlignedBuf;
-use m3::io::{Read, Write};
+use m3::mem::{size_of, MsgBuf};
+use m3::session::Pipes;
+use m3::tiles::{Activity, ActivityArgs, ChildActivity, RunningActivity, Tile};
+use m3::time::{CycleDuration, CycleInstant, Duration, Instant};
+use m3::vfs::{IndirectPipe, OpenFlags, VFS};
 use m3::wv_assert_ok;
-use m3::vfs::{OpenFlags, VFS};
+use m3::{env, reply_vmsg};
+use m3::{log, println, vec};
+use m3::{send_vmsg, tcu};
 
 const LOG_MSGS: bool = true;
 const LOG_MEM: bool = true;
 const LOG_COMP: bool = true;
+const LOG_FILE: bool = true;
 
-static BUF: StaticRefCell<AlignedBuf<4096>> = StaticRefCell::new(AlignedBuf::new_zeroed());
+fn tpu_ml() {
+    let tile = wv_assert_ok!(Tile::get("core"));
 
-fn create_reply_gate(ctrl_msg_size: usize) -> Result<RecvGate, Error> {
-    RecvGate::new_with(
-        RGateArgs::default()
-            .order(next_log2(ctrl_msg_size + size_of::<tcu::Header>()))
-            .msg_order(next_log2(ctrl_msg_size + size_of::<tcu::Header>())),
-    )
-}
+    let sh_mem = wv_assert_ok!(MemGate::new(0x31000, kif::Perm::RW));
 
-struct Node {
-    name: String,
-    ctrl_msg: MsgBuf,
-    data_buf: Vec<u8>,
-}
+    let rgate = wv_assert_ok!(RecvGate::new(8, 8));
+    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
 
-impl Node {
-    fn new(name: String, ctrl_msg_size: usize, data_size: usize) -> Self {
-        let mut ctrl_msg = MsgBuf::new();
-        ctrl_msg.set(vec![0u8; ctrl_msg_size]);
-        let data_buf = vec![0u8; data_size];
-        Self {
-            name,
-            ctrl_msg,
-            data_buf,
+    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("reader")));
+
+    wv_assert_ok!(act.delegate_obj(sh_mem.sel()));
+    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+    let mut dst = act.data_sink();
+    dst.push(sh_mem.sel());
+    dst.push(rgate.sel());
+
+    act.add_mount("/", "/");
+
+    let act = wv_assert_ok!(act.run(|| {
+        let mut src = Activity::own().data_source();
+        let shmem_sel = src.pop().unwrap();
+        let rgate_sel = src.pop().unwrap();
+
+        let mut shmem_gate = MemGate::new_bind(shmem_sel);
+        let mut rgate = RecvGate::new_bind(rgate_sel, 8, 8);
+
+        let mut data_buf: [u8; 2048] = [0; 2048];
+
+        wv_assert_ok!(shmem_gate.activate());
+        wv_assert_ok!(rgate.activate());
+
+        let mut msg = wv_assert_ok!(recv_msg(&rgate));
+
+        // Read in image data from client: 256 images * (28*28*1) bytes per image
+        let mut total = 0;
+        log!(LOG_MEM, "Starting read mgate");
+        while total < 0x31000 {
+            shmem_gate.read(&mut data_buf, total);
+            total += data_buf.len() as u64;
         }
-    }
+        log!(LOG_MEM, "Finished read mgate");
 
-    fn compute_for(&self, duration: CycleDuration) {
-        log!(LOG_COMP, "{}: computing for {:?}", self.name, duration);
-
-        let end = CycleInstant::now().as_cycles() + duration.as_raw();
+        // Perform computation
+        log!(LOG_COMP, "Starting TPU compute");
+        let end = CycleInstant::now().as_cycles() + CycleDuration::from_raw(13437141).as_raw();
         while CycleInstant::now().as_cycles() < end {}
-    }
+        log!(LOG_COMP, "End compute");
 
-    fn receive_request<'r>(
-        &self,
-        src: &str,
-        rgate: &'r RecvGate,
-    ) -> Result<GateIStream<'r>, Error> {
-        let request = recv_msg(rgate)?;
-        log!(LOG_MSGS, "{} <- {}", self.name, src);
-        Ok(request)
-    }
+        // Write results to a file: 64 byte per result for each digit
+        let mut file = wv_assert_ok!(VFS::open(
+            "/results-tpu-single",
+            OpenFlags::W | OpenFlags::CREATE | OpenFlags::NEW_SESS
+        ));
 
-    fn send_reply(&self, dest: &str, request: &mut GateIStream<'_>) -> Result<(), Error> {
-        log!(LOG_MSGS, "{} -> {}", self.name, dest);
-        request.reply(&self.ctrl_msg)
-    }
+        let mut total = 0;
+        log!(LOG_FILE, "Writing results to file");
+        while total < 0x4000 {
+            total += wv_assert_ok!(file.write(&data_buf));
+        }
+        log!(LOG_FILE, "Done writing results to file");
 
-    fn call_and_ack(
-        &self,
-        dest: &str,
-        sgate: &SendGate,
-        reply_gate: &RecvGate,
-    ) -> Result<(), Error> {
-        log!(LOG_MSGS, "{} -> {}", self.name, dest);
-        let reply = sgate.call(&self.ctrl_msg, reply_gate)?;
-        log!(LOG_MSGS, "{} <- {}", self.name, dest);
-        reply_gate.ack_msg(reply)
-    }
+        // Reply to notify that the computation was completed
+        wv_assert_ok!(reply_vmsg!(msg, "World"));
 
-    fn write_to(&self, dest: &str, mgate: &MemGate, data_size: usize) -> Result<(), Error> {
-        log!(LOG_MEM, "{}: writing to {}", self.name, dest);
-        mgate.write(&self.data_buf[0..data_size], 0)
-    }
+        0
+    }));
+
+    let reply_gate = RecvGate::def();
+
+    let start_compute = CycleInstant::now();
+    wv_assert_ok!(send_vmsg!(&sgate, reply_gate, "Hello"));
+
+    let mut reply = wv_assert_ok!(recv_msg(reply_gate));
+
+    act.wait().unwrap();
+
+    println!(
+        "total: {:?}",
+        CycleInstant::now().duration_since(start_compute)
+    );
 }
 
-fn client(args: &[&str]) {
-    if args.len() != 5 {
-        panic!("Usage: {} <ctrl-msg-size> <data-size> <runs>", args[0]);
-    }
+fn tpu_ml_dist() {
+    let tile_a = wv_assert_ok!(Tile::get("core"));
 
-    let ctrl_msg_size = args[2]
-        .parse::<usize>()
-        .expect("Unable to parse control message size");
-    let data_size = args[3]
-        .parse::<usize>()
-        .expect("Unable to parse compute time");
-    let runs = args[4]
-        .parse::<u64>()
-        .expect("Unable to parse number of runs");
+    let sh_mem_a = wv_assert_ok!(MemGate::new(0x31000, kif::Perm::RW));
 
-    let node = Node::new("client".to_string(), ctrl_msg_size, data_size);
+    let rgate_a = wv_assert_ok!(RecvGate::new(8, 8));
+    let sgate_a = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate_a).credits(1)));
 
-    let mut reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
-    reply_gate.activate().unwrap();
-    let mut sgate = SendGate::new_named("gpu").expect("Unable to create named SendGate req");
+    let mut act_a = wv_assert_ok!(ChildActivity::new_with(tile_a, ActivityArgs::new("reader")));
 
-    let mem_gate = if data_size > 0 {
-        Some(MemGate::new(data_size, Perm::W).expect("Unable to create memory gate"))
-    }
-    else {
-        None
-    };
+    wv_assert_ok!(act_a.delegate_obj(sh_mem_a.sel()));
+    wv_assert_ok!(act_a.delegate_obj(rgate_a.sel()));
+    let mut dst = act_a.data_sink();
+    dst.push(sh_mem_a.sel());
+    dst.push(rgate_a.sel());
 
-    let mut gpu_rgate = RecvGate::new_named("gpures").expect("Unable to create named RecvGate gpures");
-    gpu_rgate.activate().unwrap();
+    let tile_b = wv_assert_ok!(Tile::get("core"));
 
-    for _ in 0..runs {
-        let start = CycleInstant::now();
+    let sh_mem_b = wv_assert_ok!(MemGate::new(0x31000, kif::Perm::RW));
 
-        if let Some(ref mg) = mem_gate {
-            let start = CycleInstant::now();
-            node.write_to("gpu", mg, data_size)
-                .expect("Writing data failed");
-            let duration = CycleInstant::now().duration_since(start);
-            // println!("xfer: {:?}", duration);
+    let rgate_b = wv_assert_ok!(RecvGate::new(8, 8));
+    let sgate_b = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate_b).credits(1)));
+
+    let mut act_b = wv_assert_ok!(ChildActivity::new_with(tile_b, ActivityArgs::new("reader")));
+
+    wv_assert_ok!(act_b.delegate_obj(sh_mem_b.sel()));
+    wv_assert_ok!(act_b.delegate_obj(rgate_b.sel()));
+    let mut dst = act_b.data_sink();
+    dst.push(sh_mem_b.sel());
+    dst.push(rgate_b.sel());
+
+    act_a.add_mount("/", "/");
+    act_b.add_mount("/", "/");
+
+    let act_a = wv_assert_ok!(act_a.run(|| {
+        let mut src = Activity::own().data_source();
+        let shmem_sel = src.pop().unwrap();
+        let rgate_sel = src.pop().unwrap();
+
+        let mut shmem_gate = MemGate::new_bind(shmem_sel);
+        let mut rgate = RecvGate::new_bind(rgate_sel, 8, 8);
+
+        let mut data_buf: [u8; 2048] = [0; 2048];
+
+        wv_assert_ok!(shmem_gate.activate());
+        wv_assert_ok!(rgate.activate());
+
+        let mut msg = wv_assert_ok!(recv_msg(&rgate));
+
+        // Read in image data from client: 256 images * (28*28*1) bytes per image
+        let mut total = 0;
+        log!(LOG_MEM, "Starting read mgate");
+        while total < 0x31000 {
+            shmem_gate.read(&mut data_buf, total);
+            total += data_buf.len() as u64;
         }
+        log!(LOG_MEM, "Finished read mgate");
 
-        node.call_and_ack("gpu", &sgate, &reply_gate)
-            .expect("Request failed");
+        // Perform computation
+        log!(LOG_COMP, "Starting TPU compute");
+        let end = CycleInstant::now().as_cycles() + CycleDuration::from_raw(6948680).as_raw();
+        while CycleInstant::now().as_cycles() < end {}
+        log!(LOG_COMP, "End compute");
 
-        let mut gpu_res = node
-            .receive_request("gpu", &gpu_rgate)
-            .expect("Receiving GPU result failed");
-        reply_vmsg!(gpu_res, 0).expect("Reply to GPU failed");
+        // Write results to a file: 64 byte per result for each digit
+        let mut file = wv_assert_ok!(VFS::open(
+            "/results-tpu-dist-a",
+            OpenFlags::W | OpenFlags::CREATE | OpenFlags::NEW_SESS
+        ));
 
-        let duration = CycleInstant::now().duration_since(start);
-        // compensate for running on a 100MHz core (in contrast to the computing computes that run
-        // on a 80MHz core).
-        // let duration = ((duration.as_raw() as f64) * 0.8) as u64;
-        println!("total: {:?}", duration);
-    }
+        let mut total = 0;
+        log!(LOG_FILE, "Writing results to file");
+        while total < 0x2000 {
+            total += wv_assert_ok!(file.write(&data_buf));
+        }
+        log!(LOG_FILE, "Done writing results to file");
+
+        // Reply to notify that the computation was completed
+        wv_assert_ok!(reply_vmsg!(msg, "World"));
+
+        0
+    }));
+
+    let act_b = wv_assert_ok!(act_b.run(|| {
+        let mut src = Activity::own().data_source();
+        let shmem_sel = src.pop().unwrap();
+        let rgate_sel = src.pop().unwrap();
+
+        let mut shmem_gate = MemGate::new_bind(shmem_sel);
+        let mut rgate = RecvGate::new_bind(rgate_sel, 8, 8);
+
+        let mut data_buf: [u8; 2048] = [0; 2048];
+
+        wv_assert_ok!(shmem_gate.activate());
+        wv_assert_ok!(rgate.activate());
+
+        let mut msg = wv_assert_ok!(recv_msg(&rgate));
+
+        // Read in image data from client: 256 images * (28*28*1) bytes per image
+        let mut total = 0;
+        log!(LOG_MEM, "Starting read mgate");
+        while total < 0x31000 {
+            shmem_gate.read(&mut data_buf, total);
+            total += data_buf.len() as u64;
+        }
+        log!(LOG_MEM, "Finished read mgate");
+
+        // Perform computation
+        log!(LOG_COMP, "Starting TPU compute");
+        let end = CycleInstant::now().as_cycles() + CycleDuration::from_raw(6948680).as_raw();
+        while CycleInstant::now().as_cycles() < end {}
+        log!(LOG_COMP, "End compute");
+
+        // Write results to a file: 64 byte per result for each digit
+        let mut file = wv_assert_ok!(VFS::open(
+            "/results-tpu-dist-b",
+            OpenFlags::W | OpenFlags::CREATE | OpenFlags::NEW_SESS
+        ));
+
+        let mut total = 0;
+        log!(LOG_FILE, "Writing results to file");
+        while total < 0x2000 {
+            total += wv_assert_ok!(file.write(&data_buf));
+        }
+        log!(LOG_FILE, "Done writing results to file");
+
+        // Reply to notify that the computation was completed
+        wv_assert_ok!(reply_vmsg!(msg, "World"));
+
+        0
+    }));
+
+    let mut reply_gate = wv_assert_ok!(RecvGate::new_with(
+        RGateArgs::default().order(7).msg_order(6)
+    ));
+
+    wv_assert_ok!(reply_gate.activate());
+
+    let start_compute = CycleInstant::now();
+    wv_assert_ok!(send_vmsg!(&sgate_a, &reply_gate, "Hello"));
+    wv_assert_ok!(send_vmsg!(&sgate_b, &reply_gate, "Hello"));
+
+    let mut reply = wv_assert_ok!(recv_msg(&reply_gate));
+    let mut reply = wv_assert_ok!(recv_msg(&reply_gate));
+
+    act_a.wait().unwrap();
+    act_b.wait().unwrap();
+
+    println!(
+        "total: {:?}",
+        CycleInstant::now().duration_since(start_compute)
+    );
 }
 
-fn gpu(args: &[&str]) {
-    if args.len() != 6 {
-        panic!("Usage: {} <ctrl-msg-size> <compute-millis> <read-in-size> <write-out-size>", args[0]);
-    }
+fn face_verif() {
+    let tile = wv_assert_ok!(Tile::get("core"));
 
-    let ctrl_msg_size = args[2]
-        .parse::<usize>()
-        .expect("Unable to parse control message size");
-    let compute_time = args[3]
-        .parse::<u64>()
-        .expect("Unable to parse compute time");
-    let read_in_size = args[4]
-        .parse::<usize>()
-        .expect("Unable to parse control message size");
-    let write_out_size = args[5]
-        .parse::<usize>()
-        .expect("Unable to parse control message size");
+    let sh_mem = wv_assert_ok!(MemGate::new(0x40000, kif::Perm::RW));
 
-    let node = Node::new("gpu".to_string(), ctrl_msg_size, cmp::max(read_in_size, write_out_size));
+    let rgate = wv_assert_ok!(RecvGate::new(8, 8));
+    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
 
-    let buf = &mut BUF.borrow_mut()[..];
+    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("reader")));
 
-    let res_sgate = SendGate::new_named("gpures").expect("Unable to create named SendGate gpures");
+    wv_assert_ok!(act.delegate_obj(sh_mem.sel()));
+    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+    let mut dst = act.data_sink();
+    dst.push(sh_mem.sel());
+    dst.push(rgate.sel());
 
-    let mut reply_gate = create_reply_gate(ctrl_msg_size).expect("Unable to create reply RecvGate");
+    act.add_mount("/", "/");
 
-    reply_gate.activate().unwrap();
+    let act = wv_assert_ok!(act.run(|| {
+        let mut src = Activity::own().data_source();
+        let shmem_sel = src.pop().unwrap();
+        let rgate_sel = src.pop().unwrap();
 
-    let mut req_rgate = RecvGate::new_named("gpu").expect("Unable to create named RecvGate gpu");
-    req_rgate.activate().unwrap();
-    loop {
-        let mut request = node
-            .receive_request("client", &req_rgate)
-            .expect("Receiving request failed");
-        reply_vmsg!(request, 0).expect("Reply to client failed");
+        let mut shmem_gate = MemGate::new_bind(shmem_sel);
+        let mut rgate = RecvGate::new_bind(rgate_sel, 8, 8);
 
-        if read_in_size != 0 {
-            let mut file = wv_assert_ok!(VFS::open("/data/4096k.txt", OpenFlags::R));
-            let mut amount = 0;
+        let mut data_buf: [u8; 2048] = [0; 2048];
 
-            while read_in_size > amount {
-                // TODO: Change this to exact amount
-                let read_amount = wv_assert_ok!(file.read(buf));
+        wv_assert_ok!(shmem_gate.activate());
+        wv_assert_ok!(rgate.activate());
 
-                amount += read_amount;
-            }
+        let mut msg = wv_assert_ok!(recv_msg(&rgate));
+
+        // Read in face data from client: 256 images * 1024 bytes per image
+        let mut total = 0;
+        log!(LOG_MEM, "Starting read mgate");
+        while total < 0x40000 {
+            shmem_gate.read(&mut data_buf, total);
+            total += data_buf.len() as u64;
         }
+        log!(LOG_MEM, "Finished read mgate");
 
-        node.compute_for(CycleDuration::from_raw(compute_time));
-
-        if write_out_size != 0 {
-            let mut file = wv_assert_ok!(VFS::open("/results", OpenFlags::W | OpenFlags::CREATE | OpenFlags::TRUNC));
-            let mut amount = 0;
-
-            // loop {
-                // TODO: Change this to exact amount
-                let write_amount = wv_assert_ok!(file.write(buf));
-
-                if write_amount == 0 {
-                    break;
-                }
-            // }
+        // Read in the 256 LBP histograms
+        let mut face_file =
+            wv_assert_ok!(VFS::open("/large.txt", OpenFlags::R | OpenFlags::NEW_SESS));
+        let mut total = 0;
+        log!(LOG_FILE, "Start LBP hist read");
+        while total < 0x10000 {
+            total += wv_assert_ok!(face_file.read(&mut data_buf));
         }
+        log!(LOG_FILE, "End LBP hist read");
 
-        node.call_and_ack("client", &res_sgate, &reply_gate)
-            .expect("GPU-result send failed");
-    }
+        // Perform computation
+        log!(LOG_COMP, "Starting GPU compute");
+        let end = CycleInstant::now().as_cycles() + CycleDuration::from_raw(698880).as_raw();
+        while CycleInstant::now().as_cycles() < end {}
+        log!(LOG_COMP, "End compute");
+
+        // Write results to a file: 1 byte per result, 0 or 1 depending on whether the face matches
+        // the LBP histogram read from the LBP file
+        let mut file = wv_assert_ok!(VFS::open(
+            "/results-gpu-face-verif",
+            OpenFlags::W | OpenFlags::CREATE | OpenFlags::NEW_SESS
+        ));
+
+        let mut total = 0;
+        log!(LOG_FILE, "Writing results to file");
+        while total < 256 {
+            total += wv_assert_ok!(file.write(&data_buf[..256]));
+        }
+        log!(LOG_FILE, "Done writing results to file");
+
+        // Reply to notify that the computation was completed
+        wv_assert_ok!(reply_vmsg!(msg, "World"));
+
+        0
+    }));
+
+    let reply_gate = RecvGate::def();
+
+    let start_compute = CycleInstant::now();
+    wv_assert_ok!(send_vmsg!(&sgate, reply_gate, "Hello"));
+
+    let mut reply = wv_assert_ok!(recv_msg(reply_gate));
+
+    act.wait().unwrap();
+
+    println!(
+        "total: {:?}",
+        CycleInstant::now().duration_since(start_compute)
+    );
 }
 
 #[no_mangle]
@@ -239,10 +377,12 @@ pub fn main() -> Result<(), Error> {
     let args: Vec<&str> = env::args().collect();
 
     match args[1] {
-        "client" => client(&args),
-        "gpu" => gpu(&args),
+        "gpu" => face_verif(),
+        "tpu-single" => tpu_ml(),
+        "tpu-dist" => tpu_ml_dist(),
         s => panic!("unexpected component {}", s),
     }
+    // face_verif();
 
     Ok(())
 }
