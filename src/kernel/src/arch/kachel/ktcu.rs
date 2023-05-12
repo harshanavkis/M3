@@ -19,6 +19,7 @@ use base::goff;
 use base::kif::{PageFlags, Perm};
 use base::mem::GlobAddr;
 use base::tcu::*;
+use base::time::{CycleInstant, Duration};
 
 use crate::arch;
 use crate::ktcu::{self, config_local_ep_key, KTMP_EP};
@@ -129,6 +130,12 @@ pub fn attest_tile_remote(tile: TileId, arg: u64) -> Result<(), Error> {
 pub fn gen_key_tile_remote(tile: TileId) -> Result<(), Error> {
     let reg = ExtCmdOpCode::GEN_KEY.val as Reg;
     do_ext_cmd(tile, reg).map(|_| ())
+}
+
+pub fn gen_key_kernel(key_material_kern: &mut [u8], key_material_icu: &[u8]) {
+    let start_cycles = CycleInstant::now();
+
+    while start_cycles.elapsed().as_raw() < 1000 {}
 }
 
 pub fn invalidate_ep_remote(tile: TileId, ep: EpId, force: bool) -> Result<u32, Error> {

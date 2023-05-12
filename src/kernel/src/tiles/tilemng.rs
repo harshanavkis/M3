@@ -21,6 +21,7 @@ use base::time::{CycleInstant, Duration};
 use base::{cfg, kif, tcu};
 
 use crate::arch::ktcu::{self, KPEX_EP};
+use crate::ktcu::gen_key_kernel;
 use crate::platform;
 use crate::tiles::TileMux;
 
@@ -90,7 +91,7 @@ fn deprivilege_tiles() {
         };
 
         // Perform attestation
-        attest_tile(tile, &kern_chain_info);
+        attest_tile(tile, &mut kern_chain_info);
 
         // Take away kernel privileges from other tiles
         // TODO: Move this after kernel has configure local ICU to be attested
@@ -101,21 +102,24 @@ fn deprivilege_tiles() {
 
     for m in mem.mods() {
         // Attest memory tile
-        attest_tile(m.addr().tile(), &kern_chain_info);
+        attest_tile(m.addr().tile(), &mut kern_chain_info);
     }
 
     att_done();
 }
 
 const CERT_LEN: u64 = 128;
-const KERNEL_CHAIN_LEN: u64 = 4;
+const KERNEL_CHAIN_LEN: u64 = 3;
 const ICU_CHAIN_LEN: u8 = 1;
 const KERN_NONCE: [u8; 16] = [1; 16];
 const CA_PUB_KEY: [u8; 64] = [0; 64];
 const KERNEL_PRIV_KEY: [u8; 32] = [0; 32];
+const ECDH_KEY: [u8; 32] = [0; 32];
 
 struct AttestInfo {
     nonce: [u8; 16],
+    kern_key: [u8; 32],
+    icu_key: [u8; 32],
     chain_length: u64,
     reply_ep: u64,
     certificate_chain: Vec<u8>,
@@ -132,6 +136,8 @@ impl AttestInfo {
         // TODO: Randomize nonce
         Self {
             nonce: KERN_NONCE,
+            kern_key: ECDH_KEY,
+            icu_key: ECDH_KEY,
             chain_length: KERNEL_CHAIN_LEN,
             reply_ep: KPEX_SEP as u64,
             certificate_chain,
@@ -176,32 +182,73 @@ fn att_done() -> Result<(), Error> {
     Ok(())
 }
 
-fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
+fn attest_tile(tile: TileId, attest_info: &mut AttestInfo) -> Result<(), Error> {
     klog!(DEF, "Attesting tile: {}", tile);
 
     // Start cycle counter
     let start_cycles = CycleInstant::now();
 
+    // Generate nonce material
+    generate_random_nonce(&mut attest_info.nonce);
+
+    // Generate signed nonce
+    let kern_nonce = generate_signature_data(&KERNEL_PRIV_KEY, &attest_info.nonce);
+    let mut kern_nonce_ecdsa_sign: [u8; 64] = [0; 64];
+    generate_ecdsa_signature(&kern_nonce, &mut kern_nonce_ecdsa_sign);
+
+    // Generate key exchange material
+    generate_random_nonce(&mut attest_info.kern_key[..16]);
+    generate_random_nonce(&mut attest_info.kern_key[16..]);
+
+    // Generate signed key material
+    let kern_key_material = generate_signature_data(&KERNEL_PRIV_KEY, &attest_info.kern_key);
+    let mut kern_key_material_ecdsa_sign: [u8; 64] = [0; 64];
+    generate_ecdsa_signature(&kern_key_material, &mut kern_key_material_ecdsa_sign);
+
     // Write nonce to remote ICU
     crate::ktcu::write_mem(
         tile,
         base::tcu::TCU::attest_addr() as u64,
-        attest_info.nonce.as_ptr() as *const u8,
+        kern_nonce.as_ptr() as *const u8,
         16,
+    );
+
+    // Write nonce signature to remote ICU
+    crate::ktcu::write_mem(
+        tile,
+        base::tcu::TCU::attest_addr() as u64 + 16,
+        kern_nonce_ecdsa_sign.as_ptr() as *const u8,
+        64,
+    );
+
+    // Write key material
+    crate::ktcu::write_mem(
+        tile,
+        base::tcu::TCU::attest_addr() as u64 + 80,
+        kern_key_material.as_ptr() as *const u8,
+        32,
+    );
+
+    // Write signature of key material
+    crate::ktcu::write_mem(
+        tile,
+        base::tcu::TCU::attest_addr() as u64 + 112,
+        kern_key_material_ecdsa_sign.as_ptr() as *const u8,
+        64,
     );
 
     // Write chain length to remote ICU
     crate::ktcu::write_mem(
         tile,
-        base::tcu::TCU::attest_addr() as u64 + 16,
-        &(attest_info.chain_length.to_le_bytes()) as *const u8,
+        base::tcu::TCU::attest_addr() as u64 + 176,
+        &(3_u64.to_le_bytes()) as *const u8,
         8,
     );
 
     // Write reply endpoint id to remote ICU
     crate::ktcu::write_mem(
         tile,
-        base::tcu::TCU::attest_addr() as u64 + 24,
+        base::tcu::TCU::attest_addr() as u64 + 184,
         &(attest_info.reply_ep.to_le_bytes()) as *const u8,
         8,
     );
@@ -209,7 +256,7 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
     // Write chain to remote ICU
     crate::ktcu::write_mem(
         tile,
-        base::tcu::TCU::attest_addr() as u64 + 32,
+        base::tcu::TCU::attest_addr() as u64 + 192,
         attest_info.certificate_chain.as_ptr() as *const u8,
         attest_info.certificate_chain.len(),
     );
@@ -239,10 +286,14 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
         crate::ktcu::ack_msg(crate::ktcu::KPEX_EP, msg);
     }
 
+    // TODO: Change stuff below this
+
     // Read ICU's signed nonce and challenge nonce
     let mut icu_nonce = [0 as u8; 16];
     let mut icu_signed_nonce = [0 as u8; 64];
     let mut icu_cert_chain = [0 as u8; 128];
+    let mut icu_key_material = [0 as u8; 32];
+    let mut icu_key_material_sign = [0 as u8; 64];
     crate::ktcu::read_slice(tile, base::tcu::TCU::attest_addr() as u64, &mut icu_nonce);
     crate::ktcu::read_slice(
         tile,
@@ -253,6 +304,16 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
         tile,
         base::tcu::TCU::attest_addr() as u64 + 80,
         &mut icu_cert_chain,
+    );
+    crate::ktcu::read_slice(
+        tile,
+        base::tcu::TCU::attest_addr() as u64 + 80 + 128,
+        &mut icu_key_material,
+    );
+    crate::ktcu::read_slice(
+        tile,
+        base::tcu::TCU::attest_addr() as u64 + 80 + 128 + 32,
+        &mut icu_key_material_sign,
     );
 
     // TODO: Use CA's public key
@@ -283,6 +344,22 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
         Err(_) => klog!(DEF, "ICU nonce ECDSA signature verification not successful"),
     };
 
+    // Verify ICU signed key material
+    let verif_data = generate_verif_data(
+        &icu_key_material,
+        &icu_key_material_sign,
+        &icu_cert_chain[0..64],
+    );
+
+    match verify_ecdsa_signature(32, &verif_data) {
+        // Ok(_) => klog!(DEF, "ICU nonce ECDSA signature verification successful!"),
+        Ok(_) => (),
+        Err(_) => klog!(
+            DEF,
+            "ICU key material ECDSA signature verification not successful"
+        ),
+    };
+
     // Sign challenge nonce from ICU and write to the ICU
     // TODO: Use kernel private key
     let sign_data = generate_signature_data(&KERNEL_PRIV_KEY, &icu_nonce);
@@ -301,9 +378,10 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
     );
 
     // Write reply endpoint id to remote ICU
+    // klog!(DEF, "reply ep: {}", attest_info.reply_ep);
     crate::ktcu::write_mem(
         tile,
-        base::tcu::TCU::attest_addr() as u64 + 24,
+        base::tcu::TCU::attest_addr() as u64 + 184,
         &(attest_info.reply_ep.to_le_bytes()) as *const u8,
         8,
     );
@@ -321,6 +399,8 @@ fn attest_tile(tile: TileId, attest_info: &AttestInfo) -> Result<(), Error> {
     }
 
     crate::ktcu::invalidate_ep_remote(tile, tcu::KPEX_SEP, true).unwrap();
+
+    gen_key_kernel(&mut attest_info.kern_key, &icu_key_material);
 
     let end_cycles = start_cycles.elapsed();
 
