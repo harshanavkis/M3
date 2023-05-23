@@ -381,7 +381,11 @@ pub fn activate_async(act: &Rc<Activity>, msg: &'static tcu::Message) -> Result<
         match kobj {
             KObject::MGate(ref mg) => {
                 if mg.gate_ep().get_ep().is_some() {
-                    sysc_err!(Code::Exists, "MemGate is already activated");
+                    // sysc_err!(
+                    //     Code::Exists,
+                    //     "MemGate is already activated :{}",
+                    //     mg.tile_id()
+                    // );
                 }
 
                 let tile_id = mg.tile_id();

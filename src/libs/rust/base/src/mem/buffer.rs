@@ -20,7 +20,7 @@ use crate::cell::StaticUnsafeCell;
 use crate::mem;
 use crate::util;
 
-pub const MAX_MSG_SIZE: usize = 512;
+pub const MAX_MSG_SIZE: usize = 1024;
 
 static DEF_MSG_BUF: StaticUnsafeCell<MsgBuf> = StaticUnsafeCell::new(MsgBuf {
     bytes: [mem::MaybeUninit::new(0); MAX_MSG_SIZE],

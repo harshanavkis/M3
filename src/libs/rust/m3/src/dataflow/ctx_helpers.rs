@@ -4,7 +4,7 @@ use base::mem::MsgBuf;
 use base::tcu::Message;
 use base::{build_vmsg, log};
 
-use crate::com::{recv_msg, GateIStream, RecvGate};
+use crate::com::{recv_msg, GateIStream, MemGate, RecvGate};
 use crate::reply_vmsg;
 
 use super::app_helpers::Selector;
@@ -33,6 +33,7 @@ macro_rules! wv_assert_ok {
 pub struct CtxState {
     rgate_map: BTreeMap<Selector, RecvGate>,
     reply_map: BTreeMap<Selector, &'static Message>,
+    mgate_map: BTreeMap<Selector, MemGate>,
 }
 
 impl CtxState {
@@ -40,6 +41,7 @@ impl CtxState {
         Self {
             rgate_map: BTreeMap::new(),
             reply_map: BTreeMap::new(),
+            mgate_map: BTreeMap::new(),
         }
     }
 
@@ -71,6 +73,32 @@ impl CtxState {
         rgate.reply(&reply_msg, self.reply_map.get(&reply_sel).unwrap());
         //let msg = *self.reply_map.get(&reply_sel).unwrap();
         //wv_assert_ok!(reply_vmsg!(msg, data));
+        Ok(())
+    }
+
+    pub fn read_from(
+        &mut self,
+        read_sel: Selector,
+        data: &mut [u8],
+        off: u64,
+    ) -> Result<(), Error> {
+        if !self.mgate_map.contains_key(&read_sel) {
+            let mut read_mgate = MemGate::new_bind(read_sel);
+            log!(
+                LOG_CTX_STATE,
+                "CtxState::read_from - activating mgate: {:?}",
+                read_mgate
+            );
+            wv_assert_ok!(read_mgate.activate());
+
+            log!(LOG_CTX_STATE, "CtxState::read_from - mgate activated");
+
+            self.mgate_map.insert(read_sel, read_mgate);
+        }
+
+        let mut read_mgate = self.mgate_map.get_mut(&read_sel).unwrap();
+        log!(LOG_CTX_STATE, "CtxState::read_from {:?}", read_mgate);
+        read_mgate.read_bytes(data.as_mut_ptr(), data.len(), off);
         Ok(())
     }
 }

@@ -67,7 +67,7 @@ impl<'a> AppContext {
 /// Represnts a computation graph of an application
 #[derive(Clone)]
 pub struct CompGraph {
-    pub graph: Vec<(u64, u64, Flags)>,
+    pub graph: Vec<(u64, u64, Flags, u64)>,
     index: usize,
 }
 
@@ -79,8 +79,8 @@ impl CompGraph {
         }
     }
 
-    pub fn create_conn(&mut self, src: u64, dst: u64, kind: Flags) {
-        self.graph.push((src, dst, kind));
+    pub fn create_conn(&mut self, src: u64, dst: u64, kind: Flags, size: u64) {
+        self.graph.push((src, dst, kind, size));
     }
 
     pub fn reset_iterator_index(&mut self) {
@@ -89,7 +89,7 @@ impl CompGraph {
 }
 
 impl Iterator for CompGraph {
-    type Item = (u64, u64, Flags);
+    type Item = (u64, u64, Flags, u64);
 
     fn next(&mut self) -> Option<Self::Item> {
         let edge = self.graph[self.index];

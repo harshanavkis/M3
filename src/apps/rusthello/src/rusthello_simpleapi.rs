@@ -22,6 +22,7 @@ use m3::col::String;
 use m3::col::ToString;
 use m3::com::{recv_msg, RecvGate, SGateArgs, SendGate};
 use m3::dataflow::CtxState;
+use m3::dataflow::SessionArgs;
 use m3::dataflow::{AppContext, Flags, Session};
 use m3::errors::{Code, Error};
 use m3::tiles::{Activity, ActivityArgs, ChildActivity, RunningActivity, Tile};
@@ -40,13 +41,31 @@ pub fn main() -> i32 {
     let ctx_fn = || {
         let mut ctx_state = CtxState::new();
 
-        let recv_sel = Activity::own().data_source().pop().unwrap();
-        let msg = ctx_state.recv_from(recv_sel);
+        // let recv_sel = Activity::own().data_source().pop().unwrap();
 
-        println!("Child");
+        let mut src = Activity::own().data_source();
+        let recv_sel = src.pop().unwrap();
+        let read_sel = src.pop().unwrap();
+        let msg = ctx_state.recv_from(recv_sel);
+        println!("Child: {}", String::from_utf8(msg.to_vec()).unwrap());
+
+        // let read_sel = Activity::own().data_source().pop().unwrap();
+        let mut read_data: [u8; 2048] = [0; 2048];
+        let mut total = 0;
+        while total < 0x40000 {
+            println!("Child: start read");
+            ctx_state
+                .read_from(read_sel, &mut read_data, total)
+                .unwrap();
+            println!("Child: end read");
+            total += read_data.len() as u64;
+        }
+
+        println!("Child :{:?}", read_data);
+
+        println!("Child: {}", String::from_utf8(read_data.to_vec()).unwrap());
 
         // Change this line to new api
-        println!("Child: {}", String::from_utf8(msg.to_vec()).unwrap());
         ctx_state.reply_to(recv_sel, "World".as_bytes());
 
         0
@@ -71,8 +90,8 @@ pub fn main() -> i32 {
     };
 
     // If you want RW to be non-secure use connect_to
-    app_session.connect_to(ctx1_sel, Flags::S | Flags::G);
-    app_session.connect_to(ctx1_sel, Flags::R | Flags::W); // sets up shared memory
+    app_session.connect_to(ctx1_sel, Flags::S | Flags::G, SessionArgs::default());
+    app_session.connect_to(ctx1_sel, Flags::R | Flags::W, SessionArgs::new(0x40000)); // sets up shared memory
 
     // app_session.secure_connect_src_to_sink(&ctx1, &ctx2, op);
     //----------------------------------------------------
@@ -81,6 +100,16 @@ pub fn main() -> i32 {
     app_session.run();
 
     // send first message
+    let mut total = 0;
+    let write_data: [u8; 2048] = [1; 2048];
+    while total < 0x40000 {
+        // app_session
+        //     .write_to(ctx1_sel, "World".as_bytes(), total)
+        //     .unwrap();
+        app_session.write_to(ctx1_sel, &write_data, total);
+        total += 2048;
+    }
+    // app_session.write_to(ctx1_sel, "World".as_bytes()).unwrap();
     wv_assert_ok!(app_session.send_to(ctx1_sel, "Hello".as_bytes()));
     let mut reply = app_session.recv_from(ctx1_sel);
     println!("Parent: {}", String::from_utf8(reply.to_vec()).unwrap());
