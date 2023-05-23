@@ -18,15 +18,16 @@
 
 use m3::cell::StaticRefCell;
 use m3::com::MemGate;
-use m3::kif;
+use m3::cpu::elapsed_cycles;
 use m3::mem::AlignedBuf;
 use m3::test::WvTester;
 use m3::time::{CycleInstant, Profiler};
+use m3::{kif, println};
 use m3::{wv_perf, wv_run_test};
 
 const SIZE: usize = 2 * 1024 * 1024;
 
-static BUF: StaticRefCell<AlignedBuf<{ 8192 + 64 }>> = StaticRefCell::new(AlignedBuf::new_zeroed());
+static BUF: StaticRefCell<AlignedBuf<{ 4096 }>> = StaticRefCell::new(AlignedBuf::new_zeroed());
 
 pub fn run(t: &mut dyn WvTester) {
     wv_run_test!(t, read512);
@@ -253,7 +254,7 @@ fn write1024(_t: &mut dyn WvTester) {
     let buf = &BUF.borrow()[..1024];
     let mgate = MemGate::new(SIZE, kif::Perm::W).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(5).warmup(1);
+    let mut prof = Profiler::default().repeats(50).warmup(1);
 
     wv_perf!(
         "write 2 MiB with 1K buf",
@@ -261,7 +262,7 @@ fn write1024(_t: &mut dyn WvTester) {
             let mut total = 0;
             while total < SIZE {
                 mgate.write(buf, total as u64).expect("Writing failed");
-                total += buf.len();
+                total += 1024;
             }
         })
     );
@@ -271,7 +272,7 @@ fn write2048(_t: &mut dyn WvTester) {
     let buf = &BUF.borrow()[..2048];
     let mgate = MemGate::new(SIZE, kif::Perm::W).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(5).warmup(1);
+    let mut prof = Profiler::default().repeats(50).warmup(1);
 
     wv_perf!(
         "write 2 MiB with 2K buf",
@@ -279,7 +280,7 @@ fn write2048(_t: &mut dyn WvTester) {
             let mut total = 0;
             while total < SIZE {
                 mgate.write(buf, total as u64).expect("Writing failed");
-                total += buf.len();
+                total += 2048;
             }
         })
     );
@@ -289,7 +290,7 @@ fn write4096(_t: &mut dyn WvTester) {
     let buf = &BUF.borrow()[..4096];
     let mgate = MemGate::new(SIZE, kif::Perm::W).expect("Unable to create mgate");
 
-    let mut prof = Profiler::default().repeats(5).warmup(1);
+    let mut prof = Profiler::default().repeats(50).warmup(0);
 
     wv_perf!(
         "write 2 MiB with 4K buf",
