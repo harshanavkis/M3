@@ -22,7 +22,8 @@ use core::cmp;
 use m3::cell::StaticRefCell;
 use m3::col::{String, ToString, Vec};
 use m3::com::{recv_msg, GateIStream, MemGate, RGateArgs, RecvGate, SGateArgs, SendGate};
-use m3::errors::Error;
+use m3::dataflow::{AppContext, CtxState, Flags, Session, SessionArgs};
+use m3::errors::{Code, Error};
 use m3::io::{self, Read, Write};
 use m3::kif;
 use m3::kif::Perm;
@@ -42,6 +43,87 @@ const LOG_MSGS: bool = true;
 const LOG_MEM: bool = true;
 const LOG_COMP: bool = true;
 const LOG_FILE: bool = true;
+
+fn tpu_ml_dataflow_api() {
+    let ctx_fn = || {
+        let mut ctx_state = CtxState::new();
+
+        let mut src = Activity::own().data_source();
+        let shmem_sel = src.pop().unwrap();
+        let rgate_sel = src.pop().unwrap();
+
+        ctx_state.recv_from(rgate_sel);
+
+        // Read in image data from client: 256 images * (28*28*1) bytes per image
+        let mut data_buf: [u8; 2048] = [0; 2048];
+        let mut total = 0;
+        while total < 0x31000 {
+            ctx_state.read_from(shmem_sel, &mut data_buf, total);
+            total += data_buf.len() as u64;
+        }
+
+        // Perform computation
+        log!(LOG_COMP, "Starting TPU compute");
+        let end = CycleInstant::now().as_cycles() + CycleDuration::from_raw(13437141).as_raw();
+        while CycleInstant::now().as_cycles() < end {}
+        log!(LOG_COMP, "End compute");
+
+        // Write results to a file: 1 byte per result, 0 or 1 depending on whether the face matches
+        // the LBP histogram read from the LBP file
+        let mut file = wv_assert_ok!(VFS::open(
+            "/results-tpu-single",
+            OpenFlags::W | OpenFlags::CREATE | OpenFlags::NEW_SESS
+        ));
+
+        let mut total = 0;
+        log!(LOG_FILE, "Writing results to file");
+        while total < 0x4000 {
+            total += wv_assert_ok!(file.write(&data_buf));
+        }
+        log!(LOG_FILE, "Done writing results to file");
+
+        // Notify main application session about completion of task
+        ctx_state.reply_to(rgate_sel, "World".as_bytes());
+
+        0
+    };
+
+    let mut app_session = Session::new();
+
+    let mut ctx1 = AppContext::new("core".to_string(), TILE_HASH, false, ctx_fn);
+
+    let ctx1_sel = match app_session.insert(ctx1) {
+        Ok(sel) => sel,
+        Err(e) => match e.code() {
+            Code::IdentityMatchFail => {
+                panic!("Failed to find tile with specified identity")
+            },
+            Code::ExclusiveAccessFail => {
+                panic!("Failed to find exclusive access to tile with specified identity")
+            },
+            _ => panic!(),
+        },
+    };
+
+    // shared memory channel
+    app_session.connect_to(ctx1_sel, Flags::R | Flags::W, SessionArgs::new(0x31000));
+
+    // Message passing channel
+    app_session.connect_to(ctx1_sel, Flags::S | Flags::G, SessionArgs::default());
+
+    app_session.run();
+
+    let start_compute = CycleInstant::now();
+    app_session.send_to(ctx1_sel, "Hello".as_bytes()).unwrap();
+    app_session.recv_from(ctx1_sel);
+
+    app_session.wait();
+
+    println!(
+        "total: {:?}",
+        CycleInstant::now().duration_since(start_compute)
+    );
+}
 
 fn tpu_ml() {
     let tile = wv_assert_ok!(Tile::get("core"));
@@ -118,6 +200,152 @@ fn tpu_ml() {
     let mut reply = wv_assert_ok!(recv_msg(reply_gate));
 
     act.wait().unwrap();
+
+    println!(
+        "total: {:?}",
+        CycleInstant::now().duration_since(start_compute)
+    );
+}
+
+fn tpu_ml_dist_dataflow_api() {
+    let ctx_fn_a = || {
+        let mut ctx_state = CtxState::new();
+
+        let mut src = Activity::own().data_source();
+        let shmem_sel = src.pop().unwrap();
+        let rgate_sel = src.pop().unwrap();
+
+        ctx_state.recv_from(rgate_sel);
+
+        // Read in image data from client: 128 images * (28*28*1) bytes per image
+        let mut data_buf: [u8; 2048] = [0; 2048];
+        let mut total = 0;
+        while total < 0x18800 {
+            ctx_state.read_from(shmem_sel, &mut data_buf, total);
+            total += data_buf.len() as u64;
+        }
+
+        // Perform computation
+        log!(LOG_COMP, "Starting TPU compute");
+        let end = CycleInstant::now().as_cycles() + CycleDuration::from_raw(6948680).as_raw();
+        while CycleInstant::now().as_cycles() < end {}
+        log!(LOG_COMP, "End compute");
+
+        // Write results to a file: 1 byte per result, 0 or 1 depending on whether the face matches
+        // the LBP histogram read from the LBP file
+        let mut file = wv_assert_ok!(VFS::open(
+            "/results-tpu-dist-a",
+            OpenFlags::W | OpenFlags::CREATE | OpenFlags::NEW_SESS
+        ));
+
+        let mut total = 0;
+        log!(LOG_FILE, "Writing results to file");
+        while total < 0x2000 {
+            total += wv_assert_ok!(file.write(&data_buf));
+        }
+        log!(LOG_FILE, "Done writing results to file");
+
+        // Notify main application session about completion of task
+        ctx_state.reply_to(rgate_sel, "World".as_bytes());
+
+        0
+    };
+
+    let ctx_fn_b = || {
+        let mut ctx_state = CtxState::new();
+
+        let mut src = Activity::own().data_source();
+        let shmem_sel = src.pop().unwrap();
+        let rgate_sel = src.pop().unwrap();
+
+        ctx_state.recv_from(rgate_sel);
+
+        // Read in image data from client: 128 images * (28*28*1) bytes per image
+        let mut data_buf: [u8; 2048] = [0; 2048];
+        let mut total = 0;
+        while total < 0x18800 {
+            ctx_state.read_from(shmem_sel, &mut data_buf, total);
+            total += data_buf.len() as u64;
+        }
+
+        // Perform computation
+        log!(LOG_COMP, "Starting TPU compute");
+        let end = CycleInstant::now().as_cycles() + CycleDuration::from_raw(6948680).as_raw();
+        while CycleInstant::now().as_cycles() < end {}
+        log!(LOG_COMP, "End compute");
+
+        // Write results to a file: 1 byte per result, 0 or 1 depending on whether the face matches
+        // the LBP histogram read from the LBP file
+        let mut file = wv_assert_ok!(VFS::open(
+            "/results-tpu-dist-b",
+            OpenFlags::W | OpenFlags::CREATE | OpenFlags::NEW_SESS
+        ));
+
+        let mut total = 0;
+        log!(LOG_FILE, "Writing results to file");
+        while total < 0x2000 {
+            total += wv_assert_ok!(file.write(&data_buf));
+        }
+        log!(LOG_FILE, "Done writing results to file");
+
+        // Notify main application session about completion of task
+        ctx_state.reply_to(rgate_sel, "World".as_bytes());
+
+        0
+    };
+
+    let mut app_session = Session::new();
+
+    let mut ctx1 = AppContext::new("core".to_string(), TILE_HASH, false, ctx_fn_a);
+    let mut ctx2 = AppContext::new("core".to_string(), TILE_HASH, false, ctx_fn_b);
+
+    let ctx1_sel = match app_session.insert(ctx1) {
+        Ok(sel) => sel,
+        Err(e) => match e.code() {
+            Code::IdentityMatchFail => {
+                panic!("Failed to find tile with specified identity")
+            },
+            Code::ExclusiveAccessFail => {
+                panic!("Failed to find exclusive access to tile with specified identity")
+            },
+            _ => panic!(),
+        },
+    };
+
+    let ctx2_sel = match app_session.insert(ctx2) {
+        Ok(sel) => sel,
+        Err(e) => match e.code() {
+            Code::IdentityMatchFail => {
+                panic!("Failed to find tile with specified identity")
+            },
+            Code::ExclusiveAccessFail => {
+                panic!("Failed to find exclusive access to tile with specified identity")
+            },
+            _ => panic!(),
+        },
+    };
+
+    // shared memory channel
+    app_session.connect_to(ctx1_sel, Flags::R | Flags::W, SessionArgs::new(0x18800));
+
+    // Message passing channel
+    app_session.connect_to(ctx1_sel, Flags::S | Flags::G, SessionArgs::default());
+
+    // shared memory channel
+    app_session.connect_to(ctx2_sel, Flags::R | Flags::W, SessionArgs::new(0x18800));
+
+    // Message passing channel
+    app_session.connect_to(ctx2_sel, Flags::S | Flags::G, SessionArgs::default());
+
+    app_session.run();
+
+    let start_compute = CycleInstant::now();
+    app_session.send_to(ctx1_sel, "Hello".as_bytes()).unwrap();
+    app_session.send_to(ctx2_sel, "Hello".as_bytes()).unwrap();
+    app_session.recv_from(ctx1_sel);
+    app_session.recv_from(ctx2_sel);
+
+    app_session.wait();
 
     println!(
         "total: {:?}",
@@ -279,6 +507,101 @@ fn tpu_ml_dist() {
     );
 }
 
+const CTRL_MSG: [u8; 128] = [0; 128];
+const TILE_HASH: [u32; 8] = [0; 8];
+const FS_HASH: [u8; 256] = [0; 256];
+
+fn face_verif_dataflow_api() {
+    let ctx_fn = || {
+        let mut ctx_state = CtxState::new();
+
+        let mut src = Activity::own().data_source();
+        let shmem_sel = src.pop().unwrap();
+        let rgate_sel = src.pop().unwrap();
+
+        ctx_state.recv_from(rgate_sel);
+
+        // Read in face data from client: 256 images * 1024 bytes per image
+        let mut data_buf: [u8; 2048] = [0; 2048];
+        let mut total = 0;
+        while total < 0x40000 {
+            ctx_state.read_from(shmem_sel, &mut data_buf, total);
+            total += data_buf.len() as u64;
+        }
+
+        // Read in the 256 LBP histograms
+        let mut face_file =
+            wv_assert_ok!(VFS::open("/large.txt", OpenFlags::R | OpenFlags::NEW_SESS));
+        let mut total = 0;
+        log!(LOG_FILE, "Start LBP hist read");
+        while total < 0x10000 {
+            total += wv_assert_ok!(face_file.read(&mut data_buf));
+        }
+        log!(LOG_FILE, "End LBP hist read");
+
+        // Perform computation
+        log!(LOG_COMP, "Starting GPU compute");
+        let end = CycleInstant::now().as_cycles() + CycleDuration::from_raw(698880).as_raw();
+        while CycleInstant::now().as_cycles() < end {}
+        log!(LOG_COMP, "End compute");
+
+        // Write results to a file: 1 byte per result, 0 or 1 depending on whether the face matches
+        // the LBP histogram read from the LBP file
+        let mut file = wv_assert_ok!(VFS::open(
+            "/results-gpu-face-verif",
+            OpenFlags::W | OpenFlags::CREATE | OpenFlags::NEW_SESS
+        ));
+
+        let mut total = 0;
+        log!(LOG_FILE, "Writing results to file");
+        while total < 256 {
+            total += wv_assert_ok!(file.write(&data_buf[..256]));
+        }
+        log!(LOG_FILE, "Done writing results to file");
+
+        // Notify main application session about completion of task
+        ctx_state.reply_to(rgate_sel, "World".as_bytes());
+
+        0
+    };
+
+    let mut app_session = Session::new();
+
+    let mut ctx1 = AppContext::new("core".to_string(), TILE_HASH, false, ctx_fn);
+
+    let ctx1_sel = match app_session.insert(ctx1) {
+        Ok(sel) => sel,
+        Err(e) => match e.code() {
+            Code::IdentityMatchFail => {
+                panic!("Failed to find tile with specified identity")
+            },
+            Code::ExclusiveAccessFail => {
+                panic!("Failed to find exclusive access to tile with specified identity")
+            },
+            _ => panic!(),
+        },
+    };
+
+    // shared memory channel
+    app_session.connect_to(ctx1_sel, Flags::R | Flags::W, SessionArgs::new(0x40000));
+
+    // Message passing channel
+    app_session.connect_to(ctx1_sel, Flags::S | Flags::G, SessionArgs::default());
+
+    app_session.run();
+
+    let start_compute = CycleInstant::now();
+    app_session.send_to(ctx1_sel, "Hello".as_bytes()).unwrap();
+    app_session.recv_from(ctx1_sel);
+
+    app_session.wait();
+
+    println!(
+        "total: {:?}",
+        CycleInstant::now().duration_since(start_compute)
+    );
+}
+
 fn face_verif() {
     let tile = wv_assert_ok!(Tile::get("core"));
 
@@ -377,9 +700,9 @@ pub fn main() -> Result<(), Error> {
     let args: Vec<&str> = env::args().collect();
 
     match args[1] {
-        "gpu" => face_verif(),
-        "tpu-single" => tpu_ml(),
-        "tpu-dist" => tpu_ml_dist(),
+        "gpu" => face_verif_dataflow_api(),
+        "tpu-single" => tpu_ml_dataflow_api(),
+        "tpu-dist" => tpu_ml_dist_dataflow_api(),
         s => panic!("unexpected component {}", s),
     }
     // face_verif();
