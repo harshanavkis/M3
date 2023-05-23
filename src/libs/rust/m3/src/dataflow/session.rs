@@ -154,7 +154,7 @@ impl Session {
         log!(LOG_SESS, "create_send_recv_conn");
         // TODO: Better error handling
         // TODO: Handle error when application tries to create the same connection again
-        let rgate = wv_assert_ok!(RecvGate::new(8, 8));
+        let rgate = wv_assert_ok!(RecvGate::new(11, 11));
         let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate)));
 
         if ctx_a == 0 {
@@ -217,13 +217,13 @@ impl Session {
             // Since reply is paired with a send for the session we only need to create a local
             // receive gate to receive replies
             // TODO: Handle error when only a reply connection is specified
-            let mut recv_gate = wv_assert_ok!(RecvGate::new(8, 8));
+            let mut recv_gate = wv_assert_ok!(RecvGate::new(11, 11));
             recv_gate.activate();
             self.rgate_map.insert(ctx_b, recv_gate);
             // self.rgate_map.insert(ctx_b, wv_assert_ok!(RecvGate::def()));
         }
         else {
-            let rgate = wv_assert_ok!(RecvGate::new(8, 8));
+            let rgate = wv_assert_ok!(RecvGate::new(11, 11));
             let (_, act_a) = self.ctx_map.get_mut(&ctx_a).unwrap();
             // wv_assert_ok!(act_a.delegate_obj(rgate.sel()));
 

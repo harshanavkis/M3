@@ -9,7 +9,7 @@ use crate::reply_vmsg;
 
 use super::app_helpers::Selector;
 
-const LOG_CTX_STATE: bool = true;
+const LOG_CTX_STATE: bool = false;
 
 macro_rules! wv_assert_ok {
     ($res:expr) => {{
