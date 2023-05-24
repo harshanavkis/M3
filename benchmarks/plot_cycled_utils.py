@@ -27,6 +27,9 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
     read_df = aggr_df[aggr_df["Operation"].str.contains("Read")]
     write_df = aggr_df[aggr_df["Operation"].str.contains("Write")]
 
+    read_df_temp = read_df.copy(deep=True)
+    write_df_temp = write_df.copy(deep=True)
+
     cpu_freq = int(CPU_FREQ.replace("GHz", ""))
 
     read_df["Operation"] = read_df["Operation"].apply(lambda x: int(int(x.split("-")[-1]) / cpu_freq))
@@ -118,6 +121,18 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
     plot.ax.figure.savefig(os.path.join(exp_res_path, "fs-throughput-cycles-write.png"), bbox_inches="tight")
 
     plt.clf()
+
+    print("Printing fs read write values")
+    print(read_df_temp)
+    print(write_df_temp)
+
+    read_df_temp = read_df_temp.loc[read_df_temp["Kind"] == "Slowdown"].reset_index()
+    write_df_temp = write_df_temp.loc[write_df_temp["Kind"] == "Slowdown"].reset_index()
+
+    read_df_temp.drop("index", inplace=True, axis=1)
+    write_df_temp.drop("index", inplace=True, axis=1)
+
+    return (read_df_temp.to_dict("list"), write_df_temp.to_dict("list"))
 
 def plot_app_cycles(cycle_app, exp_res_path):
     df_list = []
@@ -263,7 +278,10 @@ def plot_ipc_cycles(cycle_ipc, exp_res_path):
 
     aggr_df = pd.concat(df_list, axis=0)
     aggr_df["Kind"] = aggr_df["Kind"].apply(lambda x: "{}ns".format(int(int(x) / cpu_freq)))
-    # print(aggr_df)
+    aggr_df["Kind"] = aggr_df["Kind"].apply(lambda x: "On-chip" if x=="0ns" else "Off-chip")
+    aggr_df["Bytes"] = aggr_df["Bytes"].apply(lambda x: int(int(x) / 8))
+    print("IPC bitch")
+    print(aggr_df)
 
     sns.set(font_scale=4, style='white')
 
@@ -286,8 +304,8 @@ def plot_ipc_cycles(cycle_ipc, exp_res_path):
         for bar in bars:
             bar.set_hatch(hatch)
     
-    plot.ax.legend(loc="upper center", ncol=4, bbox_to_anchor=(0.5, 1.65), fontsize=40, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8)
-    plot.ax.set_xlabel("Bits", labelpad = 10, fontsize=40)
+    plot.ax.legend(loc="upper center", ncol=4, bbox_to_anchor=(0.5, 1.69), fontsize=40, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8)
+    plot.ax.set_xlabel("Message size (Bytes)", labelpad = 10, fontsize=40)
     plot.ax.set_ylabel("Relative slowdown", labelpad = 10, fontsize=40)
     plot.ax.tick_params(axis='both', labelsize=40)
     # plt.grid(which="major", axis="y")
@@ -296,3 +314,44 @@ def plot_ipc_cycles(cycle_ipc, exp_res_path):
     
     plot.ax.figure.savefig(os.path.join(exp_res_path, "ipc-cycles.pdf"), bbox_inches='tight')
     plot.ax.figure.savefig(os.path.join(exp_res_path, "ipc-cycles.png"), bbox_inches='tight')
+
+def plot_acc_app_cycles(cycle_acc_apps, exp_res_path):
+    # print(cycle_acc_apps)
+
+    df = pd.DataFrame.from_dict(cycle_acc_apps)
+    # print(df)
+
+    # df["Time [ns]"] = df["Time [ns]"].astype('str')
+    df["Time [ns]"] = df["Time [ns]"].map({'0': "On-chip", '500': "Off-chip"})
+
+    print(df)
+
+    plot = sns.catplot(
+        kind = "bar",
+        x = "Application",
+        y= "Slowdown",
+        hue="Time [ns]",
+        data = df,
+        height=10,
+        aspect=2,
+        legend=False,
+        palette=palette,
+        edgecolor="k"
+    )
+
+    for i, container in enumerate(plot.ax.containers):
+        plot.ax.bar_label(container, fmt="%.2fX", padding=8, fontsize=35, rotation="vertical")
+
+    for bars, hatch in zip(plot.ax.containers, hatches):
+        for bar in bars:
+            bar.set_hatch(hatch)
+    
+    plot.ax.legend(loc="upper right", ncol=2, fontsize=35, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, bbox_to_anchor=(1, 1.1))
+    plot.ax.set_xlabel("Application", labelpad = 10, fontsize=35)
+    plot.ax.set_ylabel("Slowdown", labelpad = 10, fontsize=35)
+    plot.ax.tick_params(axis='both', labelsize=35)
+    # plot.ax.tick_params(axis='x', rotation=45, ha="right")
+    # plt.setp(plot.ax.get_xticklabels(), ha="right", rotation_mode="anchor")
+
+    plot.ax.figure.savefig(os.path.join(exp_res_path, "acc-apps-cycles.png"), bbox_inches='tight')
+    plot.ax.figure.savefig(os.path.join(exp_res_path, "acc-apps-cycles.pdf"), bbox_inches='tight')

@@ -129,6 +129,12 @@ def parse_apps_output(file):
     # return gmean(cycle_list)
     return cycle_list[0]
 
+def parse_mlapp_output(file):
+    with open(file) as f:
+        for line in f:
+            if "total:" in line:
+                return line.split(" ")[1]
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: {} <file>".format(sys.argv[0]))

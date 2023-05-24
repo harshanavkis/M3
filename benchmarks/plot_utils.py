@@ -272,13 +272,13 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
         for bar in bars:
             bar.set_hatch(hatch)
     
-    plot.ax.bar_label(plot.ax.containers[1], labels=write_slowdown, fmt="%.2f", padding=8, fontsize=30, rotation='vertical')
+    plot.ax.bar_label(plot.ax.containers[1], labels=write_slowdown, fmt="%.2f", padding=8, fontsize=33, rotation='vertical')
     # for i, container in enumerate(plot.ax.containers):
     #     plot.ax.bar_label(container, fmt="%.2f", padding=2, rotation=45)
-    plot.ax.legend(loc="upper left", ncol=2, bbox_to_anchor=(0, 1.1), fontsize=30, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8)
-    plot.ax.tick_params(axis='both', labelsize=30)
-    plot.ax.set_xlabel("Bytes", fontsize = 30)
-    plot.ax.set_ylabel("Throughput [GiB/s]", fontsize = 30)
+    plot.ax.legend(loc="upper left", bbox_to_anchor=(0, 1.1), fontsize=33, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=2)
+    plot.ax.tick_params(axis='both', labelsize=33)
+    plot.ax.set_xlabel("Bytes", fontsize = 33)
+    plot.ax.set_ylabel("Throughput [GiB/s]", fontsize = 33)
     # plt.grid(which="major", axis="y")
     # plt.grid(which="minor", axis="y", alpha=0.5)
     # plt.minorticks_on()
