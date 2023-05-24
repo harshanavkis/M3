@@ -14,7 +14,7 @@
                     <physmem addr="0" size="$fs.size" perm="r" />
                     <tiles type="boom|core" count="2" />
                     <dom tile="boom|core">
-                        <app args="/bin/facever gpu 256 4418452 0 640" daemon="1">
+                        <app args="/bin/facever gpu 256 13436961 0 16384" daemon="1">
                         <mount fs="m3fs" path="/" />
                         <rgate name="gpu" msgsize="512" slots="1" />
                         <sgate name="gpures" />
@@ -22,7 +22,7 @@
                         </app>
                     </dom>
                     <dom tile="boom|core">
-                        <app args="/bin/facever client 256 3072 1">
+                        <app args="/bin/facever client 256 200704 1">
                             <sgate name="gpu" />
                             <rgate name="gpures" msgsize="512" slots="1" />
                             <tiles type="core" count="1" />
