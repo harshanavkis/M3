@@ -143,6 +143,10 @@ impl RecvGate {
         Self::new_with(RGateArgs::default().order(order).msg_order(msg_order))
     }
 
+    pub fn new_secure(order: u32, msg_order: u32) -> Result<Self, Error> {
+        Self::new(order, msg_order)
+    }
+
     /// Creates a new `RecvGate` with given arguments.
     pub fn new_with(args: RGateArgs) -> Result<Self, Error> {
         let sel = if args.sel == INVALID_SEL {

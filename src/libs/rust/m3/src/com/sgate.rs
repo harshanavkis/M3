@@ -109,6 +109,10 @@ impl SendGate {
         })
     }
 
+    pub fn new_secure_with(args: SGateArgs) -> Result<Self, Error> {
+        Self::new_with(args)
+    }
+
     /// Creates the `SendGate` with given name as defined in the application's configuration
     pub fn new_named(name: &str) -> Result<Self, Error> {
         let sel = Activity::own().alloc_sel();
