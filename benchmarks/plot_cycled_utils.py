@@ -122,9 +122,9 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
 
     plt.clf()
 
-    print("Printing fs read write values")
-    print(read_df_temp)
-    print(write_df_temp)
+    # print("Printing fs read write values")
+    # print(read_df_temp)
+    # print(write_df_temp)
 
     read_df_temp = read_df_temp.loc[read_df_temp["Kind"] == "Slowdown"].reset_index()
     write_df_temp = write_df_temp.loc[write_df_temp["Kind"] == "Slowdown"].reset_index()
@@ -280,8 +280,8 @@ def plot_ipc_cycles(cycle_ipc, exp_res_path):
     aggr_df["Kind"] = aggr_df["Kind"].apply(lambda x: "{}ns".format(int(int(x) / cpu_freq)))
     aggr_df["Kind"] = aggr_df["Kind"].apply(lambda x: "On-chip" if x=="0ns" else "Off-chip")
     aggr_df["Bytes"] = aggr_df["Bytes"].apply(lambda x: int(int(x) / 8))
-    print("IPC bitch")
-    print(aggr_df)
+    # print("IPC bitch")
+    # print(aggr_df)
 
     sns.set(font_scale=4, style='white')
 
@@ -324,7 +324,7 @@ def plot_acc_app_cycles(cycle_acc_apps, exp_res_path):
     # df["Time [ns]"] = df["Time [ns]"].astype('str')
     df["Time [ns]"] = df["Time [ns]"].map({'0': "On-chip", '500': "Off-chip"})
 
-    print(df)
+    # print(df)
 
     plot = sns.catplot(
         kind = "bar",

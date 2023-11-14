@@ -2,6 +2,7 @@ import os
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 from .constants import *
 
 SYS_FREQ = int(CPU_FREQ.replace("GHz", "")) * 1e9
@@ -249,7 +250,7 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
         }
     )
     write_slowdown = list(write_throughput[(write_throughput["Kind"] == "Slowdown")]["Throughput [GiB/s]"].values)
-    print(write_throughput)
+    # print(write_throughput)
     write_throughput = write_throughput[(write_throughput["Kind"] != "Slowdown")]
     write_throughput = write_throughput.replace("Non-secure", "M\u00b3")
     write_throughput = write_throughput.replace("Secure", "THAI")
@@ -267,7 +268,7 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
         palette=palette
     )
     write_slowdown = ["{0:.2f}X".format(i) for i in write_slowdown]
-    print(write_slowdown)
+    # print(write_slowdown)
     for bars, hatch in zip(plot.ax.containers, hatches):
         for bar in bars:
             bar.set_hatch(hatch)
@@ -434,3 +435,163 @@ def plot_fs_benchmarks(fs_non_secure, fs_secure, exp_res_path, int_lat):
     # plot.ax.set_xlabel("")
     # plot.ax.set_ylabel("Relative slowdown")
     # plot.ax.figure.savefig(os.path.join(exp_res_path, "fs-plot.pdf"))
+
+def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
+        LINUX_FS_READ_THRU, m3fs_read_thru, thai_read_thru,
+        LINUX_FS_WRITE_THRU, m3fs_write_thru, thai_write_thru, exp_res_path):
+
+    syscall_dict = {}
+    syscall_dict["System"] = ["Linux", "M\u00b3", "THAI"]
+    syscall_dict["Latency (Cycles)"] = [LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op]
+
+    syscall_df = pd.DataFrame.from_dict(syscall_dict)
+    print(syscall_df)
+
+    read_dict = {}
+    read_dict["System"] = ["Linux", "M\u00b3", "THAI"]
+    read_dict["Throughput [GiB/s]"] = [LINUX_FS_READ_THRU, m3fs_read_thru, thai_read_thru]
+
+    write_dict = {}
+    # write_dict["Kind"] = ["Read", "Write", "Read", "Write", "Read", "Write"]
+    write_dict["System"] = ["Linux", "M\u00b3", "THAI"]
+    write_dict["Throughput [GiB/s]"] = [LINUX_FS_WRITE_THRU, m3fs_write_thru, thai_write_thru]
+
+    read_df = pd.DataFrame.from_dict(read_dict)
+    print(read_df)
+
+    write_df = pd.DataFrame.from_dict(write_dict)
+    print(write_df)
+
+    # plot = sns.catplot(
+    #     kind = "bar",
+    #     x = "System",
+    #     y= "Latency (Cycles)",
+    #     data = syscall_df,
+    #     edgecolor="k",
+    #     legend=False,
+    #     height=4.8,
+    #     aspect=1,
+    #     palette=palette
+    # )
+    # for bars, hatch in zip(plot.ax.containers, hatches):
+    #     for bar in bars:
+    #         bar.set_hatch(hatch)
+
+    # plot.ax.tick_params(axis='both', labelsize=10)
+    # plot.ax.set_xlabel("", fontsize = 10)
+    # plot.ax.set_ylabel("Latency (Cycles)", fontsize = 10)
+    
+    # plot.ax.figure.savefig(os.path.join(exp_res_path, "lx-syscall.png"), bbox_inches='tight')
+    # plot.ax.figure.savefig(os.path.join(exp_res_path, "lx-syscall.pdf"), bbox_inches='tight')
+
+    # thru_plot = sns.catplot(
+    #     kind = "bar",
+    #     x = "System",
+    #     y= "Throughput [GiB/s]",
+    #     data = thru_df,
+    #     edgecolor="k",
+    #     legend=False,
+    #     hue="Kind",
+    #     height=5,
+    #     aspect=1,
+    #     palette=palette
+    # )
+    # for bars, hatch in zip(thru_plot.ax.containers, hatches):
+    #     for bar in bars:
+    #         bar.set_hatch(hatch)
+    # thru_plot.ax.tick_params(axis='both', labelsize=10)
+    # thru_plot.ax.set_xlabel("", fontsize = 10)
+    # thru_plot.ax.set_ylabel("Throughput [GiB/s]", fontsize = 10)
+    # thru_plot.ax.legend(loc="upper left", bbox_to_anchor=(0, 1.1), fontsize=10, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=2)
+
+    # thru_plot.ax.figure.savefig(os.path.join(exp_res_path, "lx-rw.png"), bbox_inches='tight')
+    # thru_plot.ax.figure.savefig(os.path.join(exp_res_path, "lx-rw.pdf"), bbox_inches='tight')
+
+    fig, axes = plt.subplots(1, 3, sharex=True, figsize=(5,5))
+
+    palette = sns.color_palette("colorblind")
+    palette = [palette[2], palette[-1], palette[1]]
+
+    bars_syscall = sns.barplot(
+        ax=axes[0],
+        # kind = "bar",
+        x = "System",
+        y= "Latency (Cycles)",
+        data = syscall_df,
+        edgecolor="k",
+        # legend=False,
+        # height=5,
+        # aspect=1,
+        palette=palette
+    )
+
+    hatches = ["+", "//", "o"]
+
+    for i, bar in enumerate(bars_syscall.patches):
+        bar.set_hatch(hatches[i])
+
+    bars_read = sns.barplot(
+        ax=axes[1],
+        # kind = "bar",
+        x = "System",
+        y= "Throughput [GiB/s]",
+        data = read_df,
+        edgecolor="k",
+        # legend=False,
+        # height=5,
+        # aspect=1,
+        palette=palette
+    )
+
+    for i, bar in enumerate(bars_read.patches):
+        bar.set_hatch(hatches[i])
+
+    bars_write = sns.barplot(
+        ax=axes[2],
+        # kind = "bar",
+        x = "System",
+        y= "Throughput [GiB/s]",
+        data = write_df,
+        edgecolor="k",
+        # legend=False,
+        # height=5,
+        # aspect=1,
+        palette=palette
+    )
+
+    for i, bar in enumerate(bars_write.patches):
+        bar.set_hatch(hatches[i])
+
+    # for bars, hatch in zip(axes[0].containers, hatches):
+    #     for bar in bars:
+    #         bar.set_hatch(hatch)
+    
+    # for bars, hatch in zip(axes[1].containers, hatches):
+    #     for bar in bars:
+    #         bar.set_hatch(hatch)
+
+    # for bars, hatch in zip(axes[2].containers, hatches):
+    #     for bar in bars:
+    #         bar.set_hatch(hatch)
+    
+    axes[0].tick_params(axis='both', labelsize=18)
+    axes[0].set_xlabel("Syscall", fontsize = 18)
+    axes[0].set_ylabel("Latency [Cycles]", fontsize = 18)
+    # axes[0].set_xbound(-1.0 ,5.0)
+    # axes[0].set_xlim(-1, 3)
+
+    axes[1].tick_params(axis='both', labelsize=18)
+    axes[1].set_xlabel("Read", fontsize = 18)
+    axes[1].set_ylabel("Throughput [GiB/s]", fontsize = 18)
+    # axes[1].legend(loc="upper left", bbox_to_anchor=(0, 1), fontsize=18, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=1)
+    # axes[1].set_xbound(-1.0 ,5.0)
+
+    axes[2].tick_params(axis='both', labelsize=18)
+    axes[2].set_xlabel("Write", fontsize = 18)
+    axes[2].set_ylabel("", fontsize = 18)
+    axes[2].yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+
+    plt.subplots_adjust(bottom=0.1, right=2.3, top=0.9)
+
+    fig.savefig(os.path.join(exp_res_path, "lx-baseline.pdf"), bbox_inches='tight')
+    fig.savefig(os.path.join(exp_res_path, "lx-baseline.png"), bbox_inches='tight')

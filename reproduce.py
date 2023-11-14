@@ -7,7 +7,7 @@ import json
 import subprocess
 from matplotlib import pyplot as plt
 from benchmarks.check_result import parse_output, parse_apps_output, parse_mlapp_output
-from benchmarks.plot_utils import plot_ipc_benchmarks, plot_read_write_benchmarks, plot_app_benchmarks, plot_syscall_benchmarks, plot_fs_benchmarks
+from benchmarks.plot_utils import plot_ipc_benchmarks, plot_read_write_benchmarks, plot_app_benchmarks, plot_syscall_benchmarks, plot_fs_benchmarks, plot_linux_baseline
 from benchmarks.plot_cycled_utils import *
 from benchmarks.constants import *
 
@@ -17,9 +17,22 @@ from benchmarks.constants import *
 INT_LATENCY = ["0", "500"]
 # INT_LATENCY = ["0"]
 
-# CPU_FREQ = "2GHz"
-# MEM_FREQ = "1GHz"
-# PAR_PIPE = "1"
+CPU_FREQ = "2GHz"
+MEM_FREQ = "2GHz"
+PAR_PIPE = "1"
+
+# Latency (cycles)
+LINUX_SYSCALL = 293
+
+# Latency (cycles)
+LINUX_FS_READ_LAT = 1842410
+LINUX_FS_WRITE_LAT = 4220592
+
+# Throughput (GiB/s)
+LINUX_SYS_FREQ = int(CPU_FREQ.replace("GHz", "")) * 1e9
+LINUX_FS_SIZE = (2 * LINUX_SYS_FREQ) / 1024
+LINUX_FS_READ_THRU = LINUX_FS_SIZE / LINUX_FS_READ_LAT
+LINUX_FS_WRITE_THRU = LINUX_FS_SIZE / LINUX_FS_WRITE_LAT
 
 SNAPSHOT_FILE_NAME = "snapshot-{}-{}-{}.json".format(CPU_FREQ, MEM_FREQ, PAR_PIPE)
 
@@ -463,8 +476,8 @@ def main():
         "remote-ipc-secure": run_remote_ipc_secure,
         "read-write-non-secure": run_read_write_non_secure,
         "read-write-secure": run_read_write_secure,
-        # "syscall-non-secure": run_syscall_non_secure,
-        # "syscall-secure": run_syscall_secure,
+        "syscall-non-secure": run_syscall_non_secure,
+        "syscall-secure": run_syscall_secure,
         "fs-non-secure": run_fs_non_secure,
         "fs-secure": run_fs_secure,
         # "sqlite-non-secure": run_sqlite_non_secure,
@@ -516,6 +529,7 @@ def main():
     cycle_write = {}
     cycle_ipc = {}
     cycle_acc_apps = {"Time [ns]": [], "Application": [], "Slowdown": []}
+    linux_baselines = {}
 
     for l in INT_LATENCY:
         # Plot IPC benchmarks
@@ -588,9 +602,9 @@ def main():
     plot_ipc_cycles(cycle_ipc, exp_res_path)
 
     # Process the filesystem data
-    print("Bitch")
-    print(fs_read_df)
-    print(fs_write_df)
+    # print("Bitch")
+    # print(fs_read_df)
+    # print(fs_write_df)
 
     for i in range(len(fs_read_df["Operation"])):
         cycle_acc_apps["Application"].append("m3fs-read")
@@ -624,8 +638,36 @@ def main():
 
         # cycle_acc_apps["Application"].append("m3fs-write")
 
-    print(cycle_acc_apps)
+    # print(cycle_acc_apps)
     plot_acc_app_cycles(cycle_acc_apps, exp_res_path)
+
+    print("Linux read/write")
+    print(cycle_fs)
+    m3fs_read_thru = cycle_fs['0']['Throughput [GiB/s]'][0]
+    thai_read_thru = cycle_fs['0']['Throughput [GiB/s]'][1]
+    m3fs_write_thru = cycle_fs['0']['Throughput [GiB/s]'][2]
+    thai_write_thru = cycle_fs['0']['Throughput [GiB/s]'][3]
+    print(m3fs_read_thru)
+    print(m3fs_write_thru)
+    print(thai_read_thru)
+    print(thai_write_thru)
+    print(LINUX_FS_READ_THRU)
+    print(LINUX_FS_WRITE_THRU)
+
+    print("Linux syscalls")
+    m3_syscall_no_op = completed_exp["0"]["syscall-non-secure"]["bsyscall.rs: noop"]["time"]
+    thai_syscall_no_op = completed_exp["0"]["syscall-secure"]["bsyscall.rs: noop"]["time"]
+    print(m3_syscall_no_op)
+    print(thai_syscall_no_op)
+    print(LINUX_SYSCALL)
+
+    plot_linux_baseline(
+        LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
+        LINUX_FS_READ_THRU, m3fs_read_thru, thai_read_thru,
+        LINUX_FS_WRITE_THRU, m3fs_write_thru, thai_write_thru,
+        exp_res_path
+    )
+    
 
 if __name__ == "__main__":
     main()
