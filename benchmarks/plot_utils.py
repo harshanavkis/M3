@@ -445,7 +445,7 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
     syscall_dict["Latency (Cycles)"] = [LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op]
 
     syscall_df = pd.DataFrame.from_dict(syscall_dict)
-    print(syscall_df)
+    # print(syscall_df)
 
     read_dict = {}
     read_dict["System"] = ["Linux", "M\u00b3", "THAI"]
@@ -457,10 +457,10 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
     write_dict["Throughput [GiB/s]"] = [LINUX_FS_WRITE_THRU, m3fs_write_thru, thai_write_thru]
 
     read_df = pd.DataFrame.from_dict(read_dict)
-    print(read_df)
+    # print(read_df)
 
     write_df = pd.DataFrame.from_dict(write_dict)
-    print(write_df)
+    # print(write_df)
 
     # plot = sns.catplot(
     #     kind = "bar",
@@ -595,3 +595,60 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
 
     fig.savefig(os.path.join(exp_res_path, "lx-baseline.pdf"), bbox_inches='tight')
     fig.savefig(os.path.join(exp_res_path, "lx-baseline.png"), bbox_inches='tight')
+
+
+def plot_ipc_breakdown(breakdown_ipc, exp_res_path):
+    print(breakdown_ipc)
+
+    non_secure_ipc = breakdown_ipc["non-secure"]
+    secure_ipc = breakdown_ipc["secure"]
+
+    nsipc_df = {}
+    sipc_df = {}
+
+    print(non_secure_ipc)
+
+    for i in non_secure_ipc:
+        key = int(i.split(")")[0].split(" ")[-1])
+        # if key <= 1024:
+        nsipc_df[int(key/8)] = non_secure_ipc[i]["time"]
+    
+    data_sizes = list(nsipc_df.keys())
+    ns_ipc_cycles = list(nsipc_df.values())
+    print(data_sizes)
+    print(ns_ipc_cycles)
+    encr_cycles = [33, 33, 34, 36, 40, 48, 64, 96]
+    reply_cycles = [33, 33, 33, 33, 33, 33, 33, 33]
+
+    plot_data = {}
+    # plot_data["Size (B)"] = data_sizes
+    plot_data["M\u00b3"] = ns_ipc_cycles
+    plot_data["Data encr"] = encr_cycles
+    plot_data["Reply encr"] = reply_cycles
+
+    # plot_df = pd.DataFrame.from_dict(plot_data)
+    plot_df = pd.DataFrame({"M\u00b3": ns_ipc_cycles, "Data encr": encr_cycles, "Reply encr": reply_cycles}, index=data_sizes)
+    # print(plot_df)
+
+    palette = sns.color_palette("colorblind")
+    palette = [palette[-1], palette[1], palette[2]]
+    ax = plot_df.plot(kind='bar', stacked=True, color=palette, figsize=(10, 3), edgecolor="k")
+    for bar in ax.patches:
+        bar.set_hatch("//")
+
+    ax.tick_params(axis='both', labelsize=18)
+    ax.set_xlabel("Size (B)", fontsize = 18)
+    ax.set_ylabel("Cycles", fontsize = 18)
+    ax.set_xticklabels(data_sizes, rotation = 0)
+
+    ax.legend(loc="upper left", bbox_to_anchor=(0, 1), fontsize=18, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=3)
+
+    plt.savefig(os.path.join(exp_res_path, "ipc-breakdown.png"), bbox_inches='tight')
+    plt.savefig(os.path.join(exp_res_path, "ipc-breakdown.pdf"), bbox_inches='tight')
+    
+    
+    # for i in secure_ipc:
+    #     sipc_df[int(i.split(")")[0].split(" ")[-1])] = secure_ipc[i]["time"]
+    
+    # print(nsipc_df)
+    # print(sipc_df)

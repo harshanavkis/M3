@@ -7,7 +7,7 @@ import json
 import subprocess
 from matplotlib import pyplot as plt
 from benchmarks.check_result import parse_output, parse_apps_output, parse_mlapp_output
-from benchmarks.plot_utils import plot_ipc_benchmarks, plot_read_write_benchmarks, plot_app_benchmarks, plot_syscall_benchmarks, plot_fs_benchmarks, plot_linux_baseline
+from benchmarks.plot_utils import plot_ipc_benchmarks, plot_read_write_benchmarks, plot_app_benchmarks, plot_syscall_benchmarks, plot_fs_benchmarks, plot_linux_baseline, plot_ipc_breakdown
 from benchmarks.plot_cycled_utils import *
 from benchmarks.constants import *
 
@@ -642,24 +642,24 @@ def main():
     plot_acc_app_cycles(cycle_acc_apps, exp_res_path)
 
     print("Linux read/write")
-    print(cycle_fs)
+    # print(cycle_fs)
     m3fs_read_thru = cycle_fs['0']['Throughput [GiB/s]'][0]
     thai_read_thru = cycle_fs['0']['Throughput [GiB/s]'][1]
     m3fs_write_thru = cycle_fs['0']['Throughput [GiB/s]'][2]
     thai_write_thru = cycle_fs['0']['Throughput [GiB/s]'][3]
-    print(m3fs_read_thru)
-    print(m3fs_write_thru)
-    print(thai_read_thru)
-    print(thai_write_thru)
-    print(LINUX_FS_READ_THRU)
-    print(LINUX_FS_WRITE_THRU)
+    # print(m3fs_read_thru)
+    # print(m3fs_write_thru)
+    # print(thai_read_thru)
+    # print(thai_write_thru)
+    # print(LINUX_FS_READ_THRU)
+    # print(LINUX_FS_WRITE_THRU)
 
-    print("Linux syscalls")
+    # print("Linux syscalls")
     m3_syscall_no_op = completed_exp["0"]["syscall-non-secure"]["bsyscall.rs: noop"]["time"]
     thai_syscall_no_op = completed_exp["0"]["syscall-secure"]["bsyscall.rs: noop"]["time"]
-    print(m3_syscall_no_op)
-    print(thai_syscall_no_op)
-    print(LINUX_SYSCALL)
+    # print(m3_syscall_no_op)
+    # print(thai_syscall_no_op)
+    # print(LINUX_SYSCALL)
 
     plot_linux_baseline(
         LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
@@ -667,6 +667,12 @@ def main():
         LINUX_FS_WRITE_THRU, m3fs_write_thru, thai_write_thru,
         exp_res_path
     )
+
+    breakdown_ipc = {}
+    breakdown_ipc["non-secure"] = completed_exp["0"]["remote-ipc-non-secure"]
+    breakdown_ipc["secure"] = completed_exp["0"]["remote-ipc-secure"]
+
+    plot_ipc_breakdown(breakdown_ipc, exp_res_path)
     
 
 if __name__ == "__main__":
