@@ -1,7 +1,7 @@
-with import <nixpkgs> {};
+{ pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/refs/tags/23.05.tar.gz") {} }:
 
 let
-  buildInputs = [
+  buildInputs = with pkgs; [
     python3
     protobuf
     zlib
@@ -33,8 +33,8 @@ let
         );
       in
         {
-          channel = lib.head (lib.splitString "-" rustToolchain);
-          date = lib.concatStringsSep "-" (lib.tail (lib.splitString "-" rustToolchain));
+          channel = pkgs.lib.head (pkgs.lib.splitString "-" rustToolchain);
+          date = pkgs.lib.concatStringsSep "-" (pkgs.lib.tail (pkgs.lib.splitString "-" rustToolchain));
         }
     )
   ).rust.override {
@@ -46,11 +46,11 @@ let
     ];
   };
 
-  byaccBuild = stdenv.mkDerivation {
+  byaccBuild = pkgs.stdenv.mkDerivation {
     pname = "byacc";
     version = "20210808";
 
-    src = fetchurl {
+    src = pkgs.fetchurl {
       urls = [
         "ftp://ftp.invisible-island.net/byacc/byacc-20210808.tgz"
         "https://invisible-mirror.net/archives/byacc/byacc-20210808.tgz"
@@ -70,17 +70,17 @@ let
     '';
   };
 
-  ld = writeShellScriptBin "ld" ''
-     exec ${gcc7Stdenv.cc}/bin/ld ${lib.concatMapStringsSep " " (l: "-L${lib.getLib l}/lib -rpath ${lib.getLib l}/lib" ) buildInputs} "$@"
+  ld = pkgs.writeShellScriptBin "ld" ''
+     exec ${pkgs.gcc7Stdenv.cc}/bin/ld ${pkgs.lib.concatMapStringsSep " " (l: "-L${pkgs.lib.getLib l}/lib -rpath ${pkgs.lib.getLib l}/lib" ) buildInputs} "$@"
   '';
-  args = lib.concatMapStringsSep " " (l: "-I${lib.getDev l}/include -L${lib.getLib l}/lib -Wl,-rpath,${lib.getLib l}/lib" ) buildInputs;
-  cc = writeShellScriptBin "cc" ''
-    exec ${gcc7Stdenv.cc}/bin/cc ${args} "$@"
+  args = pkgs.lib.concatMapStringsSep " " (l: "-I${pkgs.lib.getDev l}/include -L${pkgs.lib.getLib l}/lib -Wl,-rpath,${pkgs.lib.getLib l}/lib" ) buildInputs;
+  cc = pkgs.writeShellScriptBin "cc" ''
+    exec ${pkgs.gcc7Stdenv.cc}/bin/cc ${args} "$@"
   '';
-  cxx = writeShellScriptBin "c++" ''
-    exec ${gcc7Stdenv.cc}/bin/c++ ${args} "$@"
+  cxx = pkgs.writeShellScriptBin "c++" ''
+    exec ${pkgs.gcc7Stdenv.cc}/bin/c++ ${args} "$@"
   '';
-in gcc7Stdenv.mkDerivation rec {
+in pkgs.gcc7Stdenv.mkDerivation rec {
   name = "env";
   EDITOR = "vim";
   M4 = "m4";
@@ -93,7 +93,7 @@ in gcc7Stdenv.mkDerivation rec {
 
   hardeningDisable = [ "format" ];
 
-  nativeBuildInputs = [
+  nativeBuildInputs = with pkgs; [
     python3.pkgs.pyyaml
     python3.pkgs.pandas
     python3.pkgs.seaborn
