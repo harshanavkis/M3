@@ -40,12 +40,12 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
     read_slowdown = list(read_df[(read_df["Kind"] == "Slowdown")]["Throughput [GiB/s]"].values)
     read_df = read_df[(read_df["Kind"] != "Slowdown")]
     read_df = read_df.replace("Non-secure", "M\u00b3")
-    read_df = read_df.replace("Secure", "THAI")
+    read_df = read_df.replace("Secure", "IronShield")
 
     write_slowdown = list(write_df[(write_df["Kind"] == "Slowdown")]["Throughput [GiB/s]"].values)
     write_df = write_df[(write_df["Kind"] != "Slowdown")]
     write_df = write_df.replace("Non-secure", "M\u00b3")
-    write_df = write_df.replace("Secure", "THAI")
+    write_df = write_df.replace("Secure", "IronShield")
 
     sns.set(font_scale=1, style='white')
 
@@ -154,7 +154,7 @@ def plot_app_cycles(cycle_app, exp_res_path):
         data = aggr_df,
         hue = "Cycles",
         height=7,
-        aspect=3,
+        aspect=2,
         legend=False,
         palette=palette,
         edgecolor="k"

@@ -207,7 +207,7 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
     read_slowdown = list(read_throughput[(read_throughput["Kind"] == "Slowdown")]["Throughput [GiB/s]"].values)
     read_throughput = read_throughput[(read_throughput["Kind"] != "Slowdown")]
     read_throughput = read_throughput.replace("Non-secure", "M\u00b3")
-    read_throughput = read_throughput.replace("Secure", "THAI")
+    read_throughput = read_throughput.replace("Secure", "IronShield")
 
     # print(read_throughput)
     plot = sns.catplot(
@@ -253,7 +253,7 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
     # print(write_throughput)
     write_throughput = write_throughput[(write_throughput["Kind"] != "Slowdown")]
     write_throughput = write_throughput.replace("Non-secure", "M\u00b3")
-    write_throughput = write_throughput.replace("Secure", "THAI")
+    write_throughput = write_throughput.replace("Secure", "IronShield")
 
     plot = sns.catplot(
         kind = "bar",
@@ -441,19 +441,19 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
         LINUX_FS_WRITE_THRU, m3fs_write_thru, thai_write_thru, exp_res_path):
 
     syscall_dict = {}
-    syscall_dict["System"] = ["Linux", "M\u00b3", "THAI"]
+    syscall_dict["System"] = ["Linux", "M\u00b3", "IronShield"]
     syscall_dict["Latency (Cycles)"] = [LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op]
 
     syscall_df = pd.DataFrame.from_dict(syscall_dict)
     # print(syscall_df)
 
     read_dict = {}
-    read_dict["System"] = ["Linux", "M\u00b3", "THAI"]
+    read_dict["System"] = ["Linux", "M\u00b3", "IronShield"]
     read_dict["Throughput [GiB/s]"] = [LINUX_FS_READ_THRU, m3fs_read_thru, thai_read_thru]
 
     write_dict = {}
     # write_dict["Kind"] = ["Read", "Write", "Read", "Write", "Read", "Write"]
-    write_dict["System"] = ["Linux", "M\u00b3", "THAI"]
+    write_dict["System"] = ["Linux", "M\u00b3", "IronShield"]
     write_dict["Throughput [GiB/s]"] = [LINUX_FS_WRITE_THRU, m3fs_write_thru, thai_write_thru]
 
     read_df = pd.DataFrame.from_dict(read_dict)
@@ -507,7 +507,7 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
     # thru_plot.ax.figure.savefig(os.path.join(exp_res_path, "lx-rw.png"), bbox_inches='tight')
     # thru_plot.ax.figure.savefig(os.path.join(exp_res_path, "lx-rw.pdf"), bbox_inches='tight')
 
-    fig, axes = plt.subplots(1, 3, sharex=True, figsize=(5,5))
+    fig, axes = plt.subplots(1, 3, sharex=True, figsize=(5,3))
 
     palette = sns.color_palette("colorblind")
     palette = [palette[2], palette[-1], palette[1]]
