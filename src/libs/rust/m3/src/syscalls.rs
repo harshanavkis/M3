@@ -34,6 +34,7 @@ use crate::quota::Quota;
 use crate::serialize::{Deserialize, M3Deserializer, M3Serializer, SliceSink};
 use crate::tcu::{ActId, EpId, Label, Message, SYSC_SEP_OFF};
 use crate::tiles::TileQuota;
+use base::col::String;
 
 static SGATE: LazyStaticRefCell<SendGate> = LazyStaticRefCell::default();
 // use a separate message buffer here, because the default buffer could be in use for a message over
@@ -645,6 +646,17 @@ pub fn reset_stats() -> Result<(), Error> {
 pub fn noop() -> Result<(), Error> {
     let mut buf = SYSC_BUF.borrow_mut();
     build_vmsg!(buf, syscalls::Operation::NOOP, syscalls::Noop {});
+    send_receive_result(&buf)
+}
+
+pub fn attest(ca: String, hash: String, name: String, is_sw: bool) -> Result<(), Error> {
+    let mut buf = SYSC_BUF.borrow_mut();
+    build_vmsg!(buf, syscalls::Operation::ATTEST, syscalls::Attest {
+        ca,
+        hash,
+        name,
+        is_sw
+    });
     send_receive_result(&buf)
 }
 

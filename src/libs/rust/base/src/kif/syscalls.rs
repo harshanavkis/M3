@@ -18,6 +18,8 @@
 
 //! The system call interface
 
+use alloc::string::String;
+
 use crate::goff;
 use crate::kif::{tilemux::QuotaId, CapRngDesc, CapSel, Perm};
 use crate::mem::GlobAddr;
@@ -68,6 +70,8 @@ int_enum! {
         // Misc
         const RESET_STATS = 26;
         const NOOP = 27;
+
+        const ATTEST = 28;
     }
 }
 
@@ -324,6 +328,15 @@ pub struct ResetStats {}
 #[derive(Debug, Serialize, Deserialize)]
 #[repr(C)]
 pub struct Noop {}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[repr(C)]
+pub struct Attest {
+    pub ca: String,
+    pub hash: String,
+    pub name: String,
+    pub is_sw: bool,
+}
 
 /// The create activity reply message
 #[derive(Debug, Serialize, Deserialize)]

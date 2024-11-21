@@ -45,6 +45,7 @@ pub use base::{
 
 pub mod cap;
 pub mod crypto;
+pub mod policy_compiler;
 pub mod dataflow;
 pub mod server;
 pub mod session;

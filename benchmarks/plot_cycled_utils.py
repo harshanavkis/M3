@@ -40,12 +40,12 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
     read_slowdown = list(read_df[(read_df["Kind"] == "Slowdown")]["Throughput [GiB/s]"].values)
     read_df = read_df[(read_df["Kind"] != "Slowdown")]
     read_df = read_df.replace("Non-secure", "M\u00b3")
-    read_df = read_df.replace("Secure", "IronShield")
+    read_df = read_df.replace("Secure", "IronBus")
 
     write_slowdown = list(write_df[(write_df["Kind"] == "Slowdown")]["Throughput [GiB/s]"].values)
     write_df = write_df[(write_df["Kind"] != "Slowdown")]
     write_df = write_df.replace("Non-secure", "M\u00b3")
-    write_df = write_df.replace("Secure", "IronShield")
+    write_df = write_df.replace("Secure", "IronBus")
 
     sns.set(font_scale=1, style='white')
 

@@ -108,5 +108,6 @@ in pkgs.gcc7Stdenv.mkDerivation rec {
     tree
     rustBuild
     byaccBuild
+    texinfoInteractive
   ];
 }

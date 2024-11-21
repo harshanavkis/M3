@@ -29,6 +29,7 @@ use crate::cap::{EPObject, SemObject};
 use crate::ktcu;
 use crate::platform;
 use crate::syscalls::{get_request, reply_success, send_reply};
+use crate::tiles::tilemng::attest_tile_master;
 use crate::tiles::{tilemng, Activity, TileMux, INVAL_ID};
 
 #[inline(never)]
@@ -623,6 +624,29 @@ pub fn reset_stats(act: &Rc<Activity>, msg: &'static tcu::Message) -> Result<(),
 
 pub fn noop(act: &Rc<Activity>, msg: &'static tcu::Message) -> Result<(), VerboseError> {
     sysc_log!(act, "noop()",);
+
+    reply_success(msg);
+    Ok(())
+}
+
+pub fn attest_tile(act: &Rc<Activity>, msg: &'static tcu::Message) -> Result<(), VerboseError> {
+    sysc_log!(act, "attest_tile()",);
+
+    let r: syscalls::Attest = get_request(msg)?;
+
+    klog!(
+        DEF,
+        "attest_tile: {}, {}, {}, {}",
+        r.ca,
+        r.hash,
+        r.name,
+        r.is_sw
+    );
+
+    // TODO: Map characteristics to tile ID instead
+    if !r.is_sw {
+        attest_tile_master(5);
+    }
 
     reply_success(msg);
     Ok(())

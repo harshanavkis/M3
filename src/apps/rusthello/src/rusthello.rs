@@ -21,60 +21,42 @@
 use m3::col::String;
 use m3::com::{recv_msg, RecvGate, SGateArgs, SendGate};
 use m3::errors::{Code, Error};
+use m3::policy_compiler::compile_policy;
 use m3::tiles::{Activity, ActivityArgs, ChildActivity, RunningActivity, Tile};
+use m3::time::{CycleInstant, Duration, Instant};
 use m3::{println, reply_vmsg, send_vmsg, wv_assert_ok};
 
 const TILE_HASH: [u32; 8] = [0 as u32; 8];
 
 #[no_mangle]
 pub fn main() -> i32 {
-    // Identity based; exclusive access;
-    // let tile = wv_assert_ok!(Tile::get("core"));
+    println!("Hello World");
 
-    // Secure data processing across a set of heterogeneous nodes
+    let example_policy = r#"
+GPU = { "vendor": "NVIDIA", "model": "A100", "ca": "0x1234", "hash": "0x1234", "loc": "DE", "name": "gpu"}
+TPU = { "vendor": "Google", "model": "v3", "ca": "0x1234", "hash": "0x1234", "loc": "DE", "name": "tpu"}
+FS   = { "version": "latest", "ca": "0x1234", "name": "m3fs", "hash": "0x1234", "loc": "DE"}
 
-    let tile = match Tile::get_with_props("core", &TILE_HASH, false) {
-        Ok(t) => t,
-        Err(e) => match e.code() {
-            Code::IdentityMatchFail => {
-                panic!("Failed to find tile with specified identity")
-            },
-            Code::ExclusiveAccessFail => {
-                panic!("Failed to find exclusive access to tile with specified identity")
-            },
-            _ => panic!(),
-        },
-    };
+create_node:-StageIs(GPU) & HWVersionIs(GPU) & HWIsExclusive()
+create_node:-StageIs(TPU) & HWVersionIs(TPU) & HWIsExclusive()
+create_node:-StageIs(FS) & SWVersionIs(FS)
 
-    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("sender")));
+send:-StageIs(MAIN) & Sink(GPU) & UseEncr(True)
 
-    let rgate = wv_assert_ok!(RecvGate::new_secure(8, 8));
-    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
+recv:-StageIs(GPU) & Src(FS) & MaxTime(TIMESTAMP) & DataIsValid() & ObtainProof(GPU, FS)
+recv :- StageIs(GPU) & Src(MAIN) & MaxTime(TIMESTAMP) & DataIsValid()
+send:-StageIs(GPU) & Sink(TPU) & UseEncr(True) & DataReuse(0)
 
-    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+# Stage 2 policy
+recv:-StageIs(TPU) & Src(GPU) & MaxTime(TIMESTAMP) & DataIsValid()
+send:-StageIs(TPU) & Sink(FS) & UseEncr(True)"#;
 
-    let mut dst = act.data_sink();
-    dst.push(rgate.sel());
+    let start_cycles = CycleInstant::now();
+    compile_policy(example_policy);
+    let end_cycles = start_cycles.elapsed();
+    println!("Elapsed time: {}", end_cycles.as_raw());
 
-    let act = wv_assert_ok!(act.secure_run(|| {
-        let rgate_sel = Activity::own().data_source().pop().unwrap();
-        let mut rgate = RecvGate::new_bind(rgate_sel, 8, 8);
-
-        wv_assert_ok!(rgate.activate());
-        let mut msg = wv_assert_ok!(recv_msg(&rgate));
-        println!("Child: {}", msg.pop::<String>().unwrap());
-        wv_assert_ok!(reply_vmsg!(msg, "World"));
-
-        0
-    }));
-
-    let reply_gate = RecvGate::def();
-    wv_assert_ok!(send_vmsg!(&sgate, reply_gate, "Hello"));
-    let mut reply = wv_assert_ok!(recv_msg(reply_gate));
-
-    println!("Parent: {}", reply.pop::<String>().unwrap());
-
-    act.wait().unwrap();
+    println!("Done");
 
     0
 }

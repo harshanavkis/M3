@@ -147,6 +147,7 @@ pub fn handle_async(msg: &'static tcu::Message) {
 
         kif::syscalls::Operation::RESET_STATS => misc::reset_stats(&act, msg),
         kif::syscalls::Operation::NOOP => misc::noop(&act, msg),
+        kif::syscalls::Operation::ATTEST => misc::attest_tile(&act, msg),
 
         _ => panic!("Unexpected operation: {}", opcode),
     };

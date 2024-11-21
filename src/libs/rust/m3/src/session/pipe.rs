@@ -111,6 +111,7 @@ impl Pipe {
 
 impl Drop for Pipe {
     fn drop(&mut self) {
-        send_recv_res!(&self.sgate, RecvGate::def(), PipeOperation::CLOSE_PIPE).unwrap();
+        // TODO: Fix Bug
+        // send_recv_res!(&self.sgate, RecvGate::def(), PipeOperation::CLOSE_PIPE).unwrap();
     }
 }
