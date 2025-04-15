@@ -652,3 +652,63 @@ def plot_ipc_breakdown(breakdown_ipc, exp_res_path):
     
     # print(nsipc_df)
     # print(sipc_df)
+
+def plot_tdisp_sim(breakdown_tdisp_sim, exp_res_path):
+    for i in range(len(breakdown_tdisp_sim["Host-centric"])):
+        breakdown_tdisp_sim["Host-centric"][i] = 512*(2)/breakdown_tdisp_sim["Host-centric"][i]
+        breakdown_tdisp_sim["IronBus"][i] = 512*(2)/breakdown_tdisp_sim["IronBus"][i]
+    
+    plot_df = pd.DataFrame(breakdown_tdisp_sim)
+    print(plot_df)
+
+    palette = sns.color_palette("colorblind")
+    palette = [palette[-1], palette[1]]
+    ax = plot_df.plot(kind='bar', color=palette, figsize=(5, 2.5), edgecolor="k")
+    hatches = ["+", "//"]
+
+    # for i, bar in enumerate(ax.patches):
+    #     bar.set_hatch(hatches[i])
+    for bars, hatch in zip(ax.containers, hatches):
+        for bar in bars:
+            bar.set_hatch(hatch)
+
+    data_sizes = [2, 3, 4]
+
+    ax.tick_params(axis='both', labelsize=15)
+    ax.set_xlabel("Chain length", fontsize = 15)
+    ax.set_ylabel("Throughput (GiB/s)", fontsize = 15)
+    ax.set_xticklabels(data_sizes, rotation = 0)
+
+    # ax.legend(loc="right", bbox_to_anchor=(0, 1), fontsize=18, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=3)
+    ax.legend(loc="upper right", ncol=1, fontsize=15, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, bbox_to_anchor=(1, 1))
+
+    plt.savefig(os.path.join(exp_res_path, "tdisp-sim.png"), bbox_inches='tight')
+    plt.savefig(os.path.join(exp_res_path, "tdisp-sim.pdf"), bbox_inches='tight')
+
+def plot_tcb_breakdown(breakdown_tcb, exp_res_path):    
+    plot_df = pd.DataFrame(breakdown_tcb)
+    print(plot_df)
+
+    palette = sns.color_palette("colorblind")
+    palette = [palette[-1], palette[1]]
+    ax = plot_df.plot(kind='bar', stacked=True, color=palette, figsize=(5, 2.5), edgecolor="k", logy=True)
+
+    for bar in ax.patches:
+        bar.set_hatch("//")
+
+    data_sizes = ["SEV-Linux", "TDX-Linux", "TDX-Gramine", "IronBus"]
+    
+    ax.tick_params(axis='both', labelsize=12)
+    ax.set_xlabel("", fontsize = 12)
+    ax.set_ylabel("MLoC", fontsize = 12)
+    ax.set_xticklabels(data_sizes, rotation = 20)
+
+    # ax.bar_label(labels=["", "", "86X"])
+    # ax.text(0, 2.55, "~77X", ha='center', va='bottom', fontsize=15)
+    # ax.text(1, 3.12, "~94X", ha='center', va='bottom', fontsize=15)
+    # ax.text(2, 0.11, "~3X", ha='center', va='bottom', fontsize=12)
+
+    ax.legend(loc="upper right", ncol=1, fontsize=12, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, bbox_to_anchor=(1, 1))
+
+    plt.savefig(os.path.join(exp_res_path, "tcb-break.png"), bbox_inches='tight')
+    plt.savefig(os.path.join(exp_res_path, "tcb-break.pdf"), bbox_inches='tight')

@@ -7,7 +7,7 @@ import json
 import subprocess
 from matplotlib import pyplot as plt
 from benchmarks.check_result import parse_output, parse_apps_output, parse_mlapp_output
-from benchmarks.plot_utils import plot_ipc_benchmarks, plot_read_write_benchmarks, plot_app_benchmarks, plot_syscall_benchmarks, plot_fs_benchmarks, plot_linux_baseline, plot_ipc_breakdown
+from benchmarks.plot_utils import plot_ipc_benchmarks, plot_read_write_benchmarks, plot_app_benchmarks, plot_syscall_benchmarks, plot_fs_benchmarks, plot_linux_baseline, plot_ipc_breakdown, plot_tdisp_sim, plot_tcb_breakdown
 from benchmarks.plot_cycled_utils import *
 from benchmarks.constants import *
 
@@ -630,9 +630,11 @@ def main():
         # cycle_acc_apps["Application"].append("img-class-smv")
         # cycle_acc_apps["Slowdown"].append(float(completed_exp[l]["img-class-smv-secure"]["time"]) / float(completed_exp[l]["img-class-smv-non-secure"]["time"]))
 
-        cycle_acc_apps["Application"].append("systolic")
+        # cycle_acc_apps["Application"].append("systolic")
+        cycle_acc_apps["Application"].append("imgclass")
         cycle_acc_apps["Slowdown"].append(float(completed_exp[l]["img-class-systolic-secure"]["time"]) / float(completed_exp[l]["img-class-systolic-non-secure"]["time"]))
 
+        # cycle_acc_apps["Application"].append("dist")
         cycle_acc_apps["Application"].append("dist")
         cycle_acc_apps["Slowdown"].append(float(completed_exp[l]["img-class-distinf-secure"]["time"]) / float(completed_exp[l]["img-class-distinf-non-secure"]["time"]))
 
@@ -673,6 +675,16 @@ def main():
     breakdown_ipc["secure"] = completed_exp["0"]["remote-ipc-secure"]
 
     plot_ipc_breakdown(breakdown_ipc, exp_res_path)
+
+    breakdown_tdisp_sim = {}
+    breakdown_tdisp_sim["Host-centric"] = [1137, 2257, 3423]
+    breakdown_tdisp_sim["IronBus"] = [566, 1127, 1693]
+    plot_tdisp_sim(breakdown_tdisp_sim, exp_res_path)
+
+    breakdown_tcb = {}
+    breakdown_tcb["Kernel"] = [2.513, 3.068, 0.057, 0.033]
+    breakdown_tcb["Firmware"] = [0.029, 0.045, 0.045, 0]
+    plot_tcb_breakdown(breakdown_tcb, exp_res_path)
     
 
 if __name__ == "__main__":

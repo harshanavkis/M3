@@ -15,13 +15,15 @@
 
 use m3::cap::Selector;
 use m3::com::{recv_msg, RecvGate, SGateArgs, SendGate};
+use m3::mem::MsgBuf;
 use m3::rc::Rc;
 use m3::test::{DefaultWvTester, WvTester};
 use m3::tiles::{Activity, ActivityArgs, ChildActivity, RunningActivity, Tile};
 use m3::time::{CycleInstant, Duration, Profiler, TimeDuration};
 use m3::vec::Vec;
 use m3::{
-    format, println, reply_vmsg, send_vmsg, wv_assert_eq, wv_assert_ok, wv_perf, wv_run_test,
+    format, println, reply_vmsg, send_recv, send_vmsg, wv_assert_eq, wv_assert_ok, wv_perf,
+    wv_run_test,
 };
 
 const MSG_ORD: u32 = 11;
@@ -31,15 +33,21 @@ const RUNS: u64 = 1000;
 
 pub fn run(t: &mut dyn WvTester) {
     // Numbers at the end denote message size in bytes
-    wv_run_test!(t, pingpong_remote8);
-    wv_run_test!(t, pingpong_remote16);
-    wv_run_test!(t, pingpong_remote32);
-    wv_run_test!(t, pingpong_remote64);
-    wv_run_test!(t, pingpong_remote128);
-    wv_run_test!(t, pingpong_remote256);
-    wv_run_test!(t, pingpong_remote512);
-    wv_run_test!(t, pingpong_remote1024);
+    // wv_run_test!(t, pingpong_remote8);
+    // wv_run_test!(t, pingpong_remote16);
+    // wv_run_test!(t, pingpong_remote32);
+    // wv_run_test!(t, pingpong_remote64);
+    // wv_run_test!(t, pingpong_remote128);
+    // wv_run_test!(t, pingpong_remote256);
+    // wv_run_test!(t, pingpong_remote512);
+    // wv_run_test!(t, pingpong_remote1024);
     // wv_run_test!(t, pingpong_remote2048);
+    wv_run_test!(t, tdisp_chain_2_pingpong_512);
+    wv_run_test!(t, tdisp_chain_3_pingpong_512);
+    wv_run_test!(t, tdisp_chain_4_pingpong_512);
+    wv_run_test!(t, ironbus_chain_2_pingpong_512);
+    wv_run_test!(t, ironbus_chain_3_pingpong_512);
+    wv_run_test!(t, ironbus_chain_4_pingpong_512);
 }
 
 fn pingpong_remote8(t: &mut dyn WvTester) {
@@ -297,6 +305,324 @@ fn pingpong_remote256(t: &mut dyn WvTester) {
 
             let mut reply = wv_assert_ok!(recv_msg(reply_gate));
             wv_assert_eq!(t, reply.pop::<u64>(), Ok(0));
+        })
+    );
+
+    wv_assert_eq!(t, act.wait(), Ok(0));
+}
+
+fn tdisp_chain_2_pingpong_512(t: &mut dyn WvTester) {
+    let tile = wv_assert_ok!(Tile::get("clone"));
+
+    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("sender")));
+
+    let rgate = wv_assert_ok!(RecvGate::new(MSG_ORD, MSG_ORD));
+    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
+
+    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+
+    let mut dst = act.data_sink();
+    dst.push(rgate.sel());
+
+    let act = wv_assert_ok!(act.run(|| {
+        let mut t = DefaultWvTester::default();
+        let rgate_sel: Selector = Activity::own().data_source().pop().unwrap();
+        let mut rgate = RecvGate::new_bind(rgate_sel, MSG_ORD, MSG_ORD);
+        wv_assert_ok!(rgate.activate());
+        for i in 0..RUNS + WARMUP {
+            for j in 0..2 {
+                let mut msg = wv_assert_ok!(recv_msg(&rgate));
+                wv_assert_eq!(t, msg.size(), 512);
+                wv_assert_ok!(reply_vmsg!(msg, 0u64));
+            }
+        }
+        0
+    }));
+
+    let mut prof = Profiler::default().repeats(RUNS).warmup(WARMUP);
+
+    let reply_gate = RecvGate::def();
+    wv_perf!(
+        format!("tdisp_chain_2_pingpong_512 with (1 * {}) msgs", 4096),
+        prof.run::<CycleInstant, _>(|| {
+            for i in 0..2 {
+                wv_assert_ok!(send_vmsg!(
+                    &sgate, reply_gate, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64
+                ));
+
+                let mut reply = wv_assert_ok!(recv_msg(reply_gate));
+                wv_assert_eq!(t, reply.pop::<u64>(), Ok(0));
+            }
+        })
+    );
+
+    wv_assert_eq!(t, act.wait(), Ok(0));
+}
+
+fn ironbus_chain_2_pingpong_512(t: &mut dyn WvTester) {
+    let tile = wv_assert_ok!(Tile::get("clone"));
+
+    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("sender")));
+
+    let rgate = wv_assert_ok!(RecvGate::new(MSG_ORD, MSG_ORD));
+    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
+
+    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+
+    let mut dst = act.data_sink();
+    dst.push(rgate.sel());
+
+    let act = wv_assert_ok!(act.run(|| {
+        let mut t = DefaultWvTester::default();
+        let rgate_sel: Selector = Activity::own().data_source().pop().unwrap();
+        let mut rgate = RecvGate::new_bind(rgate_sel, MSG_ORD, MSG_ORD);
+        wv_assert_ok!(rgate.activate());
+        for i in 0..RUNS + WARMUP {
+            for j in 0..1 {
+                let mut msg = wv_assert_ok!(recv_msg(&rgate));
+                wv_assert_eq!(t, msg.size(), 512);
+                wv_assert_ok!(reply_vmsg!(msg, 0u64));
+            }
+        }
+        0
+    }));
+
+    let mut prof = Profiler::default().repeats(RUNS).warmup(WARMUP);
+
+    let reply_gate = RecvGate::def();
+    wv_perf!(
+        format!("ironbus_chain_2_pingpong_512 with (1 * {}) msgs", 4096),
+        prof.run::<CycleInstant, _>(|| {
+            for i in 0..1 {
+                wv_assert_ok!(send_vmsg!(
+                    &sgate, reply_gate, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64
+                ));
+
+                let mut reply = wv_assert_ok!(recv_msg(reply_gate));
+                wv_assert_eq!(t, reply.pop::<u64>(), Ok(0));
+            }
+        })
+    );
+
+    wv_assert_eq!(t, act.wait(), Ok(0));
+}
+
+fn tdisp_chain_3_pingpong_512(t: &mut dyn WvTester) {
+    let tile = wv_assert_ok!(Tile::get("clone"));
+
+    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("sender")));
+
+    let rgate = wv_assert_ok!(RecvGate::new(MSG_ORD, MSG_ORD));
+    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
+
+    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+
+    let mut dst = act.data_sink();
+    dst.push(rgate.sel());
+
+    let act = wv_assert_ok!(act.run(|| {
+        let mut t = DefaultWvTester::default();
+        let rgate_sel: Selector = Activity::own().data_source().pop().unwrap();
+        let mut rgate = RecvGate::new_bind(rgate_sel, MSG_ORD, MSG_ORD);
+        wv_assert_ok!(rgate.activate());
+        for i in 0..RUNS + WARMUP {
+            for j in 0..4 {
+                let mut msg = wv_assert_ok!(recv_msg(&rgate));
+                wv_assert_eq!(t, msg.size(), 512);
+                wv_assert_ok!(reply_vmsg!(msg, 0u64));
+            }
+        }
+        0
+    }));
+
+    let mut prof = Profiler::default().repeats(RUNS).warmup(WARMUP);
+
+    let reply_gate = RecvGate::def();
+    wv_perf!(
+        format!("tdisp_chain_3_pingpong_512 with (1 * {}) msgs", 4096),
+        prof.run::<CycleInstant, _>(|| {
+            for i in 0..4 {
+                wv_assert_ok!(send_vmsg!(
+                    &sgate, reply_gate, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64
+                ));
+
+                let mut reply = wv_assert_ok!(recv_msg(reply_gate));
+                wv_assert_eq!(t, reply.pop::<u64>(), Ok(0));
+            }
+        })
+    );
+
+    wv_assert_eq!(t, act.wait(), Ok(0));
+}
+
+fn ironbus_chain_3_pingpong_512(t: &mut dyn WvTester) {
+    let tile = wv_assert_ok!(Tile::get("clone"));
+
+    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("sender")));
+
+    let rgate = wv_assert_ok!(RecvGate::new(MSG_ORD, MSG_ORD));
+    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
+
+    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+
+    let mut dst = act.data_sink();
+    dst.push(rgate.sel());
+
+    let act = wv_assert_ok!(act.run(|| {
+        let mut t = DefaultWvTester::default();
+        let rgate_sel: Selector = Activity::own().data_source().pop().unwrap();
+        let mut rgate = RecvGate::new_bind(rgate_sel, MSG_ORD, MSG_ORD);
+        wv_assert_ok!(rgate.activate());
+        for i in 0..RUNS + WARMUP {
+            for j in 0..2 {
+                let mut msg = wv_assert_ok!(recv_msg(&rgate));
+                wv_assert_eq!(t, msg.size(), 512);
+                wv_assert_ok!(reply_vmsg!(msg, 0u64));
+            }
+        }
+        0
+    }));
+
+    let mut prof = Profiler::default().repeats(RUNS).warmup(WARMUP);
+
+    let reply_gate = RecvGate::def();
+    wv_perf!(
+        format!("ironbus_chain_3_pingpong_512 with (1 * {}) msgs", 4096),
+        prof.run::<CycleInstant, _>(|| {
+            for i in 0..2 {
+                wv_assert_ok!(send_vmsg!(
+                    &sgate, reply_gate, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64
+                ));
+
+                let mut reply = wv_assert_ok!(recv_msg(reply_gate));
+                wv_assert_eq!(t, reply.pop::<u64>(), Ok(0));
+            }
+        })
+    );
+
+    wv_assert_eq!(t, act.wait(), Ok(0));
+}
+
+fn tdisp_chain_4_pingpong_512(t: &mut dyn WvTester) {
+    let tile = wv_assert_ok!(Tile::get("clone"));
+
+    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("sender")));
+
+    let rgate = wv_assert_ok!(RecvGate::new(MSG_ORD, MSG_ORD));
+    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
+
+    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+
+    let mut dst = act.data_sink();
+    dst.push(rgate.sel());
+
+    let act = wv_assert_ok!(act.run(|| {
+        let mut t = DefaultWvTester::default();
+        let rgate_sel: Selector = Activity::own().data_source().pop().unwrap();
+        let mut rgate = RecvGate::new_bind(rgate_sel, MSG_ORD, MSG_ORD);
+        wv_assert_ok!(rgate.activate());
+        for i in 0..RUNS + WARMUP {
+            for j in 0..6 {
+                let mut msg = wv_assert_ok!(recv_msg(&rgate));
+                wv_assert_eq!(t, msg.size(), 512);
+                wv_assert_ok!(reply_vmsg!(msg, 0u64));
+            }
+        }
+        0
+    }));
+
+    let mut prof = Profiler::default().repeats(RUNS).warmup(WARMUP);
+
+    let reply_gate = RecvGate::def();
+    wv_perf!(
+        format!("tdisp_chain_4_pingpong_512 with (1 * {}) msgs", 4096),
+        prof.run::<CycleInstant, _>(|| {
+            for i in 0..6 {
+                wv_assert_ok!(send_vmsg!(
+                    &sgate, reply_gate, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64
+                ));
+
+                let mut reply = wv_assert_ok!(recv_msg(reply_gate));
+                wv_assert_eq!(t, reply.pop::<u64>(), Ok(0));
+            }
+        })
+    );
+
+    wv_assert_eq!(t, act.wait(), Ok(0));
+}
+
+fn ironbus_chain_4_pingpong_512(t: &mut dyn WvTester) {
+    let tile = wv_assert_ok!(Tile::get("clone"));
+
+    let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new("sender")));
+
+    let rgate = wv_assert_ok!(RecvGate::new(MSG_ORD, MSG_ORD));
+    let sgate = wv_assert_ok!(SendGate::new_with(SGateArgs::new(&rgate).credits(1)));
+
+    wv_assert_ok!(act.delegate_obj(rgate.sel()));
+
+    let mut dst = act.data_sink();
+    dst.push(rgate.sel());
+
+    let act = wv_assert_ok!(act.run(|| {
+        let mut t = DefaultWvTester::default();
+        let rgate_sel: Selector = Activity::own().data_source().pop().unwrap();
+        let mut rgate = RecvGate::new_bind(rgate_sel, MSG_ORD, MSG_ORD);
+        wv_assert_ok!(rgate.activate());
+        for i in 0..RUNS + WARMUP {
+            for j in 0..3 {
+                let mut msg = wv_assert_ok!(recv_msg(&rgate));
+                wv_assert_eq!(t, msg.size(), 512);
+                wv_assert_ok!(reply_vmsg!(msg, 0u64));
+            }
+        }
+        0
+    }));
+
+    let mut prof = Profiler::default().repeats(RUNS).warmup(WARMUP);
+
+    let reply_gate = RecvGate::def();
+    wv_perf!(
+        format!("ironbus_chain_4_pingpong_512 with (1 * {}) msgs", 4096),
+        prof.run::<CycleInstant, _>(|| {
+            for i in 0..3 {
+                wv_assert_ok!(send_vmsg!(
+                    &sgate, reply_gate, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64, 0u64,
+                    0u64, 0u64
+                ));
+
+                let mut reply = wv_assert_ok!(recv_msg(reply_gate));
+                wv_assert_eq!(t, reply.pop::<u64>(), Ok(0));
+            }
         })
     );
 

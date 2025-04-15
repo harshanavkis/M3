@@ -109,5 +109,6 @@ in pkgs.gcc7Stdenv.mkDerivation rec {
     rustBuild
     byaccBuild
     texinfoInteractive
+    scc
   ];
 }
