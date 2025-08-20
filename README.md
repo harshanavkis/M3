@@ -95,16 +95,3 @@ On all platforms, scenarios can be run by starting the desired boot script in th
 Note that this command ensures that everything is up to date as well. For more information, run
 
     $ ./b -h
-
-References:
------------
-
-**Warning:** Some papers below use the name *data transfer unit (DTU)* instead of TCU and some use the name *controller* instead of kernel.
-
-[1] Nils Asmussen, Sebastian Haas, Carsten Weinhold, Till Miemietz, and Michael Roitzsch. **Efficient and Scalable Core Multiplexing with M³v**. In Proceedings of the Twenty-seventh International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS'22), pages 452–466, February 2022.
-
-[2] Nils Asmussen, Michael Roitzsch, and Hermann Härtig. **M³x: Autonomous Accelerators via Context-Enabled Fast-Path Communication**. USENIX Annual Technical Conference (ATC'19), July 2019
-
-[3] Matthias Hille, Nils Asmussen, Pramod Bhatotia, and Hermann Härtig, **SemperOS: A Distributed Capability System**, USENIX Annual Technical Conference (ATC'19), July 2019
-
-[4] Nils Asmussen, Marcus Völp, Benedikt Nöthen, Hermann Härtig, and Gerhard Fettweis. **M³: A Hardware/Operating-System Co-Design to Tame Heterogeneous Manycores**. In Proceedings of the Twenty-first International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS'16), pages 189-203, April 2016.
