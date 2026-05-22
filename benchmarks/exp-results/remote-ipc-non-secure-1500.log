@@ -1,0 +1,4 @@
+Building for gem5-riscv-release...
+ninja: no work to do.
+run/boot-all.xml validates
+platform/gem5/build/RISCV/gem5.opt: error while loading shared libraries: libstdc++.so.6: cannot open shared object file: No such file or directory

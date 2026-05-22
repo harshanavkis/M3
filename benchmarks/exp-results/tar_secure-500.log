@@ -1,0 +1,500 @@
+Building for gem5-riscv-release...
+ninja: no work to do.
+run/boot-all.xml validates
+warn: <orphan SpuSystem>.etherlink already has parent (Previously declared as <orphan SpuSystem>.etherlink).
+	Note: etherlink is not a parameter of SpuSystem
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 21.0.0.0
+gem5 compiled Apr 27 2023 13:09:03
+gem5 started Apr 27 2023 15:20:43
+gem5 executing on graham, pid 3356137
+command line: platform/gem5/build/RISCV/gem5.opt --outdir=run --debug-file=gem5.log --debug-flags=Tcu config/default.py --cpu-type DerivO3CPU --isa riscv --cmd 'build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,' --mods run/boot.xml,build/gem5-riscv-release/bin/root,build/gem5-riscv-release/bin/m3fs,build/gem5-riscv-release/bin/pager --cpu-clock=2GHz --sys-clock=2GHz --encr-latency=15 --par-pipe=1 --int-transfer-latency=500 --rng-latency=0 --sign-latency=0 --sign-ver-latency=0
+
+T00: build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T01: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T02: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T03: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T04: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T05: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T06: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T07: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T08: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T09: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T10: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T11: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T12: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T13: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T14: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T15: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T16: IGbE_e1000
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> Proxy -> NIC
+
+T17: IGbE_e1000
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> Proxy -> NIC
+
+T18: rot13 accelerator @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =2048 KiB
+     Comp =Core -> TCU -> SPM
+
+T19: rot13 accelerator @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =2048 KiB
+     Comp =Core -> TCU -> SPM
+
+T20: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T21: SerialInput
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> SerialInput
+
+T22: build/gem5-riscv-release/bench.img x 1
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:8, tlb:0
+     imem =3145728 KiB
+     Comp =TCU -> DRAM
+
+Global frequency set at 1000000000000 ticks per second
+warn: No dot file generated. Please install pydot to generate the dot file and pdf.
+Gem5 Terminal started; Quit via Ctrl+]
+warn: DRAM device capacity (49152 Mbytes) does not match the address range assigned (4096 Mbytes)
+platform.com_1.device: Listening for connections on port 3456
+0: T00.remote_gdb: listening for remote gdb on port 7000
+0: T01.remote_gdb: listening for remote gdb on port 7001
+0: T02.remote_gdb: listening for remote gdb on port 7002
+0: T03.remote_gdb: listening for remote gdb on port 7003
+0: T04.remote_gdb: listening for remote gdb on port 7004
+0: T05.remote_gdb: listening for remote gdb on port 7005
+0: T06.remote_gdb: listening for remote gdb on port 7006
+0: T07.remote_gdb: listening for remote gdb on port 7007
+0: T08.remote_gdb: listening for remote gdb on port 7008
+0: T09.remote_gdb: listening for remote gdb on port 7009
+0: T10.remote_gdb: listening for remote gdb on port 7010
+0: T11.remote_gdb: listening for remote gdb on port 7011
+0: T12.remote_gdb: listening for remote gdb on port 7012
+0: T13.remote_gdb: listening for remote gdb on port 7013
+0: T14.remote_gdb: listening for remote gdb on port 7014
+0: T15.remote_gdb: listening for remote gdb on port 7015
+warn: CoherentXBar T16.xbar has no snooping ports attached!
+warn: CoherentXBar T17.xbar has no snooping ports attached!
+warn: CoherentXBar T18.xbar has no snooping ports attached!
+warn: CoherentXBar T19.xbar has no snooping ports attached!
+0: T20.remote_gdb: listening for remote gdb on port 7016
+warn: CoherentXBar T21.xbar has no snooping ports attached!
+warn: CoherentXBar T22.xbar has no snooping ports attached!
+info: Loaded 'boot.xml' to 0x9600000030000000 .. 0x9600000030000311
+info: Loaded 'root' to 0x9600000030001000 .. 0x96000000300756a0
+info: Loaded 'm3fs' to 0x9600000030076000 .. 0x96000000300cc2f8
+info: Loaded 'pager' to 0x96000000300cd000 .. 0x960000003014bc00
+info: Entering event queue @ 0.  Starting simulation...
+warn: T12.spm: address out-of-range: 0
+warn: T0,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T0,PMP-EP3: invalid EP
+warn: T0,PMP-EP65535: invalid EP
+[0;31m[T0:kernel  @        135] Entered raw mode; Quit via Ctrl+]
+[0mwarn: T2,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+[0;31m[T0:kernel  @        885] Attesting tile: 1
+[0m[0;31m[T0:kernel  @       2253] Attestation complete: 1, 2722466 cycles
+[0m[0;31m[T0:kernel  @       2885] Attesting tile: 2
+[0m[0;31m[T0:kernel  @       4242] Attestation complete: 2, 2708417 cycles
+[0m[0;31m[T0:kernel  @       4873] Attesting tile: 3
+[0m[0;31m[T0:kernel  @       6230] Attestation complete: 3, 2707929 cycles
+[0m[0;31m[T0:kernel  @       6862] Attesting tile: 4
+[0m[0;31m[T0:kernel  @       8218] Attestation complete: 4, 2707709 cycles
+[0m[0;31m[T0:kernel  @       8849] Attesting tile: 5
+[0m[0;31m[T0:kernel  @      10205] Attestation complete: 5, 2707588 cycles
+[0m[0;31m[T0:kernel  @      10836] Attesting tile: 6
+[0m[0;31m[T0:kernel  @      12192] Attestation complete: 6, 2707645 cycles
+[0m[0;31m[T0:kernel  @      12825] Attesting tile: 7
+[0m[0;31m[T0:kernel  @      14181] Attestation complete: 7, 2707608 cycles
+[0m[0;31m[T0:kernel  @      14812] Attesting tile: 8
+[0m[0;31m[T0:kernel  @      16168] Attestation complete: 8, 2707702 cycles
+[0m[0;31m[T0:kernel  @      16799] Attesting tile: 9
+[0m[0;31m[T0:kernel  @      18155] Attestation complete: 9, 2707591 cycles
+[0m[0;31m[T0:kernel  @      18786] Attesting tile: 10
+[0m[0;31m[T0:kernel  @      20142] Attestation complete: 10, 2707547 cycles
+[0m[0;31m[T0:kernel  @      20773] Attesting tile: 11
+[0m[0;31m[T0:kernel  @      22129] Attestation complete: 11, 2707491 cycles
+[0m[0;31m[T0:kernel  @      22760] Attesting tile: 12
+[0m[0;31m[T0:kernel  @      24116] Attestation complete: 12, 2707534 cycles
+[0m[0;31m[T0:kernel  @      24747] Attesting tile: 13
+[0m[0;31m[T0:kernel  @      26103] Attestation complete: 13, 2707526 cycles
+[0m[0;31m[T0:kernel  @      26735] Attesting tile: 14
+[0m[0;31m[T0:kernel  @      28090] Attestation complete: 14, 2707526 cycles
+[0m[0;31m[T0:kernel  @      28722] Attesting tile: 15
+[0m[0;31m[T0:kernel  @      30077] Attestation complete: 15, 2707533 cycles
+[0m[0;31m[T0:kernel  @      30709] Attesting tile: 16
+[0m[0;31m[T0:kernel  @      32065] Attestation complete: 16, 2707468 cycles
+[0m[0;31m[T0:kernel  @      32697] Attesting tile: 17
+[0m[0;31m[T0:kernel  @      34052] Attestation complete: 17, 2706275 cycles
+[0m[0;31m[T0:kernel  @      34683] Attesting tile: 18
+[0m[0;31m[T0:kernel  @      36038] Attestation complete: 18, 2706211 cycles
+[0m[0;31m[T0:kernel  @      36670] Attesting tile: 19
+[0m[0;31m[T0:kernel  @      38025] Attestation complete: 19, 2706200 cycles
+[0m[0;31m[T0:kernel  @      38657] Attesting tile: 20
+[0m[0;31m[T0:kernel  @      40012] Attestation complete: 20, 2706274 cycles
+[0m[0;31m[T0:kernel  @      40643] Attesting tile: 21
+[0m[0;31m[T0:kernel  @      41998] Attestation complete: 21, 2706272 cycles
+[0m[0;31m[T0:kernel  @      42003] Attesting tile: 22
+[0m[0;31m[T0:kernel  @      43361] Attestation complete: 22, 2713375 cycles
+[0m[0;31m[T0:kernel  @      43364] Attesting tile: 22
+[0m[0;31m[T0:kernel  @      44723] Attestation complete: 22, 2712713 cycles
+[0m[0;31m[T0:kernel  @      44726] Attesting tile: 22
+[0m[0;31m[T0:kernel  @      46085] Attestation complete: 22, 2713533 cycles
+[0m[0;31m[T0:kernel  @      46087] Attesting tile: 22
+[0m[0;31m[T0:kernel  @      47446] Attestation complete: 22, 2713672 cycles
+[0m[0;31m[T0:kernel  @      47608] Kernel is ready!
+[0m[0;32m[T1:root    @      48146] Boot modules:
+[0m[0;32m[T1:root    @      48160]   Mod[addr: G[Tile22+0x30000000], size: 0x311, name: boot.xml]
+[0m[0;32m[T1:root    @      48165]   Mod[addr: G[Tile22+0x30001000], size: 0x746a0, name: root]
+[0m[0;32m[T1:root    @      48168]   Mod[addr: G[Tile22+0x30076000], size: 0x562f8, name: m3fs]
+[0m[0;32m[T1:root    @      48172]   Mod[addr: G[Tile22+0x300cd000], size: 0x7ec00, name: pager]
+[0m[0;32m[T1:root    @      48173] Available tiles:
+[0m[0;32m[T1:root    @      48184]   Tile01: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48190]   Tile02: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48193]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48196]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48199]   Tile05: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48203]   Tile06: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48206]   Tile07: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48209]   Tile08: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48212]   Tile09: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48216]   Tile10: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48219]   Tile11: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48222]   Tile12: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @      48225]   Tile13: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @      48228]   Tile14: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @      48231]   Tile15: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @      48235]   Tile16: COMP_IMEM NIC_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48238]   Tile17: COMP_IMEM NIC_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48242]   Tile18: COMP_IMEM ACCEL_ROT13 (empty) 2048 KiB memory
+[0m[0;32m[T1:root    @      48245]   Tile19: COMP_IMEM ACCEL_ROT13 (empty) 2048 KiB memory
+[0m[0;32m[T1:root    @      48248]   Tile20: COMP_IMEM RISCV KECACC 32768 KiB memory
+[0m[0;32m[T1:root    @      48251]   Tile21: COMP_IMEM SERIAL_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @      48258] Available memory:
+[0m[0;32m[T1:root    @      48267]   MemMod[sel: 30, res: true, addr: G[Tile22+0x0], size: 1200 MiB]
+[0m[0;32m[T1:root    @      48272]   MemMod[sel: 31, res: false, addr: G[Tile22+0x4f600000], size: 959 MiB]
+[0m[0;32m[T1:root    @      48276] Parsed Config [
+[0m[0;32m[T1:root    @      48280]   root [
+[0m[0;32m[T1:root    @      48290]     Domain on core [
+[0m[0;32m[T1:root    @      48293]       m3fs mem 268435456 [
+[0m[0;32m[T1:root    @      48295]         Daemon,
+[0m[0;32m[T1:root    @      48302]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R | W | X | RW | RWX],
+[0m[0;32m[T1:root    @      48307]         Service[lname='m3fs', gname='m3fs'],
+[0m[0;32m[T1:root    @      48310]       ]
+[0m[0;32m[T1:root    @      48312]     ]
+[0m[0;32m[T1:root    @      48314]     Domain on core [
+[0m[0;32m[T1:root    @      48316]       pager 268435456 [
+[0m[0;32m[T1:root    @      48319]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R],
+[0m[0;32m[T1:root    @      48324]         Session[lname='m3fs', gname='m3fs', arg='', dep=true],
+[0m[0;32m[T1:root    @      48328]         Tile[type=core, count=1, optional=false],
+[0m[0;32m[T1:root    @      48331]         Domain on core [
+[0m[0;32m[T1:root    @      48335]           /bin/fstrace-m3fs -d -n 1 -u 0 -v tar [
+[0m[0;32m[T1:root    @      48338]             Mount[fs='m3fs', path='/'],
+[0m[0;32m[T1:root    @      48342]             Tile[type=core, count=1, optional=false],
+[0m[0;32m[T1:root    @      48344]           ]
+[0m[0;32m[T1:root    @      48346]         ]
+[0m[0;32m[T1:root    @      48347]       ]
+[0m[0;32m[T1:root    @      48349]     ]
+[0m[0;32m[T1:root    @      48351]   ]
+[0m[0;32m[T1:root    @      48352] ]
+[0m[0;32m[T1:root    @      48353] 
+[0m[0;32m[T1:root    @      49395] Starting boot module 'm3fs' on tile2 with arguments ["mem", "268435456"]
+[0m[0;32m[T1:root    @      50386] m3fs: reg_serv(srv_sel=46, sgate_sel=50, name=m3fs, sessions=32)
+[0m[0;32m[T1:root    @      50396] Creating service 1:m3fs
+[0m[0;32m[T1:root    @      50511] Starting boot module 'pager' on tile3 with arguments ["268435456"]
+[0m[0;34m[T3:pager   @      50967] Boot modules:
+[0m[0;34m[T3:pager   @      50983]   Mod[addr: G[Tile22+0x77601000], size: 0x1f3, name: boot.xml]
+[0m[0;34m[T3:pager   @      50985] Available tiles:
+[0m[0;34m[T3:pager   @      50997]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;34m[T3:pager   @      51002]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;34m[T3:pager   @      51006] Available memory:
+[0m[0;34m[T3:pager   @      51015]   MemMod[sel: 8, res: false, addr: G[Tile22+0x63800000], size: 159 MiB]
+[0m[0;32m[T1:root    @      51038] pager: open_sess(dst_sel=59, name=m3fs)
+[0m[0;34m[T3:pager   @      52110] Starting boot module '/bin/fstrace-m3fs' on tile5 with arguments ["-d", "-n", "1", "-u", "0", "-v", "tar"]
+[0mVPFS trace_bench started [trace=tar,n=1,wait=no,data=yes,stdio=no,prefix=,loadgen=,ops=52]
+[0;36m[T5:fstrace-@      53006] line 1: opcode=WAITUNTIL -> 712 cycles
+[0m[0;36m[T5:fstrace-@      53097] line 2: opcode=OPEN -> 165753 cycles
+[0m[0;36m[T5:fstrace-@      53100] line 3: opcode=WAITUNTIL -> 40 cycles
+[0m[0;36m[T5:fstrace-@      53112] line 4: opcode=FSTAT -> 19617 cycles
+[0m[0;36m[T5:fstrace-@      53114] line 5: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53135] line 6: opcode=FSTATAT -> 38296 cycles
+[0m[0;36m[T5:fstrace-@      53137] line 7: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53160] line 8: opcode=OPEN -> 40842 cycles
+[0m[0;36m[T5:fstrace-@      53162] line 9: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53180] line 10: opcode=READ -> 31872 cycles
+[0m[0;36m[T5:fstrace-@      53182] line 11: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53202] line 12: opcode=CLOSE -> 36064 cycles
+[0m[0;36m[T5:fstrace-@      53204] line 13: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53214] line 14: opcode=OPEN -> 14735 cycles
+[0m[0;36m[T5:fstrace-@      53216] line 15: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53226] line 16: opcode=READ -> 17188 cycles
+[0m[0;36m[T5:fstrace-@      53228] line 17: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53233] line 18: opcode=CLOSE -> 5941 cycles
+[0m[0;36m[T5:fstrace-@      53235] line 19: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53258] line 20: opcode=WRITE -> 42285 cycles
+[0m[0;36m[T5:fstrace-@      53260] line 21: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53281] line 22: opcode=OPEN -> 37097 cycles
+[0m[0;36m[T5:fstrace-@      53285] line 23: opcode=FSTAT -> 3982 cycles
+[0m[0;36m[T5:fstrace-@      53287] line 24: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53313] line 25: opcode=GETDENTS -> 46183 cycles
+[0m[0;36m[T5:fstrace-@      53315] line 26: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53321] line 27: opcode=FSTATAT -> 7556 cycles
+[0m[0;36m[T5:fstrace-@      53323] line 28: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53336] line 29: opcode=OPEN -> 21926 cycles
+[0m[0;36m[T5:fstrace-@      53338] line 30: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      53341] line 31: opcode=WRITE -> 1711 cycles
+[0m[0;36m[T5:fstrace-@      53343] line 32: opcode=WAITUNTIL -> 33 cycles
+[0m[0;36m[T5:fstrace-@      56615] line 33: opcode=SENDFILE -> 6539910 cycles
+[0m[0;36m[T5:fstrace-@      56617] line 34: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56625] line 35: opcode=CLOSE -> 11478 cycles
+[0m[0;36m[T5:fstrace-@      56627] line 36: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56632] line 37: opcode=FSTATAT -> 7249 cycles
+[0m[0;36m[T5:fstrace-@      56634] line 38: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56641] line 39: opcode=OPEN -> 10122 cycles
+[0m[0;36m[T5:fstrace-@      56643] line 40: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56646] line 41: opcode=WRITE -> 1631 cycles
+[0m[0;36m[T5:fstrace-@      56648] line 42: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56756] line 43: opcode=SENDFILE -> 212555 cycles
+[0m[0;36m[T5:fstrace-@      56758] line 44: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56766] line 45: opcode=CLOSE -> 10419 cycles
+[0m[0;36m[T5:fstrace-@      56768] line 46: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56773] line 47: opcode=FSTATAT -> 6486 cycles
+[0m[0;36m[T5:fstrace-@      56775] line 48: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56781] line 49: opcode=OPEN -> 9292 cycles
+[0m[0;36m[T5:fstrace-@      56783] line 50: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      56786] line 51: opcode=WRITE -> 1631 cycles
+[0m[0;36m[T5:fstrace-@      56788] line 52: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      57202] line 53: opcode=SENDFILE -> 823018 cycles
+[0m[0;36m[T5:fstrace-@      57204] line 54: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      57211] line 55: opcode=CLOSE -> 9624 cycles
+[0m[0;36m[T5:fstrace-@      57213] line 56: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      57218] line 57: opcode=FSTATAT -> 6225 cycles
+[0m[0;36m[T5:fstrace-@      57220] line 58: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      57226] line 59: opcode=OPEN -> 9782 cycles
+[0m[0;36m[T5:fstrace-@      57228] line 60: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      57231] line 61: opcode=WRITE -> 1617 cycles
+[0m[0;36m[T5:fstrace-@      58051] line 62: opcode=SENDFILE -> 1634439 cycles
+[0m[0;36m[T5:fstrace-@      58053] line 63: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      58059] line 64: opcode=CLOSE -> 9364 cycles
+[0m[0;36m[T5:fstrace-@      58061] line 65: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      58067] line 66: opcode=FSTATAT -> 6670 cycles
+[0m[0;36m[T5:fstrace-@      58069] line 67: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      58075] line 68: opcode=OPEN -> 9243 cycles
+[0m[0;36m[T5:fstrace-@      58077] line 69: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      58080] line 70: opcode=WRITE -> 1609 cycles
+[0m[0;36m[T5:fstrace-@      64579] line 71: opcode=SENDFILE -> 12993857 cycles
+[0m[0;36m[T5:fstrace-@      64581] line 72: opcode=WAITUNTIL -> 40 cycles
+[0m[0;36m[T5:fstrace-@      64588] line 73: opcode=CLOSE -> 9528 cycles
+[0m[0;36m[T5:fstrace-@      64590] line 74: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      64595] line 75: opcode=FSTATAT -> 5817 cycles
+[0m[0;36m[T5:fstrace-@      64597] line 76: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      64603] line 77: opcode=OPEN -> 9403 cycles
+[0m[0;36m[T5:fstrace-@      64605] line 78: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      64608] line 79: opcode=WRITE -> 1638 cycles
+[0m[0;36m[T5:fstrace-@      64610] line 80: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      64824] line 81: opcode=SENDFILE -> 424259 cycles
+[0m[0;36m[T5:fstrace-@      64826] line 82: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      64833] line 83: opcode=CLOSE -> 9342 cycles
+[0m[0;36m[T5:fstrace-@      64835] line 84: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      64840] line 85: opcode=FSTATAT -> 5915 cycles
+[0m[0;36m[T5:fstrace-@      64842] line 86: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      64849] line 87: opcode=OPEN -> 9260 cycles
+[0m[0;36m[T5:fstrace-@      64851] line 88: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      64853] line 89: opcode=WRITE -> 1638 cycles
+[0m[0;36m[T5:fstrace-@      64855] line 90: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      66483] line 91: opcode=SENDFILE -> 3251266 cycles
+[0m[0;36m[T5:fstrace-@      66485] line 92: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      66492] line 93: opcode=CLOSE -> 9537 cycles
+[0m[0;36m[T5:fstrace-@      66494] line 94: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      66497] line 95: opcode=GETDENTS -> 2859 cycles
+[0m[0;36m[T5:fstrace-@      66499] line 96: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      66505] line 97: opcode=CLOSE -> 7697 cycles
+[0m[0;36m[T5:fstrace-@      66507] line 98: opcode=WAITUNTIL -> 23 cycles
+[0m[0;36m[T5:fstrace-@      66510] line 99: opcode=WRITE -> 1735 cycles
+[0m[0;36m[T5:fstrace-@      66525] line 100: opcode=CLOSE -> 25764 cycles
+[0m[0;36m[T5:fstrace-@      66527] total waittime: 449281 cycles
+[0mTotal time: 27075113 cycles
+VPFS trace_bench benchmark terminated
+[0;32m[T1:root    @      67149] Sending SHUTDOWN to service 1:m3fs
+[0m[0;32m[T1:root    @      67187] m3fs: unreg_serv(sel=46)
+[0m[0;32m[T1:root    @      67191] Removing service 1:m3fs
+[0m[0;32m[T1:root    @      67343] All childs gone. Exiting.
+[0m[0;31m[T0:kernel  @      67412] Shutting down
+[0mExiting @ tick 67421730500 because m5_exit instruction encountered

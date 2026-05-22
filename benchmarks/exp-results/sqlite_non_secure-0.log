@@ -1,0 +1,28 @@
+Building for gem5-riscv-release...
+ninja: no work to do.
+run/boot-all.xml validates
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "build/RISCV/python/m5/main.py", line 455, in main
+  File "config/default.py", line 7, in <module>
+    options = getOptions()
+  File "/scratch/harshanavkis/sec-acc/M3/platform/gem5/configs/example/tcu_fs.py", line 162, in getOptions
+    (options, args) = parser.parse_args()
+  File "/nix/store/hhk4wr7hwry854sq69chmrjqyi964p7y-python3-3.10.9/lib/python3.10/optparse.py", line 1371, in parse_args
+    values = self.get_default_values()
+  File "/nix/store/hhk4wr7hwry854sq69chmrjqyi964p7y-python3-3.10.9/lib/python3.10/optparse.py", line 1316, in get_default_values
+    defaults[option.dest] = option.check_value(opt_str, default)
+  File "/nix/store/hhk4wr7hwry854sq69chmrjqyi964p7y-python3-3.10.9/lib/python3.10/optparse.py", line 766, in check_value
+    return checker(self, opt, value)
+  File "/nix/store/hhk4wr7hwry854sq69chmrjqyi964p7y-python3-3.10.9/lib/python3.10/optparse.py", line 440, in check_choice
+    raise OptionValueError(
+optparse.OptionValueError: option --mem-type: invalid choice: 'DDR3_2400_8x8' (choose from 'DDR3_1600_8x8', 'DDR3_2133_8x8', 'DDR4_2400_16x4', 'DDR4_2400_4x16', 'DDR4_2400_8x8', 'DRAMInterface', 'GDDR5_4000_2x32', 'HBM_1000_4H_1x128', 'HBM_1000_4H_1x64', 'HMC_2500_1x32', 'LPDDR2_S4_1066_1x32', 'LPDDR3_1600_1x32', 'LPDDR5_5500_1x16_8B_BL32', 'LPDDR5_5500_1x16_BG_BL16', 'LPDDR5_5500_1x16_BG_BL32', 'LPDDR5_6400_1x16_8B_BL32', 'LPDDR5_6400_1x16_BG_BL16', 'LPDDR5_6400_1x16_BG_BL32', 'NVMInterface', 'NVM_2400_1x64', 'QoSMemSinkInterface', 'Scratchpad', 'SimpleMemory', 'WideIO_200_1x128')
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 21.0.0.0
+gem5 compiled Apr 27 2023 16:45:45
+gem5 started Apr 27 2023 16:47:01
+gem5 executing on graham, pid 3436865
+command line: platform/gem5/build/RISCV/gem5.opt --outdir=run --debug-file=gem5.log --debug-flags=Tcu config/default.py --cpu-type DerivO3CPU --isa riscv --cmd 'build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,' --mods run/boot.xml,build/gem5-riscv-release/bin/root,build/gem5-riscv-release/bin/m3fs,build/gem5-riscv-release/bin/pager --cpu-clock=2GHz --sys-clock=2GHz --encr-latency=0 --par-pipe=1 --int-transfer-latency=0 --rng-latency=0 --sign-latency=0 --sign-ver-latency=0
+

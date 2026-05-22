@@ -1,0 +1,547 @@
+Building for gem5-riscv-release...
+ninja: no work to do.
+run/boot-all.xml validates
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 21.0.0.0
+gem5 compiled May 16 2023 13:50:01
+gem5 started May 23 2023 21:51:24
+gem5 executing on graham, pid 1948074
+command line: platform/gem5/build/RISCV/gem5.opt --outdir=run --debug-file=gem5.log --debug-flags=Tcu /scratch/harshanavkis/sec-acc/M3/config/accels.py --cpu-type DerivO3CPU --isa riscv --cmd 'build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,' --mods run/boot.xml,build/gem5-riscv-release/bin/root,build/gem5-riscv-release/bin/m3fs,build/gem5-riscv-release/bin/pipes,build/gem5-riscv-release/bin/pager --cpu-clock=2GHz --sys-clock=2GHz --encr-latency=0 --par-pipe=1 --int-transfer-latency=1000 --rng-latency=0 --sign-latency=0 --sign-ver-latency=0
+
+T00: build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T01: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T02: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T03: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T04: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T05: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T06: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T07: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T08: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T09: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T10: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T11: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T12: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T13: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T14: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T15: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T16: indir accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T17: indir accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T18: indir accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T19: indir accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T20: copy accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T21: copy accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T22: copy accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T23: copy accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T24: rot13 accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =4096 KiB
+     Comp =Core -> TCU -> SPM
+
+T25: SerialInput
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> SerialInput
+
+T26: build/gem5-riscv-release/bench.img x 1
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:8, tlb:0
+     imem =3145728 KiB
+     Comp =TCU -> DRAM
+
+Global frequency set at 1000000000000 ticks per second
+warn: No dot file generated. Please install pydot to generate the dot file and pdf.
+Gem5 Terminal started; Quit via Ctrl+]
+warn: DRAM device capacity (49152 Mbytes) does not match the address range assigned (4096 Mbytes)
+platform.com_1.device: Listening for connections on port 3456
+0: T00.remote_gdb: listening for remote gdb on port 7000
+0: T01.remote_gdb: listening for remote gdb on port 7001
+0: T02.remote_gdb: listening for remote gdb on port 7002
+0: T03.remote_gdb: listening for remote gdb on port 7003
+0: T04.remote_gdb: listening for remote gdb on port 7004
+0: T05.remote_gdb: listening for remote gdb on port 7005
+0: T06.remote_gdb: listening for remote gdb on port 7006
+0: T07.remote_gdb: listening for remote gdb on port 7007
+0: T08.remote_gdb: listening for remote gdb on port 7008
+0: T09.remote_gdb: listening for remote gdb on port 7009
+0: T10.remote_gdb: listening for remote gdb on port 7010
+0: T11.remote_gdb: listening for remote gdb on port 7011
+0: T12.remote_gdb: listening for remote gdb on port 7012
+0: T13.remote_gdb: listening for remote gdb on port 7013
+0: T14.remote_gdb: listening for remote gdb on port 7014
+0: T15.remote_gdb: listening for remote gdb on port 7015
+warn: CoherentXBar T16.xbar has no snooping ports attached!
+warn: CoherentXBar T17.xbar has no snooping ports attached!
+warn: CoherentXBar T18.xbar has no snooping ports attached!
+warn: CoherentXBar T19.xbar has no snooping ports attached!
+warn: CoherentXBar T20.xbar has no snooping ports attached!
+warn: CoherentXBar T21.xbar has no snooping ports attached!
+warn: CoherentXBar T22.xbar has no snooping ports attached!
+warn: CoherentXBar T23.xbar has no snooping ports attached!
+warn: CoherentXBar T24.xbar has no snooping ports attached!
+warn: CoherentXBar T25.xbar has no snooping ports attached!
+warn: CoherentXBar T26.xbar has no snooping ports attached!
+info: Loaded 'boot.xml' to 0x9a00000030000000 .. 0x9a000000300003ce
+info: Loaded 'root' to 0x9a00000030001000 .. 0x9a000000300766e8
+info: Loaded 'm3fs' to 0x9a00000030077000 .. 0x9a000000300cd2e0
+info: Loaded 'pipes' to 0x9a000000300ce000 .. 0x9a00000030113b38
+info: Loaded 'pager' to 0x9a00000030114000 .. 0x9a00000030192b38
+info: Entering event queue @ 0.  Starting simulation...
+warn: T0,PMP-EP65535: invalid EP
+warn: T15,PMP-EP65535: invalid EP
+warn: T14,PMP-EP65535: invalid EP
+warn: T13,PMP-EP65535: invalid EP
+warn: T12,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T15,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T12,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T14,PMP-EP65535: invalid EP
+warn: T13,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T0,PMP-EP65535: invalid EP
+[0;31m[T0:kernel  @        218] Entered raw mode; Quit via Ctrl+]
+[0mwarn: T7,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T15,PMP-EP65535: invalid EP
+warn: T15,PMP-EP65535: invalid EP
+warn: T15,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T15,PMP-EP65535: invalid EP
+warn: T14,PMP-EP65535: invalid EP
+warn: T14,PMP-EP65535: invalid EP
+warn: T14,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T12,PMP-EP65535: invalid EP
+warn: T12,PMP-EP65535: invalid EP
+warn: T12,PMP-EP65535: invalid EP
+warn: T13,PMP-EP65535: invalid EP
+warn: T13,PMP-EP65535: invalid EP
+warn: T13,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T14,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T12,PMP-EP65535: invalid EP
+warn: T13,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+[0;31m[T0:kernel  @       1022] Attesting tile: 1
+[0m[0;31m[T0:kernel  @       5529] Attestation complete: 1, 8997156 cycles
+[0m[0;31m[T0:kernel  @       6159] Attesting tile: 2
+[0m[0;31m[T0:kernel  @      10640] Attestation complete: 2, 8957545 cycles
+[0m[0;31m[T0:kernel  @      11270] Attesting tile: 3
+[0m[0;31m[T0:kernel  @      15750] Attestation complete: 3, 8956327 cycles
+[0m[0;31m[T0:kernel  @      16379] Attesting tile: 4
+[0m[0;31m[T0:kernel  @      20859] Attestation complete: 4, 8956302 cycles
+[0m[0;31m[T0:kernel  @      21489] Attesting tile: 5
+[0m[0;31m[T0:kernel  @      25968] Attestation complete: 5, 8955273 cycles
+[0m[0;31m[T0:kernel  @      26598] Attesting tile: 6
+[0m[0;31m[T0:kernel  @      31079] Attestation complete: 6, 8958705 cycles
+[0m[0;31m[T0:kernel  @      31708] Attesting tile: 7
+[0m[0;31m[T0:kernel  @      36189] Attestation complete: 7, 8956816 cycles
+[0m[0;31m[T0:kernel  @      36818] Attesting tile: 8
+[0m[0;31m[T0:kernel  @      41298] Attestation complete: 8, 8956673 cycles
+[0m[0;31m[T0:kernel  @      41928] Attesting tile: 9
+[0m[0;31m[T0:kernel  @      46408] Attestation complete: 9, 8956621 cycles
+[0m[0;31m[T0:kernel  @      47037] Attesting tile: 10
+[0m[0;31m[T0:kernel  @      51517] Attestation complete: 10, 8956126 cycles
+[0m[0;31m[T0:kernel  @      52147] Attesting tile: 11
+[0m[0;31m[T0:kernel  @      56627] Attestation complete: 11, 8956865 cycles
+[0m[0;31m[T0:kernel  @      57256] Attesting tile: 12
+[0m[0;31m[T0:kernel  @      61736] Attestation complete: 12, 8955142 cycles
+[0m[0;31m[T0:kernel  @      62365] Attesting tile: 13
+[0m[0;31m[T0:kernel  @      66845] Attestation complete: 13, 8956379 cycles
+[0m[0;31m[T0:kernel  @      67474] Attesting tile: 14
+[0m[0;31m[T0:kernel  @      71956] Attestation complete: 14, 8960024 cycles
+[0m[0;31m[T0:kernel  @      72586] Attesting tile: 15
+[0m[0;31m[T0:kernel  @      77066] Attestation complete: 15, 8956756 cycles
+[0m[0;31m[T0:kernel  @      77695] Attesting tile: 16
+[0m[0;31m[T0:kernel  @      84767] Attestation complete: 16, 14138719 cycles
+[0m[0;31m[T0:kernel  @      85396] Attesting tile: 17
+[0m[0;31m[T0:kernel  @      92467] Attestation complete: 17, 14136580 cycles
+[0m[0;31m[T0:kernel  @      93097] Attesting tile: 18
+[0m[0;31m[T0:kernel  @     100166] Attestation complete: 18, 14135448 cycles
+[0m[0;31m[T0:kernel  @     100796] Attesting tile: 19
+[0m[0;31m[T0:kernel  @     107867] Attestation complete: 19, 14137621 cycles
+[0m[0;31m[T0:kernel  @     108497] Attesting tile: 20
+[0m[0;31m[T0:kernel  @     115567] Attestation complete: 20, 14138271 cycles
+[0m[0;31m[T0:kernel  @     116197] Attesting tile: 21
+[0m[0;31m[T0:kernel  @     123267] Attestation complete: 21, 14136521 cycles
+[0m[0;31m[T0:kernel  @     123897] Attesting tile: 22
+[0m[0;31m[T0:kernel  @     130967] Attestation complete: 22, 14136627 cycles
+[0m[0;31m[T0:kernel  @     131597] Attesting tile: 23
+[0m[0;31m[T0:kernel  @     138667] Attestation complete: 23, 14136086 cycles
+[0m[0;31m[T0:kernel  @     139297] Attesting tile: 24
+[0m[0;31m[T0:kernel  @     146367] Attestation complete: 24, 14137434 cycles
+[0m[0;31m[T0:kernel  @     146997] Attesting tile: 25
+[0m[0;31m[T0:kernel  @     154068] Attestation complete: 25, 14138549 cycles
+[0m[0;31m[T0:kernel  @     154074] Attesting tile: 26
+[0m[0;31m[T0:kernel  @     158554] Attestation complete: 26, 8956705 cycles
+[0m[0;31m[T0:kernel  @     158557] Attesting tile: 26
+[0m[0;31m[T0:kernel  @     163040] Attestation complete: 26, 8960693 cycles
+[0m[0;31m[T0:kernel  @     163043] Attesting tile: 26
+[0m[0;31m[T0:kernel  @     167522] Attestation complete: 26, 8954867 cycles
+[0m[0;31m[T0:kernel  @     167525] Attesting tile: 26
+[0m[0;31m[T0:kernel  @     172004] Attestation complete: 26, 8955864 cycles
+[0m[0;31m[T0:kernel  @     172359] Kernel is ready!
+[0m[0;32m[T1:root    @     173191] Boot modules:
+[0m[0;32m[T1:root    @     173213]   Mod[addr: G[Tile26+0x30000000], size: 0x3ce, name: boot.xml]
+[0m[0;32m[T1:root    @     173218]   Mod[addr: G[Tile26+0x30001000], size: 0x756e8, name: root]
+[0m[0;32m[T1:root    @     173221]   Mod[addr: G[Tile26+0x30077000], size: 0x562e0, name: m3fs]
+[0m[0;32m[T1:root    @     173225]   Mod[addr: G[Tile26+0x300ce000], size: 0x45b38, name: pipes]
+[0m[0;32m[T1:root    @     173228]   Mod[addr: G[Tile26+0x30114000], size: 0x7eb38, name: pager]
+[0m[0;32m[T1:root    @     173230] Available tiles:
+[0m[0;32m[T1:root    @     173246]   Tile01: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173253]   Tile02: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173257]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173260]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173263]   Tile05: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173267]   Tile06: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173270]   Tile07: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173273]   Tile08: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173276]   Tile09: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173280]   Tile10: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173283]   Tile11: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173286]   Tile12: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173289]   Tile13: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173292]   Tile14: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173295]   Tile15: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173298]   Tile16: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173302]   Tile17: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173310]   Tile18: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173313]   Tile19: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173316]   Tile20: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173319]   Tile21: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173323]   Tile22: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173326]   Tile23: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173329]   Tile24: COMP_IMEM ACCEL_ROT13 (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     173332]   Tile25: COMP_IMEM SERIAL_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     173338] Available memory:
+[0m[0;32m[T1:root    @     173349]   MemMod[sel: 35, res: true, addr: G[Tile26+0x0], size: 1264 MiB]
+[0m[0;32m[T1:root    @     173354]   MemMod[sel: 36, res: false, addr: G[Tile26+0x53600000], size: 959 MiB]
+[0m[0;32m[T1:root    @     173360] Parsed Config [
+[0m[0;32m[T1:root    @     173366]   root [
+[0m[0;32m[T1:root    @     173381]     Domain on core [
+[0m[0;32m[T1:root    @     173383]       m3fs mem 268435456 [
+[0m[0;32m[T1:root    @     173386]         Daemon,
+[0m[0;32m[T1:root    @     173396]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R | W | X | RW | RWX],
+[0m[0;32m[T1:root    @     173402]         Service[lname='m3fs', gname='m3fs'],
+[0m[0;32m[T1:root    @     173405]       ]
+[0m[0;32m[T1:root    @     173407]     ]
+[0m[0;32m[T1:root    @     173409]     Domain on core [
+[0m[0;32m[T1:root    @     173412]       pipes [
+[0m[0;32m[T1:root    @     173413]         Daemon,
+[0m[0;32m[T1:root    @     173416]         Service[lname='pipes', gname='pipes'],
+[0m[0;32m[T1:root    @     173418]       ]
+[0m[0;32m[T1:root    @     173420]     ]
+[0m[0;32m[T1:root    @     173422]     Domain on core [
+[0m[0;32m[T1:root    @     173424]       pager 268435456 [
+[0m[0;32m[T1:root    @     173428]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R],
+[0m[0;32m[T1:root    @     173435]         SessCreator[service='pipes', count=None],
+[0m[0;32m[T1:root    @     173441]         Session[lname='m3fs', gname='m3fs', arg='', dep=true],
+[0m[0;32m[T1:root    @     173447]         Tile[type=core, count=1, optional=false],
+[0m[0;32m[T1:root    @     173449]         Domain on core [
+[0m[0;32m[T1:root    @     173454]           /bin/imgproc -m dir -n 1 -r 8 /large.txt [
+[0m[0;32m[T1:root    @     173458]             Session[lname='pipes', gname='pipes', arg='', dep=true],
+[0m[0;32m[T1:root    @     173462]             Mount[fs='m3fs', path='/'],
+[0m[0;32m[T1:root    @     173465]             Tile[type=copy, count=3, optional=false],
+[0m[0;32m[T1:root    @     173467]           ]
+[0m[0;32m[T1:root    @     173469]         ]
+[0m[0;32m[T1:root    @     173471]       ]
+[0m[0;32m[T1:root    @     173472]     ]
+[0m[0;32m[T1:root    @     173474]   ]
+[0m[0;32m[T1:root    @     173475] ]
+[0m[0;32m[T1:root    @     173477] 
+[0m[0;32m[T1:root    @     174867] Starting boot module 'm3fs' on tile2 with arguments ["mem", "268435456"]
+[0m[0;32m[T1:root    @     175480] Starting boot module 'pipes' on tile3 with arguments []
+[0m[0;32m[T1:root    @     176006] pipes: reg_serv(srv_sel=59, sgate_sel=64, name=pipes, sessions=32)
+[0m[0;32m[T1:root    @     176018] Creating service 1:pipes
+[0m[0;32m[T1:root    @     176774] m3fs: reg_serv(srv_sel=51, sgate_sel=55, name=m3fs, sessions=32)
+[0m[0;32m[T1:root    @     176780] Creating service 2:m3fs
+[0m[0;32m[T1:root    @     176968] Creating service 1:pipes
+[0m[0;32m[T1:root    @     177004] Starting boot module 'pager' on tile4 with arguments ["268435456"]
+[0m[0;35m[T4:pager   @     177652] Boot modules:
+[0m[0;35m[T4:pager   @     177676]   Mod[addr: G[Tile26+0x80600000], size: 0x21d, name: boot.xml]
+[0m[0;35m[T4:pager   @     177679] Available tiles:
+[0m[0;35m[T4:pager   @     177694]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;35m[T4:pager   @     177701]   Tile20: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;35m[T4:pager   @     177705]   Tile21: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;35m[T4:pager   @     177708]   Tile22: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;35m[T4:pager   @     177714] Available memory:
+[0m[0;35m[T4:pager   @     177727]   MemMod[sel: 10, res: false, addr: G[Tile26+0x71800000], size: 119 MiB]
+[0m[0;35m[T4:pager   @     177730] Services:
+[0m[0;35m[T4:pager   @     177736]   Service[name=pipes, sessions=32]
+[0m[0;35m[T4:pager   @     177745] Creating service 1:pipes
+[0m[0;32m[T1:root    @     177780] pager: open_sess(dst_sel=78, name=m3fs)
+[0m[0;35m[T4:pager   @     179590] Starting boot module '/bin/imgproc' on tile5 with arguments ["-m", "dir", "-n", "1", "-r", "8", "/large.txt"]
+[0m[0;35m[T4:pager   @     180624] /bin/imgproc: open_sess(dst_sel=101, name=pipes)
+[0m[0;36m[T5:imgproc @     180786] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     180989] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     181119] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     181211] Connecting input and output...
+[0m[0;36m[T5:imgproc @     181306] Starting chain...
+[0m[0;35m[T4:pager   @     184069] /bin/imgproc: close_sess(sel=101)
+[0m[0;35m[T4:pager   @     184105] /bin/imgproc: open_sess(dst_sel=147, name=pipes)
+[0m[0;36m[T5:imgproc @     184150] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     184239] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     184320] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     184454] Connecting input and output...
+[0m[0;36m[T5:imgproc @     184526] Starting chain...
+[0m[0;35m[T4:pager   @     187152] /bin/imgproc: close_sess(sel=147)
+[0m[0;35m[T4:pager   @     187166] /bin/imgproc: open_sess(dst_sel=191, name=pipes)
+[0m[0;36m[T5:imgproc @     187206] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     187308] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     187450] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     187532] Connecting input and output...
+[0m[0;36m[T5:imgproc @     187607] Starting chain...
+[0m[0;35m[T4:pager   @     190230] /bin/imgproc: close_sess(sel=191)
+[0m[0;35m[T4:pager   @     190243] /bin/imgproc: open_sess(dst_sel=235, name=pipes)
+[0m[0;36m[T5:imgproc @     190283] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     190381] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     190460] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     190542] Connecting input and output...
+[0m[0;36m[T5:imgproc @     190611] Starting chain...
+[0m[0;35m[T4:pager   @     193220] /bin/imgproc: close_sess(sel=235)
+[0m[0;35m[T4:pager   @     193232] /bin/imgproc: open_sess(dst_sel=279, name=pipes)
+[0m[0;36m[T5:imgproc @     193264] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     193357] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     193443] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     193522] Connecting input and output...
+[0m[0;36m[T5:imgproc @     193591] Starting chain...
+[0m[0;35m[T4:pager   @     196197] /bin/imgproc: close_sess(sel=279)
+[0m[0;35m[T4:pager   @     196208] /bin/imgproc: open_sess(dst_sel=323, name=pipes)
+[0m[0;36m[T5:imgproc @     196245] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     196334] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     196416] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     196541] Connecting input and output...
+[0m[0;36m[T5:imgproc @     196610] Starting chain...
+[0m[0;35m[T4:pager   @     199225] /bin/imgproc: close_sess(sel=323)
+[0m[0;35m[T4:pager   @     199238] /bin/imgproc: open_sess(dst_sel=367, name=pipes)
+[0m[0;36m[T5:imgproc @     199276] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     199371] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     199462] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     199604] Connecting input and output...
+[0m[0;36m[T5:imgproc @     199676] Starting chain...
+[0m[0;35m[T4:pager   @     202311] /bin/imgproc: close_sess(sel=367)
+[0m[0;35m[T4:pager   @     202324] /bin/imgproc: open_sess(dst_sel=411, name=pipes)
+[0m[0;36m[T5:imgproc @     202360] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     202453] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     202541] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     202669] Connecting input and output...
+[0m[0;36m[T5:imgproc @     202742] Starting chain...
+[0m[0;35m[T4:pager   @     205361] /bin/imgproc: close_sess(sel=411)
+[0m[0;35m[T4:pager   @     205373] /bin/imgproc: open_sess(dst_sel=455, name=pipes)
+[0m[0;36m[T5:imgproc @     205413] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     205515] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     205604] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     205732] Connecting input and output...
+[0m[0;36m[T5:imgproc @     205805] Starting chain...
+[0m[0;35m[T4:pager   @     208427] /bin/imgproc: close_sess(sel=455)
+[0m! src/apps/bench/imgproc/imgproc.cc:105  PERF "imgproc-dir (1 chains)": 4856612 cycles (+/- 12849 cycles with 8 runs)
+[0;32m[T1:root    @     209196] Sending SHUTDOWN to service 2:m3fs
+[0m[0;32m[T1:root    @     209246] Sending SHUTDOWN to service 1:pipes
+[0m[0;32m[T1:root    @     209263] m3fs: unreg_serv(sel=51)
+[0m[0;32m[T1:root    @     209271] Removing service 2:m3fs
+[0m[0;32m[T1:root    @     209297] pipes: unreg_serv(sel=59)
+[0m[0;32m[T1:root    @     209300] Removing service 1:pipes
+[0m[0;32m[T1:root    @     209666] All childs gone. Exiting.
+[0m[0;31m[T0:kernel  @     209811] Shutting down
+[0mExiting @ tick 209828720500 because m5_exit instruction encountered

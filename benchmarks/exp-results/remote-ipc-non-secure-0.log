@@ -1,0 +1,1482 @@
+Building for gem5-riscv-release...
+ninja: no work to do.
+run/boot-all.xml validates
+warn: <orphan SpuSystem>.etherlink already has parent (Previously declared as <orphan SpuSystem>.etherlink).
+	Note: etherlink is not a parameter of SpuSystem
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 21.0.0.0
+gem5 compiled May 16 2023 13:50:01
+gem5 started May 23 2023 19:52:45
+gem5 executing on graham, pid 1782146
+command line: platform/gem5/build/RISCV/gem5.opt --outdir=run --debug-file=gem5.log --debug-flags=Tcu config/default.py --cpu-type DerivO3CPU --isa riscv --cmd 'build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,' --mods run/boot.xml,build/gem5-riscv-release/bin/root,build/gem5-riscv-release/bin/m3fs,build/gem5-riscv-release/bin/pager --cpu-clock=2GHz --sys-clock=2GHz --encr-latency=0 --par-pipe=1 --int-transfer-latency=0 --rng-latency=0 --sign-latency=0 --sign-ver-latency=0
+
+T00: build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T01: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T02: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T03: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T04: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T05: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T06: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T07: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T08: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T09: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T10: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T11: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T12: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T13: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T14: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T15: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T16: IGbE_e1000
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> Proxy -> NIC
+
+T17: IGbE_e1000
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> Proxy -> NIC
+
+T18: rot13 accelerator @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =2048 KiB
+     Comp =Core -> TCU -> SPM
+
+T19: rot13 accelerator @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =2048 KiB
+     Comp =Core -> TCU -> SPM
+
+T20: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 2GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T21: SerialInput
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> SerialInput
+
+T22: build/gem5-riscv-release/bench.img x 1
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:8, tlb:0
+     imem =3145728 KiB
+     Comp =TCU -> DRAM
+
+Global frequency set at 1000000000000 ticks per second
+warn: No dot file generated. Please install pydot to generate the dot file and pdf.
+Gem5 Terminal started; Quit via Ctrl+]
+warn: DRAM device capacity (49152 Mbytes) does not match the address range assigned (4096 Mbytes)
+platform.com_1.device: Listening for connections on port 3456
+0: T00.remote_gdb: listening for remote gdb on port 7000
+0: T01.remote_gdb: listening for remote gdb on port 7001
+0: T02.remote_gdb: listening for remote gdb on port 7002
+0: T03.remote_gdb: listening for remote gdb on port 7003
+0: T04.remote_gdb: listening for remote gdb on port 7004
+0: T05.remote_gdb: listening for remote gdb on port 7005
+0: T06.remote_gdb: listening for remote gdb on port 7006
+0: T07.remote_gdb: listening for remote gdb on port 7007
+0: T08.remote_gdb: listening for remote gdb on port 7008
+0: T09.remote_gdb: listening for remote gdb on port 7009
+0: T10.remote_gdb: listening for remote gdb on port 7010
+0: T11.remote_gdb: listening for remote gdb on port 7011
+0: T12.remote_gdb: listening for remote gdb on port 7012
+0: T13.remote_gdb: listening for remote gdb on port 7013
+0: T14.remote_gdb: listening for remote gdb on port 7014
+0: T15.remote_gdb: listening for remote gdb on port 7015
+warn: CoherentXBar T16.xbar has no snooping ports attached!
+warn: CoherentXBar T17.xbar has no snooping ports attached!
+warn: CoherentXBar T18.xbar has no snooping ports attached!
+warn: CoherentXBar T19.xbar has no snooping ports attached!
+0: T20.remote_gdb: listening for remote gdb on port 7016
+warn: CoherentXBar T21.xbar has no snooping ports attached!
+warn: CoherentXBar T22.xbar has no snooping ports attached!
+info: Loaded 'boot.xml' to 0x9600000030000000 .. 0x960000003000031a
+info: Loaded 'root' to 0x9600000030001000 .. 0x96000000300766e8
+info: Loaded 'm3fs' to 0x9600000030077000 .. 0x96000000300cd2e0
+info: Loaded 'pager' to 0x96000000300ce000 .. 0x960000003014cb38
+info: Entering event queue @ 0.  Starting simulation...
+warn: T12.spm: address out-of-range: 0
+warn: T0,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T0,PMP-EP65535: invalid EP
+[0;31m[T0:kernel  @        128] Entered raw mode; Quit via Ctrl+]
+[0mwarn: T11,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+[0;31m[T0:kernel  @        852] Attesting tile: 1
+[0m[0;31m[T0:kernel  @       5325] Attestation complete: 1, 8938669 cycles
+[0m[0;31m[T0:kernel  @       5954] Attesting tile: 2
+[0m[0;31m[T0:kernel  @      10423] Attestation complete: 2, 8932536 cycles
+[0m[0;31m[T0:kernel  @      11051] Attesting tile: 3
+[0m[0;31m[T0:kernel  @      15519] Attestation complete: 3, 8931379 cycles
+[0m[0;31m[T0:kernel  @      16147] Attesting tile: 4
+[0m[0;31m[T0:kernel  @      20615] Attestation complete: 4, 8930916 cycles
+[0m[0;31m[T0:kernel  @      21243] Attesting tile: 5
+[0m[0;31m[T0:kernel  @      25711] Attestation complete: 5, 8930837 cycles
+[0m[0;31m[T0:kernel  @      26339] Attesting tile: 6
+[0m[0;31m[T0:kernel  @      30806] Attestation complete: 6, 8930561 cycles
+[0m[0;31m[T0:kernel  @      31434] Attesting tile: 7
+[0m[0;31m[T0:kernel  @      35902] Attestation complete: 7, 8931383 cycles
+[0m[0;31m[T0:kernel  @      36530] Attesting tile: 8
+[0m[0;31m[T0:kernel  @      40998] Attestation complete: 8, 8930728 cycles
+[0m[0;31m[T0:kernel  @      41626] Attesting tile: 9
+[0m[0;31m[T0:kernel  @      46093] Attestation complete: 9, 8930894 cycles
+[0m[0;31m[T0:kernel  @      46722] Attesting tile: 10
+[0m[0;31m[T0:kernel  @      51189] Attestation complete: 10, 8930725 cycles
+[0m[0;31m[T0:kernel  @      51817] Attesting tile: 11
+[0m[0;31m[T0:kernel  @      56285] Attestation complete: 11, 8930677 cycles
+[0m[0;31m[T0:kernel  @      56913] Attesting tile: 12
+[0m[0;31m[T0:kernel  @      61380] Attestation complete: 12, 8930705 cycles
+[0m[0;31m[T0:kernel  @      62009] Attesting tile: 13
+[0m[0;31m[T0:kernel  @      66476] Attestation complete: 13, 8930843 cycles
+[0m[0;31m[T0:kernel  @      67104] Attesting tile: 14
+[0m[0;31m[T0:kernel  @      71571] Attestation complete: 14, 8930722 cycles
+[0m[0;31m[T0:kernel  @      72200] Attesting tile: 15
+[0m[0;31m[T0:kernel  @      76667] Attestation complete: 15, 8930657 cycles
+[0m[0;31m[T0:kernel  @      77295] Attesting tile: 16
+[0m[0;31m[T0:kernel  @      81763] Attestation complete: 16, 8930723 cycles
+[0m[0;31m[T0:kernel  @      82391] Attesting tile: 17
+[0m[0;31m[T0:kernel  @      86858] Attestation complete: 17, 8930544 cycles
+[0m[0;31m[T0:kernel  @      87486] Attesting tile: 18
+[0m[0;31m[T0:kernel  @      91954] Attestation complete: 18, 8930879 cycles
+[0m[0;31m[T0:kernel  @      92582] Attesting tile: 19
+[0m[0;31m[T0:kernel  @      97049] Attestation complete: 19, 8930416 cycles
+[0m[0;31m[T0:kernel  @      97678] Attesting tile: 20
+[0m[0;31m[T0:kernel  @     102145] Attestation complete: 20, 8930963 cycles
+[0m[0;31m[T0:kernel  @     102773] Attesting tile: 21
+[0m[0;31m[T0:kernel  @     107240] Attestation complete: 21, 8930611 cycles
+[0m[0;31m[T0:kernel  @     107244] Attesting tile: 22
+[0m[0;31m[T0:kernel  @     111712] Attestation complete: 22, 8933076 cycles
+[0m[0;31m[T0:kernel  @     111715] Attesting tile: 22
+[0m[0;31m[T0:kernel  @     116184] Attestation complete: 22, 8932824 cycles
+[0m[0;31m[T0:kernel  @     116187] Attesting tile: 22
+[0m[0;31m[T0:kernel  @     120655] Attestation complete: 22, 8932389 cycles
+[0m[0;31m[T0:kernel  @     120658] Attesting tile: 22
+[0m[0;31m[T0:kernel  @     125125] Attestation complete: 22, 8932502 cycles
+[0m[0;31m[T0:kernel  @     125168] Kernel is ready!
+[0m[0;32m[T1:root    @     125407] Boot modules:
+[0m[0;32m[T1:root    @     125413]   Mod[addr: G[Tile22+0x30000000], size: 0x31a, name: boot.xml]
+[0m[0;32m[T1:root    @     125416]   Mod[addr: G[Tile22+0x30001000], size: 0x756e8, name: root]
+[0m[0;32m[T1:root    @     125420]   Mod[addr: G[Tile22+0x30077000], size: 0x562e0, name: m3fs]
+[0m[0;32m[T1:root    @     125423]   Mod[addr: G[Tile22+0x300ce000], size: 0x7eb38, name: pager]
+[0m[0;32m[T1:root    @     125424] Available tiles:
+[0m[0;32m[T1:root    @     125429]   Tile01: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125433]   Tile02: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125436]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125439]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125442]   Tile05: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125446]   Tile06: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125449]   Tile07: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125452]   Tile08: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125455]   Tile09: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125459]   Tile10: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125462]   Tile11: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125465]   Tile12: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @     125468]   Tile13: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @     125471]   Tile14: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @     125475]   Tile15: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @     125478]   Tile16: COMP_IMEM NIC_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125481]   Tile17: COMP_IMEM NIC_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125485]   Tile18: COMP_IMEM ACCEL_ROT13 (empty) 2048 KiB memory
+[0m[0;32m[T1:root    @     125488]   Tile19: COMP_IMEM ACCEL_ROT13 (empty) 2048 KiB memory
+[0m[0;32m[T1:root    @     125492]   Tile20: COMP_IMEM RISCV KECACC 32768 KiB memory
+[0m[0;32m[T1:root    @     125495]   Tile21: COMP_IMEM SERIAL_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     125499] Available memory:
+[0m[0;32m[T1:root    @     125504]   MemMod[sel: 30, res: true, addr: G[Tile22+0x0], size: 1200 MiB]
+[0m[0;32m[T1:root    @     125508]   MemMod[sel: 31, res: false, addr: G[Tile22+0x4f600000], size: 959 MiB]
+[0m[0;32m[T1:root    @     125510] Parsed Config [
+[0m[0;32m[T1:root    @     125512]   root [
+[0m[0;32m[T1:root    @     125516]     Domain on core [
+[0m[0;32m[T1:root    @     125519]       m3fs mem 268435456 [
+[0m[0;32m[T1:root    @     125521]         Daemon,
+[0m[0;32m[T1:root    @     125526]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R | W | X | RW | RWX],
+[0m[0;32m[T1:root    @     125529]         Service[lname='m3fs', gname='m3fs'],
+[0m[0;32m[T1:root    @     125531]       ]
+[0m[0;32m[T1:root    @     125533]     ]
+[0m[0;32m[T1:root    @     125535]     Domain on core [
+[0m[0;32m[T1:root    @     125537]       pager 268435456 [
+[0m[0;32m[T1:root    @     125541]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R],
+[0m[0;32m[T1:root    @     125544]         Session[lname='m3fs', gname='m3fs', arg='', dep=true],
+[0m[0;32m[T1:root    @     125548]         Tile[type=boom|core, count=1, optional=false],
+[0m[0;32m[T1:root    @     125550]         Domain on boom|core [
+[0m[0;32m[T1:root    @     125553]           /bin/ripc [
+[0m[0;32m[T1:root    @     125555]             TimeSlice[1000000000 ns],
+[0m[0;32m[T1:root    @     125558]             Mount[fs='m3fs', path='/'],
+[0m[0;32m[T1:root    @     125562]             Tile[type=boom|core, count=1, optional=false],
+[0m[0;32m[T1:root    @     125564]           ]
+[0m[0;32m[T1:root    @     125566]         ]
+[0m[0;32m[T1:root    @     125567]       ]
+[0m[0;32m[T1:root    @     125569]     ]
+[0m[0;32m[T1:root    @     125570]   ]
+[0m[0;32m[T1:root    @     125572] ]
+[0m[0;32m[T1:root    @     125573] 
+[0m[0;32m[T1:root    @     125998] Starting boot module 'm3fs' on tile2 with arguments ["mem", "268435456"]
+[0m[0;32m[T1:root    @     126571] m3fs: reg_serv(srv_sel=46, sgate_sel=50, name=m3fs, sessions=32)
+[0m[0;32m[T1:root    @     126576] Creating service 1:m3fs
+[0m[0;32m[T1:root    @     126637] Starting boot module 'pager' on tile3 with arguments ["268435456"]
+[0m[0;34m[T3:pager   @     126887] Boot modules:
+[0m[0;34m[T3:pager   @     126894]   Mod[addr: G[Tile22+0x77601000], size: 0x1fc, name: boot.xml]
+[0m[0;34m[T3:pager   @     126895] Available tiles:
+[0m[0;34m[T3:pager   @     126900]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;34m[T3:pager   @     126904]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;34m[T3:pager   @     126906] Available memory:
+[0m[0;34m[T3:pager   @     126912]   MemMod[sel: 8, res: false, addr: G[Tile22+0x63800000], size: 159 MiB]
+[0m[0;32m[T1:root    @     126921] pager: open_sess(dst_sel=59, name=m3fs)
+[0m[0;32m[T1:root    @     127418] pager: Ok(8:ALLOC_TILE) failed: NotFound
+[0m[0;34m[T3:pager   @     127560] Starting boot module '/bin/ripc' on tile5 with arguments []
+[0mRunning test suite bremote_ipc::run ...
+
+Testing "pingpong_remote8" in src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:
+childactivity.rs: /bin/ripc
+! src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:74  PERF "remote pingpong with (1 * 64) msgs": 241 cycles (+/- 1 cycles with 1000 runs)
+
+Testing "pingpong_remote16" in src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:
+childactivity.rs: /bin/ripc
+! src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:116  PERF "remote pingpong with (1 * 128) msgs": 241 cycles (+/- 0 cycles with 1000 runs)
+
+Testing "pingpong_remote32" in src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:
+childactivity.rs: /bin/ripc
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+! src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:158  PERF "remote pingpong with (1 * 256) msgs": 243 cycles (+/- 1 cycles with 1000 runs)
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+
+Testing "pingpong_remote64" in src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:
+childactivity.rs: /bin/ripc
+! src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:200  PERF "remote pingpong with (1 * 512) msgs": 242 cycles (+/- 1 cycles with 1000 runs)
+warn: PowerState: More than one power state change request encountered within the same simulation tick
+
+Testing "pingpong_remote128" in src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:
+childactivity.rs: /bin/ripc
+! src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:244  PERF "remote pingpong with (1 * 1024) msgs": 323 cycles (+/- 1 cycles with 1000 runs)
+
+Testing "pingpong_remote256" in src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:
+childactivity.rs: /bin/ripc
+! src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:289  PERF "remote pingpong with (1 * 2048) msgs": 373 cycles (+/- 1 cycles with 1000 runs)
+
+Testing "pingpong_remote512" in src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:
+childactivity.rs: /bin/ripc
+! src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:335  PERF "remote pingpong with (1 * 4096) msgs": 460 cycles (+/- 2 cycles with 1000 runs)
+
+Testing "pingpong_remote1024" in src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:
+childactivity.rs: /bin/ripc
+! src/apps/bench/ripc/src/../../rustbenchs/src/bremote_ipc.rs:383  PERF "remote pingpong with (1 * 8192) msgs": 648 cycles (+/- 1 cycles with 1000 runs)
+
+
+[0;32m[T1:root    @     132689] Sending SHUTDOWN to service 1:m3fs
+[0m[0;32m[T1:root    @     132703] m3fs: unreg_serv(sel=46)
+[0m[0;32m[T1:root    @     132706] Removing service 1:m3fs
+[0m[0;32m[T1:root    @     132773] All childs gone. Exiting.
+[0m[0;31m[T0:kernel  @     132810] Shutting down
+[0mExiting @ tick 132814233500 because m5_exit instruction encountered

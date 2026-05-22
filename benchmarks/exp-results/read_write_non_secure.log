@@ -1,0 +1,752 @@
+Building for gem5-riscv-release...
+ninja: no work to do.
+run/boot-all.xml validates
+warn: <orphan SpuSystem>.etherlink already has parent (Previously declared as <orphan SpuSystem>.etherlink).
+	Note: etherlink is not a parameter of SpuSystem
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 21.0.0.0
+gem5 compiled Oct  6 2022 21:54:58
+gem5 started Oct  7 2022 22:56:26
+gem5 executing on graham, pid 1440850
+command line: platform/gem5/build/RISCV/gem5.opt --outdir=run --debug-file=gem5.log --debug-flags=Tcu config/default.py --cpu-type DerivO3CPU --isa riscv --cmd 'build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,' --mods run/boot.xml,build/gem5-riscv-release/bin/root,build/gem5-riscv-release/bin/m3fs,build/gem5-riscv-release/bin/pager --cpu-clock=1GHz --sys-clock=1GHz --encr-latency=0 --par-pipe=1 --int-transfer-latency=0 --rng-latency=0 --sign-latency=0 --sign-ver-latency=0
+
+T00: build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T01: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T02: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T03: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T04: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T05: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T06: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T07: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T08: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T09: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T10: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T11: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:64 B, count:4, tlb:128
+     L1i$ =32 KiB (2-way assoc, 4 cycles)
+     L1d$ =32 KiB (2-way assoc, 4 cycles)
+     L2$  =256 KiB (8-way assoc, 12 cycles)
+     Comp =Core -> TCU -> L1$ -> L2$
+
+T12: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T13: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T14: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T15: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T16: IGbE_e1000
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> Proxy -> NIC
+
+T17: IGbE_e1000
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> Proxy -> NIC
+
+T18: rot13 accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =2048 KiB
+     Comp =Core -> TCU -> SPM
+
+T19: rot13 accelerator @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =2048 KiB
+     Comp =Core -> TCU -> SPM
+
+T20: build/gem5-riscv-release/bin/tilemux
+     Core =DerivO3CPU riscv @ 1GHz
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     imem =32768 KiB
+     Comp =Core -> TCU -> SPM
+
+T21: SerialInput
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:4, tlb:0
+     Comp =TCU -> SerialInput
+
+T22: build/gem5-riscv-release/bench.img x 1
+     TCU  =eps:192, bufsz:2048 B, blocksz:2048 B, count:8, tlb:0
+     imem =3145728 KiB
+     Comp =TCU -> DRAM
+
+Global frequency set at 1000000000000 ticks per second
+warn: No dot file generated. Please install pydot to generate the dot file and pdf.
+Gem5 Terminal started; Quit via Ctrl+]
+warn: DRAM device capacity (49152 Mbytes) does not match the address range assigned (4096 Mbytes)
+platform.com_1.device: Listening for connections on port 3456
+0: T00.remote_gdb: listening for remote gdb on port 7000
+0: T01.remote_gdb: listening for remote gdb on port 7001
+0: T02.remote_gdb: listening for remote gdb on port 7002
+0: T03.remote_gdb: listening for remote gdb on port 7003
+0: T04.remote_gdb: listening for remote gdb on port 7004
+0: T05.remote_gdb: listening for remote gdb on port 7005
+0: T06.remote_gdb: listening for remote gdb on port 7006
+0: T07.remote_gdb: listening for remote gdb on port 7007
+0: T08.remote_gdb: listening for remote gdb on port 7008
+0: T09.remote_gdb: listening for remote gdb on port 7009
+0: T10.remote_gdb: listening for remote gdb on port 7010
+0: T11.remote_gdb: listening for remote gdb on port 7011
+0: T12.remote_gdb: listening for remote gdb on port 7012
+0: T13.remote_gdb: listening for remote gdb on port 7013
+0: T14.remote_gdb: listening for remote gdb on port 7014
+0: T15.remote_gdb: listening for remote gdb on port 7015
+warn: CoherentXBar T16.xbar has no snooping ports attached!
+warn: CoherentXBar T17.xbar has no snooping ports attached!
+warn: CoherentXBar T18.xbar has no snooping ports attached!
+warn: CoherentXBar T19.xbar has no snooping ports attached!
+0: T20.remote_gdb: listening for remote gdb on port 7016
+warn: CoherentXBar T21.xbar has no snooping ports attached!
+warn: CoherentXBar T22.xbar has no snooping ports attached!
+info: Loaded 'boot.xml' to 0x9600000030000000 .. 0x9600000030000320
+info: Loaded 'root' to 0x9600000030001000 .. 0x9600000030075588
+info: Loaded 'm3fs' to 0x9600000030076000 .. 0x96000000300cc338
+info: Loaded 'pager' to 0x96000000300cd000 .. 0x960000003014ba40
+info: Entering event queue @ 0.  Starting simulation...
+warn: T12.spm: address out-of-range: 0
+warn: T11,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T0,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T0,PMP-EP65535: invalid EP
+[0;31m[T0:kernel  @        155] Entered raw mode; Quit via Ctrl+]
+[0mwarn: T10,PMP-EP3: invalid EP
+warn: T11,PMP-EP3: invalid EP
+warn: T8,PMP-EP3: invalid EP
+warn: T9,PMP-EP3: invalid EP
+warn: T3,PMP-EP3: invalid EP
+warn: T7,PMP-EP3: invalid EP
+warn: T5,PMP-EP3: invalid EP
+warn: T2,PMP-EP3: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T6,PMP-EP3: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T4,PMP-EP3: invalid EP
+warn: T1,PMP-EP3: invalid EP
+warn: T10,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T11,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T8,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T9,PMP-EP65535: invalid EP
+warn: T3,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T7,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T5,PMP-EP65535: invalid EP
+warn: T2,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+warn: T6,PMP-EP65535: invalid EP
+warn: T4,PMP-EP65535: invalid EP
+warn: T1,PMP-EP65535: invalid EP
+[0;31m[T0:kernel  @        290] generate random nonce ok
+[0m[0;31m[T0:kernel  @        309] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        337] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @        362]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        373] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        378] Attesting tile: 1
+[0m[0;31m[T0:kernel  @        386] Kernel woken up!
+[0m[0;31m[T0:kernel  @        402] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 1, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @        410] abel: 0, label: 1 }, data: [] }
+[0m[0;31m[T0:kernel  @        419] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        427] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        434] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @        439] Kernel woken up!
+[0m[0;31m[T0:kernel  @        451] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 1, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @        457] abel: 0, label: 1 }, data: [] }
+[0m[0;31m[T0:kernel  @        467] generate random nonce ok
+[0m[0;31m[T0:kernel  @        482] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        506] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @        531]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        541] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        545] Attesting tile: 2
+[0m[0;31m[T0:kernel  @        550] Kernel woken up!
+[0m[0;31m[T0:kernel  @        561] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 2, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @        567] abel: 0, label: 2 }, data: [] }
+[0m[0;31m[T0:kernel  @        575] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        581] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        586] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @        590] Kernel woken up!
+[0m[0;31m[T0:kernel  @        601] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 2, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @        607] abel: 0, label: 2 }, data: [] }
+[0m[0;31m[T0:kernel  @        614] generate random nonce ok
+[0m[0;31m[T0:kernel  @        629] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        653] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @        678]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        687] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        691] Attesting tile: 3
+[0m[0;31m[T0:kernel  @        697] Kernel woken up!
+[0m[0;31m[T0:kernel  @        708] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 3, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @        713] abel: 0, label: 3 }, data: [] }
+[0m[0;31m[T0:kernel  @        721] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        727] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        731] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @        736] Kernel woken up!
+[0m[0;31m[T0:kernel  @        746] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 3, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @        752] abel: 0, label: 3 }, data: [] }
+[0m[0;31m[T0:kernel  @        760] generate random nonce ok
+[0m[0;31m[T0:kernel  @        774] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        798] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @        823]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        832] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        836] Attesting tile: 4
+[0m[0;31m[T0:kernel  @        842] Kernel woken up!
+[0m[0;31m[T0:kernel  @        853] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 4, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @        859] abel: 0, label: 4 }, data: [] }
+[0m[0;31m[T0:kernel  @        866] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        872] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        876] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @        881] Kernel woken up!
+[0m[0;31m[T0:kernel  @        891] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 4, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @        897] abel: 0, label: 4 }, data: [] }
+[0m[0;31m[T0:kernel  @        905] generate random nonce ok
+[0m[0;31m[T0:kernel  @        919] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        943] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @        967]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @        977] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @        981] Attesting tile: 5
+[0m[0;31m[T0:kernel  @        987] Kernel woken up!
+[0m[0;31m[T0:kernel  @        997] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 5, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1003] abel: 0, label: 5 }, data: [] }
+[0m[0;31m[T0:kernel  @       1010] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1017] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1021] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       1025] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1035] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 5, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1041] abel: 0, label: 5 }, data: [] }
+[0m[0;31m[T0:kernel  @       1048] generate random nonce ok
+[0m[0;31m[T0:kernel  @       1062] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1086] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       1111]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1120] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1124] Attesting tile: 6
+[0m[0;31m[T0:kernel  @       1129] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1140] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 6, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1146] abel: 0, label: 6 }, data: [] }
+[0m[0;31m[T0:kernel  @       1153] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1159] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1163] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       1167] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1177] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 6, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1183] abel: 0, label: 6 }, data: [] }
+[0m[0;31m[T0:kernel  @       1190] generate random nonce ok
+[0m[0;31m[T0:kernel  @       1204] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1229] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       1253]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1262] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1266] Attesting tile: 7
+[0m[0;31m[T0:kernel  @       1271] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1282] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 7, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1288] abel: 0, label: 7 }, data: [] }
+[0m[0;31m[T0:kernel  @       1295] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1301] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1305] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       1309] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1319] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 7, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1325] abel: 0, label: 7 }, data: [] }
+[0m[0;31m[T0:kernel  @       1332] generate random nonce ok
+[0m[0;31m[T0:kernel  @       1346] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1370] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       1395]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1404] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1408] Attesting tile: 8
+[0m[0;31m[T0:kernel  @       1413] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1424] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 8, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1430] abel: 0, label: 8 }, data: [] }
+[0m[0;31m[T0:kernel  @       1437] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1443] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1447] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       1451] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1461] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 8, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1467] abel: 0, label: 8 }, data: [] }
+[0m[0;31m[T0:kernel  @       1474] generate random nonce ok
+[0m[0;31m[T0:kernel  @       1488] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1512] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       1536]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1546] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1550] Attesting tile: 9
+[0m[0;31m[T0:kernel  @       1555] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1566] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 9, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1571] abel: 0, label: 9 }, data: [] }
+[0m[0;31m[T0:kernel  @       1578] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1585] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1589] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       1593] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1603] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 9, sender_ep: 4, reply_ep: 65535, length: 0, reply_l[0m
+[0;31m[T0:kernel  @       1609] abel: 0, label: 9 }, data: [] }
+[0m[0;31m[T0:kernel  @       1616] generate random nonce ok
+[0m[0;31m[T0:kernel  @       1630] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1654] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       1678]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1688] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1691] Attesting tile: 10
+[0m[0;31m[T0:kernel  @       1697] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1708] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 10, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       1714] label: 0, label: 10 }, data: [] }
+[0m[0;31m[T0:kernel  @       1721] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1727] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1731] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       1735] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1746] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 10, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       1751] label: 0, label: 10 }, data: [] }
+[0m[0;31m[T0:kernel  @       1759] generate random nonce ok
+[0m[0;31m[T0:kernel  @       1773] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1797] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       1821]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1831] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1835] Attesting tile: 11
+[0m[0;31m[T0:kernel  @       1840] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1851] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 11, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       1857] label: 0, label: 11 }, data: [] }
+[0m[0;31m[T0:kernel  @       1864] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1870] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1874] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       1878] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1889] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 11, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       1894] label: 0, label: 11 }, data: [] }
+[0m[0;31m[T0:kernel  @       1902] generate random nonce ok
+[0m[0;31m[T0:kernel  @       1916] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1940] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       1964]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       1973] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       1977] Attesting tile: 12
+[0m[0;31m[T0:kernel  @       1982] Kernel woken up!
+[0m[0;31m[T0:kernel  @       1993] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 12, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       1999] label: 0, label: 12 }, data: [] }
+[0m[0;31m[T0:kernel  @       2006] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2012] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2016] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       2020] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2031] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 12, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2036] label: 0, label: 12 }, data: [] }
+[0m[0;31m[T0:kernel  @       2044] generate random nonce ok
+[0m[0;31m[T0:kernel  @       2058] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2082] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       2106]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2115] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2119] Attesting tile: 13
+[0m[0;31m[T0:kernel  @       2124] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2135] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 13, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2141] label: 0, label: 13 }, data: [] }
+[0m[0;31m[T0:kernel  @       2148] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2154] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2158] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       2162] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2173] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 13, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2178] label: 0, label: 13 }, data: [] }
+[0m[0;31m[T0:kernel  @       2186] generate random nonce ok
+[0m[0;31m[T0:kernel  @       2200] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2224] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       2248]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2257] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2261] Attesting tile: 14
+[0m[0;31m[T0:kernel  @       2266] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2277] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 14, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2283] label: 0, label: 14 }, data: [] }
+[0m[0;31m[T0:kernel  @       2290] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2296] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2300] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       2304] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2315] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 14, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2320] label: 0, label: 14 }, data: [] }
+[0m[0;31m[T0:kernel  @       2328] generate random nonce ok
+[0m[0;31m[T0:kernel  @       2342] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2366] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       2390]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2400] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2404] Attesting tile: 15
+[0m[0;31m[T0:kernel  @       2409] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2420] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 15, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2426] label: 0, label: 15 }, data: [] }
+[0m[0;31m[T0:kernel  @       2433] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2439] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2443] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       2447] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2457] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 15, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2463] label: 0, label: 15 }, data: [] }
+[0m[0;31m[T0:kernel  @       2470] generate random nonce ok
+[0m[0;31m[T0:kernel  @       2484] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2509] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       2533]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2542] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2546] Attesting tile: 16
+[0m[0;31m[T0:kernel  @       2551] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2562] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 16, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2568] label: 0, label: 16 }, data: [] }
+[0m[0;31m[T0:kernel  @       2575] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2581] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2585] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       2589] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2599] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 16, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2605] label: 0, label: 16 }, data: [] }
+[0m[0;31m[T0:kernel  @       2612] generate random nonce ok
+[0m[0;31m[T0:kernel  @       2626] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2651] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       2675]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2684] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2688] Attesting tile: 17
+[0m[0;31m[T0:kernel  @       2693] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2704] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 17, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2710] label: 0, label: 17 }, data: [] }
+[0m[0;31m[T0:kernel  @       2717] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2723] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2727] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       2730] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2741] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 17, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2747] label: 0, label: 17 }, data: [] }
+[0m[0;31m[T0:kernel  @       2754] generate random nonce ok
+[0m[0;31m[T0:kernel  @       2768] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2792] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       2816]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2826] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2829] Attesting tile: 18
+[0m[0;31m[T0:kernel  @       2835] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2845] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 18, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2851] label: 0, label: 18 }, data: [] }
+[0m[0;31m[T0:kernel  @       2858] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2864] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2868] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       2872] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2883] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 18, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2888] label: 0, label: 18 }, data: [] }
+[0m[0;31m[T0:kernel  @       2896] generate random nonce ok
+[0m[0;31m[T0:kernel  @       2910] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2934] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       2958]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       2968] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       2971] Attesting tile: 19
+[0m[0;31m[T0:kernel  @       2977] Kernel woken up!
+[0m[0;31m[T0:kernel  @       2987] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 19, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       2993] label: 0, label: 19 }, data: [] }
+[0m[0;31m[T0:kernel  @       3000] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3006] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3010] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       3014] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3025] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 19, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3030] label: 0, label: 19 }, data: [] }
+[0m[0;31m[T0:kernel  @       3038] generate random nonce ok
+[0m[0;31m[T0:kernel  @       3052] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       3076] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       3100]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       3109] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3113] Attesting tile: 20
+[0mwarn: PowerState: More than one power state change request encountered within the same simulation tick
+[0;31m[T0:kernel  @       3118] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3129] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 20, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3135] label: 0, label: 20 }, data: [] }
+[0m[0;31m[T0:kernel  @       3142] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3148] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3152] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       3156] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3166] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 20, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3172] label: 0, label: 20 }, data: [] }
+[0m[0;31m[T0:kernel  @       3179] generate random nonce ok
+[0m[0;31m[T0:kernel  @       3193] Generated nonce: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       3218] Generated ecdsa sign: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,[0m
+[0;31m[T0:kernel  @       3242]  32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+[0m[0;31m[T0:kernel  @       3251] ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3255] Attesting tile: 21
+[0mwarn: PowerState: More than one power state change request encountered within the same simulation tick
+[0;31m[T0:kernel  @       3260] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3271] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 21, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3276] label: 0, label: 21 }, data: [] }
+[0m[0;31m[T0:kernel  @       3284] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3290] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3294] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       3297] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3308] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 21, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3314] label: 0, label: 21 }, data: [] }
+[0m[0;31m[T0:kernel  @       3322] Attesting tile: 22
+[0mwarn: PowerState: More than one power state change request encountered within the same simulation tick
+[0;31m[T0:kernel  @       3327] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3338] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 22, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3344] label: 0, label: 22 }, data: [] }
+[0m[0;31m[T0:kernel  @       3354] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3362] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3366] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       3370] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3381] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 22, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3386] label: 0, label: 22 }, data: [] }
+[0m[0;31m[T0:kernel  @       3393] Attesting tile: 22
+[0mwarn: PowerState: More than one power state change request encountered within the same simulation tick
+[0;31m[T0:kernel  @       3398] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3409] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 22, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3415] label: 0, label: 22 }, data: [] }
+[0m[0;31m[T0:kernel  @       3425] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3432] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3437] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       3441] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3451] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 22, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3457] label: 0, label: 22 }, data: [] }
+[0m[0;31m[T0:kernel  @       3464] Attesting tile: 22
+[0mwarn: PowerState: More than one power state change request encountered within the same simulation tick
+[0;31m[T0:kernel  @       3469] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3479] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 22, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3485] label: 0, label: 22 }, data: [] }
+[0m[0;31m[T0:kernel  @       3495] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3502] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3507] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       3510] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3521] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 22, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3527] label: 0, label: 22 }, data: [] }
+[0m[0;31m[T0:kernel  @       3533] Attesting tile: 22
+[0m[0;31m[T0:kernel  @       3538] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3549] Attestation message arrived: Message { header: Header { flags_reply_size: 0, sender_tile: 22, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3554] label: 0, label: 22 }, data: [] }
+[0m[0;31m[T0:kernel  @       3565] ICU cert ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3572] ICU nonce ECDSA signature verification successful!
+[0m[0;31m[T0:kernel  @       3576] Writing signed ICU challenge to ICU
+[0m[0;31m[T0:kernel  @       3580] Kernel woken up!
+[0m[0;31m[T0:kernel  @       3591] Key generated at remote ICU: Message { header: Header { flags_reply_size: 0, sender_tile: 22, sender_ep: 4, reply_ep: 65535, length: 0, reply_[0m
+[0;31m[T0:kernel  @       3596] label: 0, label: 22 }, data: [] }
+[0m[0;31m[T0:kernel  @       3746] Kernel is ready!
+[0m[0;32m[T1:root    @       4344] Boot modules:
+[0m[0;32m[T1:root    @       4360]   Mod[addr: G[Tile22+0x30000000], size: 0x320, name: boot.xml]
+[0m[0;32m[T1:root    @       4368]   Mod[addr: G[Tile22+0x30001000], size: 0x74588, name: root]
+[0m[0;32m[T1:root    @       4375]   Mod[addr: G[Tile22+0x30076000], size: 0x56338, name: m3fs]
+[0m[0;32m[T1:root    @       4382]   Mod[addr: G[Tile22+0x300cd000], size: 0x7ea40, name: pager]
+[0m[0;32m[T1:root    @       4386] Available tiles:
+[0m[0;32m[T1:root    @       4398]   Tile01: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4407]   Tile02: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4414]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4420]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4427]   Tile05: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4435]   Tile06: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4441]   Tile07: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4448]   Tile08: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4455]   Tile09: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4462]   Tile10: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4468]   Tile11: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4475]   Tile12: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @       4481]   Tile13: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @       4487]   Tile14: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @       4497]   Tile15: COMP_IMEM RISCV (empty) 32768 KiB memory
+[0m[0;32m[T1:root    @       4503]   Tile16: COMP_IMEM NIC_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4509]   Tile17: COMP_IMEM NIC_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4518]   Tile18: COMP_IMEM ACCEL_ROT13 (empty) 2048 KiB memory
+[0m[0;32m[T1:root    @       4524]   Tile19: COMP_IMEM ACCEL_ROT13 (empty) 2048 KiB memory
+[0m[0;32m[T1:root    @       4531]   Tile20: COMP_IMEM RISCV KECACC 32768 KiB memory
+[0m[0;32m[T1:root    @       4537]   Tile21: COMP_IMEM SERIAL_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @       4547] Available memory:
+[0m[0;32m[T1:root    @       4558]   MemMod[sel: 30, res: true, addr: G[Tile22+0x0], size: 1200 MiB]
+[0m[0;32m[T1:root    @       4567]   MemMod[sel: 31, res: false, addr: G[Tile22+0x4f600000], size: 959 MiB]
+[0m[0;32m[T1:root    @       4572] Parsed Config [
+[0m[0;32m[T1:root    @       4578]   root [
+[0m[0;32m[T1:root    @       4589]     Domain on core [
+[0m[0;32m[T1:root    @       4595]       m3fs mem 268435456 [
+[0m[0;32m[T1:root    @       4599]         Daemon,
+[0m[0;32m[T1:root    @       4609]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R | W | X | RW | RWX],
+[0m[0;32m[T1:root    @       4617]         Service[lname='m3fs', gname='m3fs'],
+[0m[0;32m[T1:root    @       4621]       ]
+[0m[0;32m[T1:root    @       4625]     ]
+[0m[0;32m[T1:root    @       4630]     Domain on core [
+[0m[0;32m[T1:root    @       4635]       pager 268435456 [
+[0m[0;32m[T1:root    @       4642]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R],
+[0m[0;32m[T1:root    @       4650]         Session[lname='m3fs', gname='m3fs', arg='', dep=true],
+[0m[0;32m[T1:root    @       4657]         Tile[type=boom|core, count=1, optional=false],
+[0m[0;32m[T1:root    @       4662]         Domain on boom|core [
+[0m[0;32m[T1:root    @       4668]           /bin/bencrmgate [
+[0m[0;32m[T1:root    @       4674]             TimeSlice[1000000000 ns],
+[0m[0;32m[T1:root    @       4681]             Mount[fs='m3fs', path='/'],
+[0m[0;32m[T1:root    @       4688]             Tile[type=boom|core, count=1, optional=false],
+[0m[0;32m[T1:root    @       4693]           ]
+[0m[0;32m[T1:root    @       4697]         ]
+[0m[0;32m[T1:root    @       4701]       ]
+[0m[0;32m[T1:root    @       4704]     ]
+[0m[0;32m[T1:root    @       4707]   ]
+[0m[0;32m[T1:root    @       4710] ]
+[0m[0;32m[T1:root    @       4712] 
+[0m[0;32m[T1:root    @       5654] Starting boot module 'm3fs' on tile2 with arguments ["mem", "268435456"]
+[0m[0;32m[T1:root    @       6887] m3fs: reg_serv(srv_sel=46, sgate_sel=50, name=m3fs, sessions=32)
+[0m[0;32m[T1:root    @       6899] Creating service 1:m3fs
+[0m[0;32m[T1:root    @       7039] Starting boot module 'pager' on tile3 with arguments ["268435456"]
+[0m[0;34m[T3:pager   @       7613] Boot modules:
+[0m[0;34m[T3:pager   @       7629]   Mod[addr: G[Tile22+0x77601000], size: 0x202, name: boot.xml]
+[0m[0;34m[T3:pager   @       7633] Available tiles:
+[0m[0;34m[T3:pager   @       7646]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;34m[T3:pager   @       7654]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;34m[T3:pager   @       7660] Available memory:
+[0m[0;34m[T3:pager   @       7672]   MemMod[sel: 8, res: false, addr: G[Tile22+0x63800000], size: 159 MiB]
+[0m[0;32m[T1:root    @       7695] pager: open_sess(dst_sel=59, name=m3fs)
+[0m[0;32m[T1:root    @       8747] pager: Ok(8:ALLOC_TILE) failed: NotFound
+[0mwarn: PowerState: More than one power state change request encountered within the same simulation tick
+[0;34m[T3:pager   @       9100] Starting boot module '/bin/bencrmgate' on tile5 with arguments []
+[0mRunning test suite bencrmgate::run ...
+
+Testing "read512" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:60  PERF "read 2 MiB with 512B buf": 1226604 cycles (+/- 107 cycles with 5 runs)
+
+Testing "read1024" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:78  PERF "read 2 MiB with 1K buf": 724774 cycles (+/- 12 cycles with 5 runs)
+
+Testing "read2048" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:96  PERF "read 2 MiB with 2K buf": 498281 cycles (+/- 7 cycles with 5 runs)
+
+Testing "read4096" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:114  PERF "read 2 MiB with 4K buf": 484884 cycles (+/- 124 cycles with 5 runs)
+
+Testing "read8192" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:132  PERF "read 2 MiB with 8K buf": 483208 cycles (+/- 141 cycles with 5 runs)
+
+Testing "write512" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:240  PERF "write 2 MiB with 512B buf": 1540125 cycles (+/- 22 cycles with 5 runs)
+
+Testing "write1024" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:258  PERF "write 2 MiB with 1K buf": 823321 cycles (+/- 27 cycles with 5 runs)
+
+Testing "write2048" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:276  PERF "write 2 MiB with 2K buf": 464916 cycles (+/- 13 cycles with 5 runs)
+
+Testing "write4096" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:294  PERF "write 2 MiB with 4K buf": 452623 cycles (+/- 2 cycles with 5 runs)
+
+Testing "write8192" in src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:
+! src/apps/bench/bencrmgate/src/../../rustbenchs/src/bencrmgate.rs:312  PERF "write 2 MiB with 8K buf": 456202 cycles (+/- 19 cycles with 5 runs)
+
+
+[0;32m[T1:root    @      53550] Sending SHUTDOWN to service 1:m3fs
+[0m[0;32m[T1:root    @      53582] m3fs: unreg_serv(sel=46)
+[0m[0;32m[T1:root    @      53588] Removing service 1:m3fs
+[0m[0;32m[T1:root    @      53745] All childs gone. Exiting.
+[0m[0;31m[T0:kernel  @      53822] Shutting down
+[0mExiting @ tick 53828353000 because m5_exit instruction encountered
