@@ -2,15 +2,28 @@ import os
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
+from matplotlib.ticker import FormatStrFormatter, AutoMinorLocator
 from .constants import *
 
 SYS_FREQ = int(CPU_FREQ.replace("GHz", "")) * 1e9
+
 palette = sns.color_palette("colorblind")
 palette = [palette[-1], palette[1]]
 
 # hatches = ["o", "+", "x"]
 hatches = ["/", "o", ""]
+
+def style_axis(ax, labelsize=12, linewidth=1.0):
+    """Apply standardized axis styling to a plot axis."""
+    ax.tick_params(axis='both', which='major', labelsize=labelsize,
+                   direction='out', length=3, width=0.5, pad=2,
+                   bottom=True, left=True, top=False, right=False)
+    ax.tick_params(axis='both', which='minor',
+                   bottom=False, left=False, top=False, right=False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    for patch in ax.patches:
+        patch.set_linewidth(linewidth)
 
 def change_width(ax, new_value) :
     for i, patch in enumerate(ax.patches):
@@ -55,18 +68,20 @@ def plot_ipc_benchmarks(ipc_non_secure, ipc_secure, exp_res_path, int_lat):
     # print(plot_data)
     plot = sns.catplot(
         kind="bar",
-        x=plot_data.columns[0],
-        y=plot_data.columns[1],
+        y=plot_data.columns[0],
+        x=plot_data.columns[1],
         data=plot_data,
+        orient='h',
     )
 
     ipc_plot_data = plot_data
 
     # Create plot
     for i, container in enumerate(plot.ax.containers):
-        plot.ax.bar_label(container, fmt="%.2f", padding=2, rotation=45)
-    plot.ax.set_xlabel("Bytes")
-    plot.ax.set_ylabel("Relative slowdown")
+        plot.ax.bar_label(container, fmt="%.2f", padding=2)
+    style_axis(plot.ax)
+    plot.ax.set_ylabel("Bytes", labelpad=2)
+    plot.ax.set_xlabel("Relative slowdown", labelpad=2)
     plot.ax.figure.savefig(os.path.join(exp_res_path, "ipc-plot-{}.pdf".format(int_lat)))
     plot.ax.figure.savefig(os.path.join(exp_res_path, "ipc-plot-{}.png".format(int_lat)))
 
@@ -97,16 +112,18 @@ def plot_ipc_benchmarks(ipc_non_secure, ipc_secure, exp_res_path, int_lat):
     #     color='b'
     # )
     ax = sns.barplot(
-        x=overhead_plot_data[overhead_plot_data.columns[0]],
-        y=overhead_plot_data[overhead_plot_data.columns[1]],
+        y=overhead_plot_data[overhead_plot_data.columns[0]],
+        x=overhead_plot_data[overhead_plot_data.columns[1]],
+        orient='h',
         # color='r',
     )
 
     for i, container in enumerate(ax.containers):
-        ax.bar_label(container, fmt="%d", padding=2, fontsize=20, rotation=45)
+        ax.bar_label(container, fmt="%d", padding=2, fontsize=20)
 
-    ax.set_xlabel("Bytes")
-    ax.set_ylabel("Cycles")
+    style_axis(ax, labelsize=20)
+    ax.set_ylabel("Bytes", labelpad=2)
+    ax.set_xlabel("Cycles", labelpad=2)
     # ax.legend(labels=["Encryption", "IPC"])
     ax.figure.savefig(os.path.join(exp_res_path, "ipc-overhead-plot-{}.pdf".format(int_lat)))
     ax.figure.savefig(os.path.join(exp_res_path, "ipc-overhead-plot-{}.png".format(int_lat)))
@@ -212,10 +229,11 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
     # print(read_throughput)
     plot = sns.catplot(
         kind = "bar",
-        x = "Bytes",
-        y= "Throughput [GiB/s]",
+        y = "Bytes",
+        x= "Throughput [GiB/s]",
         data = read_throughput,
         hue = "Kind",
+        orient='h',
         edgecolor="k",
         legend=False,
         height=8,
@@ -224,18 +242,18 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
     )
 
     read_slowdown = ["{0:.2f}X".format(i) for i in read_slowdown]
-    plot.ax.bar_label(plot.ax.containers[1], labels=read_slowdown, fmt="%.2f", padding=8, fontsize=30, rotation='vertical', label_type="edge")
+    plot.ax.bar_label(plot.ax.containers[1], labels=read_slowdown, fmt="%.2f", padding=8, fontsize=30, label_type="edge")
 
     for bars, hatch in zip(plot.ax.containers, hatches):
         for bar in bars:
             bar.set_hatch(hatch)
     
-    plot.ax.legend(loc="upper left", fontsize=30, handletextpad=0.2, borderpad=0.3, edgecolor='k')
-    plot.ax.tick_params(axis='both', labelsize=30)
-    plot.ax.set_xlabel("Bytes", fontsize = 30)
-    plot.ax.set_ylabel("Throughput [GiB/s]", fontsize = 30)
-    # plt.grid(which="major", axis="y")
-    # plt.grid(which="minor", axis="y", alpha=0.5)
+    plot.ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fontsize=30, handletextpad=0.2, borderpad=0.3, edgecolor='k', ncol=2)
+    style_axis(plot.ax, labelsize=30, linewidth=8)
+    plot.ax.set_ylabel("Bytes", fontsize=30, labelpad=2)
+    plot.ax.set_xlabel("Throughput [GiB/s]", fontsize=30, labelpad=2)
+    # plt.grid(which="major", axis="x")
+    # plt.grid(which="minor", axis="x", alpha=0.5)
     # plt.minorticks_on()
 
     plot.figure.savefig(os.path.join(exp_res_path, "read-throughput-{}.pdf".format(int_lat)), bbox_inches="tight")
@@ -257,10 +275,11 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
 
     plot = sns.catplot(
         kind = "bar",
-        x = "Bytes",
-        y= "Throughput [GiB/s]",
+        y = "Bytes",
+        x= "Throughput [GiB/s]",
         data = write_throughput,
         hue = "Kind",
+        orient='h',
         edgecolor="k",
         legend=False,
         height=8,
@@ -273,15 +292,15 @@ def plot_read_write_benchmarks(rw_non_secure, rw_secure, exp_res_path, int_lat):
         for bar in bars:
             bar.set_hatch(hatch)
     
-    plot.ax.bar_label(plot.ax.containers[1], labels=write_slowdown, fmt="%.2f", padding=8, fontsize=33, rotation='vertical')
+    plot.ax.bar_label(plot.ax.containers[1], labels=write_slowdown, fmt="%.2f", padding=8, fontsize=33)
     # for i, container in enumerate(plot.ax.containers):
-    #     plot.ax.bar_label(container, fmt="%.2f", padding=2, rotation=45)
-    plot.ax.legend(loc="upper left", bbox_to_anchor=(0, 1.1), fontsize=33, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=2)
-    plot.ax.tick_params(axis='both', labelsize=33)
-    plot.ax.set_xlabel("Bytes", fontsize = 33)
-    plot.ax.set_ylabel("Throughput [GiB/s]", fontsize = 33)
-    # plt.grid(which="major", axis="y")
-    # plt.grid(which="minor", axis="y", alpha=0.5)
+    #     plot.ax.bar_label(container, fmt="%.2f", padding=2)
+    plot.ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fontsize=33, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=2)
+    style_axis(plot.ax, labelsize=33, linewidth=8)
+    plot.ax.set_ylabel("Bytes", fontsize=33, labelpad=2)
+    plot.ax.set_xlabel("Throughput [GiB/s]", fontsize=33, labelpad=2)
+    # plt.grid(which="major", axis="x")
+    # plt.grid(which="minor", axis="x", alpha=0.5)
     # plt.minorticks_on()
 
     plot.figure.savefig(os.path.join(exp_res_path, "write-throughput-{}.pdf".format(int_lat)), bbox_inches="tight")
@@ -304,15 +323,17 @@ def plot_app_benchmarks(exp_dict, exp_res_path, int_lat):
 
     plot = sns.catplot(
         kind="bar",
-        x=plot_data.columns[0],
-        y=plot_data.columns[1],
+        y=plot_data.columns[0],
+        x=plot_data.columns[1],
         data=plot_data,
+        orient='h',
     )
 
     for i, container in enumerate(plot.ax.containers):
-        plot.ax.bar_label(container, fmt="%.2f", padding=2, rotation=45)
-    plot.ax.set_xlabel("")
-    plot.ax.set_ylabel("Relative slowdown")
+        plot.ax.bar_label(container, fmt="%.2f", padding=2)
+    style_axis(plot.ax)
+    plot.ax.set_ylabel("", labelpad=2)
+    plot.ax.set_xlabel("Relative slowdown", labelpad=2)
     plot.figure.savefig(os.path.join(exp_res_path, "apps-plot-{}.pdf".format(int_lat)))
     plot.figure.savefig(os.path.join(exp_res_path, "apps-plot-{}.png".format(int_lat)))
 
@@ -331,13 +352,15 @@ def plot_app_benchmarks(exp_dict, exp_res_path, int_lat):
     
     plot = sns.catplot(
         kind="bar",
-        x=plot_data.columns[0],
-        y=plot_data.columns[1],
+        y=plot_data.columns[0],
+        x=plot_data.columns[1],
         data=plot_data,
+        orient='h',
     )
 
-    plot.ax.set_xlabel("")
-    plot.ax.set_ylabel("Overhead in cycles")
+    style_axis(plot.ax)
+    plot.ax.set_ylabel("", labelpad=2)
+    plot.ax.set_xlabel("Overhead in cycles", labelpad=2)
     plot.figure.savefig(os.path.join(exp_res_path, "apps-plot-overhead-{}.pdf".format(int_lat)))
     plot.figure.savefig(os.path.join(exp_res_path, "apps-plot-overhead-{}.png".format(int_lat)))
 
@@ -358,14 +381,16 @@ def plot_syscall_benchmarks(syscall_non_secure, syscall_secure, exp_res_path, in
 
     plot = sns.catplot(
         kind="bar",
-        x=plot_data.columns[0],
-        y=plot_data.columns[1],
+        y=plot_data.columns[0],
+        x=plot_data.columns[1],
         data=plot_data,
+        orient='h',
     )
 
-    plot.ax.set_xlabel("")
-    plot.ax.set_ylabel("Relative slowdown")
-    plot.ax.set_xticklabels(list(xlabels), rotation=30, fontsize=6)
+    style_axis(plot.ax)
+    plot.ax.set_ylabel("", labelpad=2)
+    plot.ax.set_xlabel("Relative slowdown", labelpad=2)
+    plot.ax.set_yticklabels(list(xlabels), rotation=0, fontsize=6)
     plot.figure.savefig(os.path.join(exp_res_path, "syscall-plot-{}.pdf".format(int_lat)))
     plot.figure.savefig(os.path.join(exp_res_path, "syscall-plot-{}.png".format(int_lat)))
 
@@ -405,14 +430,17 @@ def plot_fs_benchmarks(fs_non_secure, fs_secure, exp_res_path, int_lat):
 
     plot = sns.catplot(
         kind = "bar",
-        x = "Operation",
-        y= "Throughput [GiB/s]",
+        y = "Operation",
+        x= "Throughput [GiB/s]",
         data = plot_data,
-        hue = "Kind"
+        hue = "Kind",
+        orient='h',
     )
 
     for i, container in enumerate(plot.ax.containers):
-        plot.ax.bar_label(container, fmt="%.2f", padding=2, rotation=45)
+        plot.ax.bar_label(container, fmt="%.2f", padding=2)
+
+    style_axis(plot.ax)
 
     plot.ax.figure.savefig(os.path.join(exp_res_path, "fs-throughput-{}.pdf".format(int_lat)))
     plot.ax.figure.savefig(os.path.join(exp_res_path, "fs-throughput-{}.png".format(int_lat)))
@@ -507,7 +535,7 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
     # thru_plot.ax.figure.savefig(os.path.join(exp_res_path, "lx-rw.png"), bbox_inches='tight')
     # thru_plot.ax.figure.savefig(os.path.join(exp_res_path, "lx-rw.pdf"), bbox_inches='tight')
 
-    fig, axes = plt.subplots(1, 3, sharex=True, figsize=(5,3))
+    fig, axes = plt.subplots(3, 1, sharey=True, figsize=(5,3))
 
     palette = sns.color_palette("colorblind")
     palette = [palette[2], palette[-1], palette[1]]
@@ -515,9 +543,10 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
     bars_syscall = sns.barplot(
         ax=axes[0],
         # kind = "bar",
-        x = "System",
-        y= "Latency (Cycles)",
+        y = "System",
+        x= "Latency (Cycles)",
         data = syscall_df,
+        orient='h',
         edgecolor="k",
         # legend=False,
         # height=5,
@@ -533,9 +562,10 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
     bars_read = sns.barplot(
         ax=axes[1],
         # kind = "bar",
-        x = "System",
-        y= "Throughput [GiB/s]",
+        y = "System",
+        x= "Throughput [GiB/s]",
         data = read_df,
+        orient='h',
         edgecolor="k",
         # legend=False,
         # height=5,
@@ -549,9 +579,10 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
     bars_write = sns.barplot(
         ax=axes[2],
         # kind = "bar",
-        x = "System",
-        y= "Throughput [GiB/s]",
+        y = "System",
+        x= "Throughput [GiB/s]",
         data = write_df,
+        orient='h',
         edgecolor="k",
         # legend=False,
         # height=5,
@@ -574,24 +605,24 @@ def plot_linux_baseline(LINUX_SYSCALL, m3_syscall_no_op, thai_syscall_no_op,
     #     for bar in bars:
     #         bar.set_hatch(hatch)
     
-    axes[0].tick_params(axis='both', labelsize=18)
-    axes[0].set_xlabel("Syscall", fontsize = 18)
-    axes[0].set_ylabel("Latency [Cycles]", fontsize = 18)
-    # axes[0].set_xbound(-1.0 ,5.0)
-    # axes[0].set_xlim(-1, 3)
+    style_axis(axes[0], labelsize=18)
+    axes[0].set_ylabel("Syscall", fontsize=18, labelpad=2)
+    axes[0].set_xlabel("Latency [Cycles]", fontsize=18, labelpad=2)
+    # axes[0].set_ybound(-1.0 ,5.0)
+    # axes[0].set_ylim(-1, 3)
 
-    axes[1].tick_params(axis='both', labelsize=18)
-    axes[1].set_xlabel("Read", fontsize = 18)
-    axes[1].set_ylabel("Throughput [GiB/s]", fontsize = 18)
+    style_axis(axes[1], labelsize=18)
+    axes[1].set_ylabel("Read", fontsize=18, labelpad=2)
+    axes[1].set_xlabel("Throughput [GiB/s]", fontsize=18, labelpad=2)
     # axes[1].legend(loc="upper left", bbox_to_anchor=(0, 1), fontsize=18, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=1)
-    # axes[1].set_xbound(-1.0 ,5.0)
+    # axes[1].set_ybound(-1.0 ,5.0)
 
-    axes[2].tick_params(axis='both', labelsize=18)
-    axes[2].set_xlabel("Write", fontsize = 18)
-    axes[2].set_ylabel("", fontsize = 18)
-    axes[2].yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+    style_axis(axes[2], labelsize=18)
+    axes[2].set_ylabel("Write", fontsize=18, labelpad=2)
+    axes[2].set_xlabel("", fontsize=18, labelpad=2)
+    axes[2].xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
 
-    plt.subplots_adjust(bottom=0.1, right=2.3, top=0.9)
+    plt.subplots_adjust(left=0.1, right=0.9, top=2.3, bottom=0.1)
 
     fig.savefig(os.path.join(exp_res_path, "lx-baseline.pdf"), bbox_inches='tight')
     fig.savefig(os.path.join(exp_res_path, "lx-baseline.png"), bbox_inches='tight')
@@ -632,16 +663,16 @@ def plot_ipc_breakdown(breakdown_ipc, exp_res_path):
 
     palette = sns.color_palette("colorblind")
     palette = [palette[-1], palette[1], palette[2]]
-    ax = plot_df.plot(kind='bar', stacked=True, color=palette, figsize=(10, 3), edgecolor="k")
+    ax = plot_df.plot(kind='barh', stacked=True, color=palette, figsize=(10, 3), edgecolor="k")
     for bar in ax.patches:
         bar.set_hatch("//")
 
-    ax.tick_params(axis='both', labelsize=18)
-    ax.set_xlabel("Size (B)", fontsize = 18)
-    ax.set_ylabel("Cycles", fontsize = 18)
-    ax.set_xticklabels(data_sizes, rotation = 0)
+    style_axis(ax, labelsize=18, linewidth=3)
+    ax.set_ylabel("Size (B)", fontsize=18, labelpad=2)
+    ax.set_xlabel("Cycles", fontsize=18, labelpad=2)
+    ax.set_yticklabels(data_sizes, rotation=0)
 
-    ax.legend(loc="upper left", bbox_to_anchor=(0, 1), fontsize=18, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=3)
+    ax.legend(loc="upper right", bbox_to_anchor=(1, 0.7), fontsize=18, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=1)
 
     plt.savefig(os.path.join(exp_res_path, "ipc-breakdown.png"), bbox_inches='tight')
     plt.savefig(os.path.join(exp_res_path, "ipc-breakdown.pdf"), bbox_inches='tight')
@@ -663,8 +694,8 @@ def plot_tdisp_sim(breakdown_tdisp_sim, exp_res_path):
 
     palette = sns.color_palette("colorblind")
     palette = [palette[-1], palette[1]]
-    ax = plot_df.plot(kind='bar', color=palette, figsize=(5, 2.5), edgecolor="k")
-    hatches = ["+", "//"]
+    ax = plot_df.plot(kind='barh', color=palette, figsize=(2, 0.6), edgecolor="k", width=0.4)
+    hatches = ["////", "oooo"]
 
     # for i, bar in enumerate(ax.patches):
     #     bar.set_hatch(hatches[i])
@@ -674,14 +705,18 @@ def plot_tdisp_sim(breakdown_tdisp_sim, exp_res_path):
 
     data_sizes = [2, 3, 4]
 
-    ax.tick_params(axis='both', labelsize=15)
-    ax.set_xlabel("Chain length", fontsize = 15)
-    ax.set_ylabel("Throughput (GiB/s)", fontsize = 15)
-    ax.set_xticklabels(data_sizes, rotation = 0)
+    style_axis(ax, labelsize=3)
+    ax.spines['bottom'].set_linewidth(0.3)
+    ax.spines['left'].set_linewidth(0.3)
+    ax.set_ylabel("Chain length", fontsize=3, labelpad=2)
+    ax.set_xlabel("Throughput (GiB/s)", fontsize=3, labelpad=2)
+    ax.set_yticklabels(data_sizes, rotation=0)
 
     # ax.legend(loc="right", bbox_to_anchor=(0, 1), fontsize=18, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, ncol=3)
-    ax.legend(loc="upper right", ncol=1, fontsize=15, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, bbox_to_anchor=(1, 1))
+    legend = ax.legend(loc="upper right", ncol=1, fontsize=3, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, bbox_to_anchor=(1, 1))
+    legend.get_frame().set_linewidth(0.3)
 
+    # plt.tight_layout(pad=0.3)
     plt.savefig(os.path.join(exp_res_path, "tdisp-sim.png"), bbox_inches='tight')
     plt.savefig(os.path.join(exp_res_path, "tdisp-sim.pdf"), bbox_inches='tight')
 
@@ -691,17 +726,17 @@ def plot_tcb_breakdown(breakdown_tcb, exp_res_path):
 
     palette = sns.color_palette("colorblind")
     palette = [palette[-1], palette[1]]
-    ax = plot_df.plot(kind='bar', stacked=True, color=palette, figsize=(5, 2.5), edgecolor="k", logy=True)
+    ax = plot_df.plot(kind='barh', stacked=True, color=palette, figsize=(5, 2.5), edgecolor="k", logx=True)
 
     for bar in ax.patches:
         bar.set_hatch("//")
 
     data_sizes = ["SEV-Linux", "TDX-Linux", "TDX-Gramine", "IronBus"]
     
-    ax.tick_params(axis='both', labelsize=12)
-    ax.set_xlabel("", fontsize = 12)
-    ax.set_ylabel("MLoC", fontsize = 12)
-    ax.set_xticklabels(data_sizes, rotation = 20)
+    style_axis(ax, labelsize=12)
+    ax.set_ylabel("", fontsize=12, labelpad=2)
+    ax.set_xlabel("MLoC", fontsize=12, labelpad=2)
+    ax.set_yticklabels(data_sizes, rotation = 0)
 
     # ax.bar_label(labels=["", "", "86X"])
     # ax.text(0, 2.55, "~77X", ha='center', va='bottom', fontsize=15)

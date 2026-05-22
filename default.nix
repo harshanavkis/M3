@@ -19,7 +19,7 @@ let
     libxml2
   ];
 
-  moz_overlay = import (builtins.fetchTarball https://github.com/mozilla/nixpkgs-mozilla/archive/master.tar.gz);
+  moz_overlay = import (builtins.fetchTarball "https://github.com/mozilla/nixpkgs-mozilla/archive/master.tar.gz");
   rustpkgs = import <nixpkgs> { overlays = [ moz_overlay ]; };
 
   rustBuild = (

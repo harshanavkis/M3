@@ -3,7 +3,7 @@ import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 from .constants import *
-from .plot_utils import change_width
+from .plot_utils import change_width, style_axis
 
 SYS_FREQ = int(CPU_FREQ.replace("GHz", "")) * 1e9
 cpu_freq = int(CPU_FREQ.replace("GHz", ""))
@@ -52,10 +52,11 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
     # read data
     plot = sns.catplot(
         kind = "bar",
-        x = "Operation",
-        y= "Throughput [GiB/s]",
+        y = "Operation",
+        x= "Throughput [GiB/s]",
         data = read_df,
         hue = "Kind",
+        orient='h',
         height=8,
         aspect=1,
         legend=False,
@@ -64,23 +65,22 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
     )
     # change_width(plot.ax, .1)
     # for i, container in enumerate(plot.ax.containers):
-    #     plot.ax.bar_label(container, fmt="%.2f", padding=2, rotation=45)
+    #     plot.ax.bar_label(container, fmt="%.2f", padding=2)
     read_slowdown = ["{0:.2f}X".format(i) for i in read_slowdown]
 
     for bars, hatch in zip(plot.ax.containers, hatches):
         for bar in bars:
             bar.set_hatch(hatch)
 
-    plot.ax.bar_label(plot.ax.containers[1], labels=read_slowdown, fmt="%.2f", padding=8, fontsize=30, rotation="vertical")
-    plot.ax.tick_params(axis='both', labelsize=30)
-    plot.ax.set_xlabel("Interconnect latency (ns)", fontsize = 30)
-    plot.ax.set_ylabel("Throughput [GiB/s]", fontsize = 30)
+    plot.ax.bar_label(plot.ax.containers[1], labels=read_slowdown, fmt="%.2f", padding=8, fontsize=30)
+    style_axis(plot.ax, labelsize=30)
+    plot.ax.set_ylabel("Interconnect latency (ns)", fontsize=30, labelpad=2)
+    plot.ax.set_xlabel("Throughput [GiB/s]", fontsize=30, labelpad=2)
 
     plot.ax.legend(loc="upper right", fontsize=30, handletextpad=0.2, borderpad=0.3, edgecolor='k')
-    # plt.grid(which="major", axis="y")
-    # plt.grid(which="minor", axis="y", alpha=0.5)
-    plt.minorticks_on()
-    # plt.grid(which="minor", axis="y")
+    # plt.grid(which="major", axis="x")
+    # plt.grid(which="minor", axis="x", alpha=0.5)
+    # plt.grid(which="minor", axis="x")
 
     plot.ax.figure.savefig(os.path.join(exp_res_path, "fs-throughput-cycles-read.pdf"), bbox_inches="tight")
     plot.ax.figure.savefig(os.path.join(exp_res_path, "fs-throughput-cycles-read.png"), bbox_inches="tight")
@@ -89,10 +89,11 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
     # write data
     plot = sns.catplot(
         kind = "bar",
-        x = "Operation",
-        y= "Throughput [GiB/s]",
+        y = "Operation",
+        x= "Throughput [GiB/s]",
         data = write_df,
         hue = "Kind",
+        orient='h',
         height=8,
         aspect=1,
         legend=False,
@@ -100,22 +101,20 @@ def plot_fs_bench_cycles(cycle_fs, exp_res_path):
         edgecolor="k"
     )
     # for i, container in enumerate(plot.ax.containers):
-    #     plot.ax.bar_label(container, fmt="%.2f", padding=2, rotation=45)
+    #     plot.ax.bar_label(container, fmt="%.2f", padding=2)
     write_slowdown = ["{0:.2f}X".format(i) for i in write_slowdown]
-    plot.ax.bar_label(plot.ax.containers[1], labels=write_slowdown, fmt="%.2f", padding=8, fontsize=30, rotation="vertical")
+    plot.ax.bar_label(plot.ax.containers[1], labels=write_slowdown, fmt="%.2f", padding=8, fontsize=30)
 
     for bars, hatch in zip(plot.ax.containers, hatches):
         for bar in bars:
             bar.set_hatch(hatch)
 
     plot.ax.legend(loc="upper right", fontsize=30, handletextpad=0.2, borderpad=0.3, edgecolor='k')
-    # plt.grid(which="major", axis="y")
-    # plt.grid(which="minor", axis="y", alpha=0.5)
-    plt.minorticks_on()
-    plot.ax.set_xlabel("Interconnect latency (ns)")
-    plot.ax.tick_params(axis='both', labelsize=30)
-    plot.ax.set_xlabel("Interconnect latency (ns)", fontsize = 30)
-    plot.ax.set_ylabel("Throughput [GiB/s]", fontsize = 30)
+    # plt.grid(which="major", axis="x")
+    # plt.grid(which="minor", axis="x", alpha=0.5)
+    style_axis(plot.ax, labelsize=30)
+    plot.ax.set_ylabel("Interconnect latency (ns)", fontsize=30, labelpad=2)
+    plot.ax.set_xlabel("Throughput [GiB/s]", fontsize=30, labelpad=2)
 
     plot.ax.figure.savefig(os.path.join(exp_res_path, "fs-throughput-cycles-write.pdf"), bbox_inches="tight")
     plot.ax.figure.savefig(os.path.join(exp_res_path, "fs-throughput-cycles-write.png"), bbox_inches="tight")
@@ -149,10 +148,11 @@ def plot_app_cycles(cycle_app, exp_res_path):
     # read data
     plot = sns.catplot(
         kind = "bar",
-        x = "Application",
-        y= "Relative slowdown",
+        y = "Application",
+        x= "Relative slowdown",
         data = aggr_df,
         hue = "Cycles",
+        orient='h',
         height=7,
         aspect=2,
         legend=False,
@@ -160,19 +160,19 @@ def plot_app_cycles(cycle_app, exp_res_path):
         edgecolor="k"
     )
     for i, container in enumerate(plot.ax.containers):
-        plot.ax.bar_label(container, fmt="%.2fX", padding=8, fontsize=40, rotation="vertical")
+        plot.ax.bar_label(container, fmt="%.2fX", padding=8, fontsize=40)
 
     for bars, hatch in zip(plot.ax.containers, hatches):
         for bar in bars:
             bar.set_hatch(hatch)
 
     plt.legend(loc="upper right", ncol=3, bbox_to_anchor=(1, 1.38), fontsize=40, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8)
-    # plt.grid(which="major", axis="y")
-    # plt.grid(which="minor", axis="y", alpha=0.5)
+    # plt.grid(which="major", axis="x")
+    # plt.grid(which="minor", axis="x", alpha=0.5)
     # plt.minorticks_on()
-    plot.ax.set_xlabel("Application", labelpad = 10, fontsize=40)
-    plot.ax.set_ylabel("Relative slowdown", labelpad = 10, fontsize=40)
-    plot.ax.tick_params(axis='both', labelsize=40)
+    plot.ax.set_ylabel("Application", labelpad=2, fontsize=40)
+    plot.ax.set_xlabel("Relative slowdown", labelpad=2, fontsize=40)
+    style_axis(plot.ax, labelsize=40)
     # plt.setp(plot.ax.patches, linewidth=2)
     plot.ax.figure.savefig(os.path.join(exp_res_path, "app-cycles.pdf"), bbox_inches="tight")
     plot.ax.figure.savefig(os.path.join(exp_res_path, "app-cycles.png"), bbox_inches='tight')
@@ -200,10 +200,11 @@ def plot_read_cycles(cycle_read, exp_res_path):
     # read data
     plot = sns.catplot(
         kind = "bar",
-        x = "Bytes",
-        y= "Throughput [GiB/s]",
+        y = "Bytes",
+        x= "Throughput [GiB/s]",
         data = aggr_df,
         hue = "Kind",
+        orient='h',
         height=20,
         aspect=4,
         legend=False,
@@ -211,15 +212,15 @@ def plot_read_cycles(cycle_read, exp_res_path):
         edgecolor="k"
     )
     # for i, container in enumerate(plot.ax.containers):
-    #     plot.ax.bar_label(container, labels=["", slowdown[i], ""], fmt="%.2f", padding=2, fontsize=55, rotation=35)
+    #     plot.ax.bar_label(container, labels=["", slowdown[i], ""], fmt="%.2f", padding=2, fontsize=55)
     slowdown = ["{0:.2f}x".format(i) for i in slowdown]
-    plot.ax.bar_label(plot.ax.containers[1], labels=slowdown, fmt="%.2f", padding=2, fontsize=55, rotation=35)
+    plot.ax.bar_label(plot.ax.containers[1], labels=slowdown, fmt="%.2f", padding=2, fontsize=55)
     
+    style_axis(plot.ax, labelsize=55)
     plot.ax.legend(loc="upper right", ncol=3)
-    # plt.grid(which="major", axis="y")
-    # plt.grid(which="minor", axis="y", alpha=0.5)
-    plt.minorticks_on()
-    # plot.ax.xticks(rotation=45)
+    # plt.grid(which="major", axis="x")
+    # plt.grid(which="minor", axis="x", alpha=0.5)
+    # plot.ax.yticks(rotation=45)
 
     plot.ax.figure.savefig(os.path.join(exp_res_path, "read-cycles.pdf"))
     plot.ax.figure.savefig(os.path.join(exp_res_path, "read-cycles.png"))
@@ -243,10 +244,11 @@ def plot_write_cycles(cycle_write, exp_res_path):
     # read data
     plot = sns.catplot(
         kind = "bar",
-        x = "Bytes",
-        y= "Throughput [GiB/s]",
+        y = "Bytes",
+        x= "Throughput [GiB/s]",
         data = aggr_df,
         hue = "Kind",
+        orient='h',
         height=20,
         aspect=4,
         legend=False,
@@ -254,16 +256,16 @@ def plot_write_cycles(cycle_write, exp_res_path):
         edgecolor="k"
     )
     # for i, container in enumerate(plot.ax.containers):
-    #     plot.ax.bar_label(container, fmt="%.2f", padding=2, fontsize=55, rotation=35)
+    #     plot.ax.bar_label(container, fmt="%.2f", padding=2, fontsize=55)
     slowdown = ["{0:.2f}x".format(i) for i in slowdown]
-    plot.ax.bar_label(plot.ax.containers[1], labels=slowdown, fmt="%.2f", padding=2, fontsize=55, rotation=35)
+    plot.ax.bar_label(plot.ax.containers[1], labels=slowdown, fmt="%.2f", padding=2, fontsize=55)
     
+    style_axis(plot.ax, labelsize=55)
     plot.ax.legend(loc="upper right", ncol=3)
-    # plt.grid(which="major", axis="y")
-    # plt.grid(which="minor", axis="y", alpha=0.5)
-    plt.minorticks_on()
+    # plt.grid(which="major", axis="x")
+    # plt.grid(which="minor", axis="x", alpha=0.5)
     
-    # plt.xticks(rotation=45)
+    # plt.yticks(rotation=45)
 
     plot.ax.figure.savefig(os.path.join(exp_res_path, "write-cycles.pdf"))
     plot.ax.figure.savefig(os.path.join(exp_res_path, "write-cycles.png"))
@@ -291,6 +293,7 @@ def plot_ipc_cycles(cycle_ipc, exp_res_path):
         y= "Relative slowdown",
         hue="Kind",
         data = aggr_df,
+        orient='v',
         height=7,
         aspect=3,
         legend=False,
@@ -298,19 +301,18 @@ def plot_ipc_cycles(cycle_ipc, exp_res_path):
         edgecolor="k"
     )
     for i, container in enumerate(plot.ax.containers):
-        plot.ax.bar_label(container, fmt="%.2fX", padding=8, fontsize=40, rotation="vertical")
+        plot.ax.bar_label(container, fmt="%.2fX", padding=8, fontsize=25)
 
     for bars, hatch in zip(plot.ax.containers, hatches):
         for bar in bars:
             bar.set_hatch(hatch)
     
-    plot.ax.legend(loc="upper center", ncol=4, bbox_to_anchor=(0.5, 1.69), fontsize=40, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8)
-    plot.ax.set_xlabel("Message size (Bytes)", labelpad = 10, fontsize=40)
-    plot.ax.set_ylabel("Relative slowdown", labelpad = 10, fontsize=40)
-    plot.ax.tick_params(axis='both', labelsize=40)
-    # plt.grid(which="major", axis="y")
-    # plt.grid(which="minor", axis="y", alpha=0.5)
-    plt.minorticks_on()
+    plot.ax.legend(loc="upper right", ncol=4, bbox_to_anchor=(1, 1.3), fontsize=35, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8)
+    plot.ax.set_ylabel("Relative slowdown", labelpad=2, fontsize=35)
+    plot.ax.set_xlabel("Message size (Bytes)", labelpad=2, fontsize=35)
+    style_axis(plot.ax, labelsize=35)
+    # plt.grid(which="major", axis="x")
+    # plt.grid(which="minor", axis="x", alpha=0.5)
     
     plot.ax.figure.savefig(os.path.join(exp_res_path, "ipc-cycles.pdf"), bbox_inches='tight')
     plot.ax.figure.savefig(os.path.join(exp_res_path, "ipc-cycles.png"), bbox_inches='tight')
@@ -332,26 +334,27 @@ def plot_acc_app_cycles(cycle_acc_apps, exp_res_path):
         y= "Slowdown",
         hue="Time [ns]",
         data = df,
-        height=10,
-        aspect=2,
+        orient='v',
+        height=7,
+        aspect=3,
         legend=False,
         palette=palette,
         edgecolor="k"
     )
 
     for i, container in enumerate(plot.ax.containers):
-        plot.ax.bar_label(container, fmt="%.2fX", padding=8, fontsize=35, rotation="vertical")
+        plot.ax.bar_label(container, fmt="%.2fX", padding=8, fontsize=25)
 
     for bars, hatch in zip(plot.ax.containers, hatches):
         for bar in bars:
             bar.set_hatch(hatch)
     
     plot.ax.legend(loc="upper right", ncol=2, fontsize=35, handletextpad=0.2, borderpad=0.3, edgecolor='k', columnspacing=0.8, bbox_to_anchor=(1, 1.1))
-    plot.ax.set_xlabel("Application", labelpad = 10, fontsize=35)
-    plot.ax.set_ylabel("Slowdown", labelpad = 10, fontsize=35)
-    plot.ax.tick_params(axis='both', labelsize=35)
-    # plot.ax.tick_params(axis='x', rotation=45, ha="right")
-    # plt.setp(plot.ax.get_xticklabels(), ha="right", rotation_mode="anchor")
+    plot.ax.set_ylabel("Slowdown", labelpad=2, fontsize=35)
+    plot.ax.set_xlabel("Application", labelpad=2, fontsize=35)
+    style_axis(plot.ax, labelsize=35)
+    # plot.ax.tick_params(axis='y', rotation=0)
+    # plt.setp(plot.ax.get_yticklabels(), ha="right", rotation_mode="anchor")
 
     plot.ax.figure.savefig(os.path.join(exp_res_path, "acc-apps-cycles.png"), bbox_inches='tight')
     plot.ax.figure.savefig(os.path.join(exp_res_path, "acc-apps-cycles.pdf"), bbox_inches='tight')
