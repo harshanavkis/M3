@@ -7,7 +7,7 @@ import json
 import subprocess
 from matplotlib import pyplot as plt
 from benchmarks.check_result import parse_output, parse_apps_output, parse_mlapp_output
-from benchmarks.plot_utils import plot_ipc_benchmarks, plot_read_write_benchmarks, plot_app_benchmarks, plot_syscall_benchmarks, plot_fs_benchmarks, plot_linux_baseline, plot_ipc_breakdown, plot_tdisp_sim, plot_tcb_breakdown
+from benchmarks.plot_utils import plot_ipc_benchmarks, plot_read_write_benchmarks, plot_app_benchmarks, plot_syscall_benchmarks, plot_fs_benchmarks, plot_linux_baseline, plot_ipc_breakdown, plot_tdisp_sim, plot_tcb_breakdown, plot_dma_pipelining
 from benchmarks.plot_cycled_utils import *
 from benchmarks.constants import *
 
@@ -458,8 +458,55 @@ def run_img_class_distinf_secure(exp_res_path, int_latency):
 
     return perf_res
 
+# DMA pipelining sweep (bench-p2p-spm: device-to-device transfers between two SPM tiles) with
+# the number of packets in flight per command; the 64 GB/s variant (32 B crossbar) additionally
+# varies the number of AES-GCM engines per AIU.
+P2P_INFLIGHT = [1, 2, 4, 8, 16]
+P2P_ENGINES = [1, 2, 4]
+
+def run_p2p_dma(exp_res_path, int_latency, inflight, secure, engines=None, xbar_width=None):
+    encr = "15" if secure else "0"
+    generate_env_vars(encr_latency=encr, int_transfer_latency=int_latency)
+    os.environ["M3_GEM5_INFLIGHT"] = str(inflight)
+    os.environ["M3_GEM5_BUFCOUNT"] = str(max(4, inflight))
+    if engines is not None:
+        os.environ["M3_GEM5_CRYPTO_ENGINES"] = str(engines)
+    if xbar_width is not None:
+        os.environ["M3_GEM5_XBAR_WIDTH"] = str(xbar_width)
+
+    name = "p2p_dma_{}_{}".format("secure" if secure else "non_secure", inflight)
+    if engines is not None:
+        name += "_eng{}".format(engines)
+    if xbar_width is not None:
+        name += "_xbar{}".format(xbar_width)
+    out_file = os.path.join(exp_res_path, "{}-{}.log".format(name, int_latency))
+
+    perf_res = run_gem5("p2p-spm", out_file)
+    perf_res["encr_latency"] = int(encr)
+    perf_res["inflight"] = inflight
+    perf_res["engines"] = engines
+    perf_res["xbar_width"] = xbar_width
+    return perf_res
+
+def p2p_dma_benchmarks():
+    benchs = {}
+    for n in P2P_INFLIGHT:
+        benchs["p2p-dma-non-secure-{}".format(n)] = \
+            (lambda n: lambda path, lat: run_p2p_dma(path, lat, n, False))(n)
+        benchs["p2p-dma-secure-{}".format(n)] = \
+            (lambda n: lambda path, lat: run_p2p_dma(path, lat, n, True))(n)
+    # 64 GB/s link: native and IronBus with 1, 2 and 4 engines (32 packets in flight)
+    benchs["p2p-dma-64gbs-non-secure"] = \
+        lambda path, lat: run_p2p_dma(path, lat, 32, False, xbar_width=32)
+    for k in P2P_ENGINES:
+        benchs["p2p-dma-64gbs-secure-eng{}".format(k)] = \
+            (lambda k: lambda path, lat: run_p2p_dma(path, lat, 32, True, engines=k, xbar_width=32))(k)
+    return benchs
+
+BENCHMARKS = {}
+
 def _run_one(bench, lat, exp_res_path):
-    return globals()["run_" + bench.replace("-", "_")](exp_res_path, lat)
+    return BENCHMARKS[bench](exp_res_path, lat)
 
 def main():
     # Used to resume experiments if the script stops unexpectedly
@@ -512,10 +559,13 @@ def main():
         "img-class-distinf-non-secure": run_img_class_distinf_non_secure,
         "img-class-distinf-secure": run_img_class_distinf_secure,
     }
+    benchmark_list.update(p2p_dma_benchmarks())
+    BENCHMARKS.update(benchmark_list)
 
-    # --parallel N: build once, then run up to N experiments concurrently (each in its own
-    # process, since the benchmark functions configure the environment globally)
-    parallel = 1
+    # Build once, then run up to N experiments concurrently (each in its own process, since the
+    # benchmark functions configure the environment globally). Default: one gem5 per core, at
+    # most 32; --parallel 1 runs sequentially (building before every run as before).
+    parallel = min(32, os.cpu_count() or 1)
     if "--parallel" in sys.argv:
         parallel = int(sys.argv[sys.argv.index("--parallel") + 1])
 
@@ -636,6 +686,9 @@ def main():
 
     # Plot cycled IPC benchmark
     plot_ipc_cycles(cycle_ipc, exp_res_path)
+
+    # Plot DMA pipelining (packets in flight, crypto engines)
+    plot_dma_pipelining(completed_exp, INT_LATENCY, P2P_INFLIGHT, P2P_ENGINES, exp_res_path)
 
     # Process the filesystem data
     # print("Bitch")

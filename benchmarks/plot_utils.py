@@ -747,3 +747,78 @@ def plot_tcb_breakdown(breakdown_tcb, exp_res_path):
 
     plt.savefig(os.path.join(exp_res_path, "tcb-break.png"), bbox_inches='tight')
     plt.savefig(os.path.join(exp_res_path, "tcb-break.pdf"), bbox_inches='tight')
+
+
+def plot_dma_pipelining(completed_exp, int_latencies, inflights, engines, exp_res_path):
+    """Device-to-device DMA throughput (1 MiB commands, 2 KiB packets) vs. the number of packets
+    in flight per command, for M3 and IronBus, on-chip and off-chip; plus the 64 GB/s link with
+    1, 2 and 4 AES-GCM engines per AIU."""
+    plt.clf()
+    size_gib = 2 / 1024
+    lat_names = {"0": "On-chip", "500": "Off-chip"}
+
+    def thru(res, op):
+        # metric names are prefixed with the source file, e.g. "bp2pspm.rs: read 2 MiB with 1M cmd"
+        for name, val in res.items():
+            if isinstance(val, dict) and name.endswith("{} 2 MiB with 1M cmd".format(op)):
+                return (size_gib * SYS_FREQ) / val["time"]
+        raise KeyError(op)
+
+    rows = []
+    for l in int_latencies:
+        for n in inflights:
+            for sec, kind in (("non-secure", "M3"), ("secure", "IronBus")):
+                key = "p2p-dma-{}-{}".format(sec, n)
+                if key not in completed_exp[l]:
+                    continue
+                for op in ("read", "write"):
+                    rows.append({"Interconnect": lat_names.get(l, l), "In flight": n,
+                                 "Kind": kind, "Op": op,
+                                 "Throughput [GiB/s]": thru(completed_exp[l][key], op)})
+    df = pd.DataFrame(rows)
+    df.to_csv(os.path.join(exp_res_path, "dma-pipelining.csv"), index=False)
+    print(df.pivot_table(index=["Interconnect", "In flight"], columns=["Kind", "Op"],
+                         values="Throughput [GiB/s]"))
+
+    palette = sns.color_palette("colorblind")
+    colors = {"M3": palette[-1], "IronBus": palette[1]}
+    fig, axes = plt.subplots(1, len(int_latencies) + 1, figsize=(2.0 * (len(int_latencies) + 1), 1.4))
+    for ax, l in zip(axes, int_latencies):
+        sub = df[(df["Interconnect"] == lat_names.get(l, l)) & (df["Op"] == "write")]
+        for kind, marker in (("M3", "o"), ("IronBus", "s")):
+            d = sub[sub["Kind"] == kind]
+            ax.plot(d["In flight"], d["Throughput [GiB/s]"], marker=marker, markersize=2.5,
+                    linewidth=0.8, color=colors[kind], label=kind)
+        ax.set_xscale("log", base=2)
+        ax.set_xticks(inflights)
+        ax.set_xticklabels([str(n) for n in inflights])
+        ax.set_ylim(0, 35)
+        style_axis(ax, labelsize=5)
+        ax.set_title(lat_names.get(l, l), fontsize=6, pad=2)
+        ax.set_xlabel("Packets in flight", fontsize=5, labelpad=1)
+    axes[0].set_ylabel("Throughput (GiB/s)", fontsize=5, labelpad=1)
+    axes[0].legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="lower right")
+
+    # 64 GB/s link: bars for M3 and IronBus with 1/2/4 engines (off-chip if available)
+    l = "500" if "500" in int_latencies else int_latencies[-1]
+    bars = []
+    key = "p2p-dma-64gbs-non-secure"
+    if key in completed_exp[l]:
+        bars.append(("M3", thru(completed_exp[l][key], "write"), colors["M3"]))
+    for k in engines:
+        key = "p2p-dma-64gbs-secure-eng{}".format(k)
+        if key in completed_exp[l]:
+            bars.append(("IronBus\n{} eng.".format(k), thru(completed_exp[l][key], "write"), colors["IronBus"]))
+    ax = axes[-1]
+    ax.bar([b[0] for b in bars], [b[1] for b in bars], color=[b[2] for b in bars],
+           edgecolor="k", linewidth=0.5, width=0.6)
+    ax.set_ylim(0, 70)
+    style_axis(ax, labelsize=5)
+    ax.tick_params(axis="x", labelsize=4)
+    ax.set_title("64 GiB/s link, {}".format(lat_names.get(l, l).lower()), fontsize=6, pad=2)
+    ax.set_ylabel("Throughput (GiB/s)", fontsize=5, labelpad=1)
+
+    plt.tight_layout(pad=0.3)
+    plt.savefig(os.path.join(exp_res_path, "dma-pipelining.png"), bbox_inches="tight", dpi=200)
+    plt.savefig(os.path.join(exp_res_path, "dma-pipelining.pdf"), bbox_inches="tight")
+    return df
