@@ -30,7 +30,14 @@ Note that you can specify the number of threads to use for building in the last 
 
 ### 3. Cross compiler for gem5 and the hardware platform
 
-For gem5 and the hardware platform, you need to build a cross-compiler for the desired ISA. Note that only gem5 supports all three ISAs; the hardware platform only supports RISC-V. You can build the cross compiler as follows:
+For gem5 and the hardware platform, you need to build a cross-compiler for the desired ISA. Note that only gem5 supports all three ISAs; the hardware platform only supports RISC-V.
+
+The cross compiler links against the musl headers in `src/libs/musl`, so this submodule (and the other source submodules needed by the build) must be pulled in first:
+
+    $ git submodule update --init src/libs/musl src/libs/leveldb src/libs/flac \
+        src/libs/llvmprofile src/apps/bsdutils
+
+You can then build the cross compiler as follows:
 
     $ cd cross
     $ ./build.sh (x86_64|arm|riscv)
