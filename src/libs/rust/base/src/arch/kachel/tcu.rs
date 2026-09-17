@@ -504,8 +504,18 @@ impl TCU {
         mut off: goff,
         cmd: CmdOpCode,
     ) -> Result<(), Error> {
+        // on tiles with virtual memory, the TCU may hit a translation fault, which we resolve
+        // below for the page of `data`; hence, transfer at most one page per command. Tiles
+        // without virtual memory cannot fault, so we hand the whole transfer to the TCU as a
+        // single command and let it pipeline the packets.
+        let virtmem = crate::kif::TileDesc::new_from(crate::envdata::get().tile_desc).has_virtmem();
         while size > 0 {
-            let amount = cmp::min(size, cfg::PAGE_SIZE - (data & cfg::PAGE_MASK));
+            let amount = if virtmem {
+                cmp::min(size, cfg::PAGE_SIZE - (data & cfg::PAGE_MASK))
+            }
+            else {
+                size
+            };
 
             Self::write_unpriv_reg(UnprivReg::DATA, Self::build_data(data, amount));
             Self::write_unpriv_reg(UnprivReg::ARG1, off as Reg);
