@@ -33,15 +33,15 @@ const RUNS: u64 = 1000;
 
 pub fn run(t: &mut dyn WvTester) {
     // Numbers at the end denote message size in bytes
-    // wv_run_test!(t, pingpong_remote8);
-    // wv_run_test!(t, pingpong_remote16);
-    // wv_run_test!(t, pingpong_remote32);
-    // wv_run_test!(t, pingpong_remote64);
-    // wv_run_test!(t, pingpong_remote128);
-    // wv_run_test!(t, pingpong_remote256);
-    // wv_run_test!(t, pingpong_remote512);
-    // wv_run_test!(t, pingpong_remote1024);
-    // wv_run_test!(t, pingpong_remote2048);
+    wv_run_test!(t, pingpong_remote8);
+    wv_run_test!(t, pingpong_remote16);
+    wv_run_test!(t, pingpong_remote32);
+    wv_run_test!(t, pingpong_remote64);
+    wv_run_test!(t, pingpong_remote128);
+    wv_run_test!(t, pingpong_remote256);
+    wv_run_test!(t, pingpong_remote512);
+    wv_run_test!(t, pingpong_remote1024);
+    wv_run_test!(t, pingpong_remote2048);
     wv_run_test!(t, tdisp_chain_2_pingpong_512);
     wv_run_test!(t, tdisp_chain_3_pingpong_512);
     wv_run_test!(t, tdisp_chain_4_pingpong_512);

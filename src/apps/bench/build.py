@@ -12,6 +12,8 @@ dirs = [
     'ipc',
     'ripc',
     'bencrmgate',
+    'bmgatelarge',
+    'bp2pspm',
     'encrsyscall',
     'loadgen',
     'netlat',
