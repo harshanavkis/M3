@@ -749,7 +749,7 @@ def plot_tcb_breakdown(breakdown_tcb, exp_res_path):
     plt.savefig(os.path.join(exp_res_path, "tcb-break.pdf"), bbox_inches='tight')
 
 
-def plot_dma_pipelining(completed_exp, int_latencies, inflights, engines, exp_res_path):
+def plot_dma_pipelining(completed_exp, int_latencies, inflights, engines, xbar_widths, exp_res_path):
     """Device-to-device DMA throughput (1 MiB commands, 2 KiB packets) vs. the number of packets
     in flight per command, for M3 and IronBus, on-chip and off-chip; plus the 64 GB/s link with
     1, 2 and 4 AES-GCM engines per AIU."""
@@ -799,24 +799,40 @@ def plot_dma_pipelining(completed_exp, int_latencies, inflights, engines, exp_re
     axes[0].set_ylabel("Throughput (GiB/s)", fontsize=5, labelpad=1)
     axes[0].legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="lower right")
 
-    # 64 GB/s link: bars for M3 and IronBus with 1/2/4 engines (off-chip if available)
+    # throughput vs. link bandwidth (crossbar width) for M3 and IronBus with 1/2/4 engines
     l = "500" if "500" in int_latencies else int_latencies[-1]
-    bars = []
-    key = "p2p-dma-64gbs-non-secure"
-    if key in completed_exp[l]:
-        bars.append(("M3", thru(completed_exp[l][key], "write"), colors["M3"]))
-    for k in engines:
-        key = "p2p-dma-64gbs-secure-eng{}".format(k)
-        if key in completed_exp[l]:
-            bars.append(("IronBus\n{} eng.".format(k), thru(completed_exp[l][key], "write"), colors["IronBus"]))
     ax = axes[-1]
-    ax.bar([b[0] for b in bars], [b[1] for b in bars], color=[b[2] for b in bars],
-           edgecolor="k", linewidth=0.5, width=0.6)
-    ax.set_ylim(0, 70)
+    link_rows = []
+    def link_gbs(w):
+        return w * SYS_FREQ / 1e9
+    series = [("M3", "p2p-dma-link{}-non-secure", colors["M3"], "o", "-")]
+    styles = {1: ("s", "-"), 2: ("^", "--"), 4: ("D", ":")}
+    for k in engines:
+        series.append(("IronBus, {} eng.".format(k), "p2p-dma-link{}-secure-eng" + str(k),
+                       colors["IronBus"], styles.get(k, ("x", "-"))[0], styles.get(k, ("x", "-"))[1]))
+    for label, keyfmt, color, marker, ls in series:
+        xs, ys = [], []
+        for w in xbar_widths:
+            key = keyfmt.format(w)
+            if key in completed_exp[l]:
+                xs.append(link_gbs(w))
+                ys.append(thru(completed_exp[l][key], "write"))
+                link_rows.append({"Interconnect": lat_names.get(l, l), "Link [GB/s]": link_gbs(w),
+                                  "Kind": label, "Throughput [GiB/s]": ys[-1]})
+        if xs:
+            ax.plot(xs, ys, marker=marker, markersize=2.5, linewidth=0.8, linestyle=ls,
+                    color=color, label=label)
+    ax.set_xscale("log", base=2)
+    ax.set_xticks([link_gbs(w) for w in xbar_widths])
+    ax.set_xticklabels([str(int(link_gbs(w))) for w in xbar_widths])
+    ax.set_ylim(0, 65)
     style_axis(ax, labelsize=5)
-    ax.tick_params(axis="x", labelsize=4)
-    ax.set_title("64 GiB/s link, {}".format(lat_names.get(l, l).lower()), fontsize=6, pad=2)
+    ax.set_title("Link bandwidth, {}".format(lat_names.get(l, l).lower()), fontsize=6, pad=2)
+    ax.set_xlabel("Link bandwidth (GB/s)", fontsize=5, labelpad=1)
     ax.set_ylabel("Throughput (GiB/s)", fontsize=5, labelpad=1)
+    ax.legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="lower right")
+    pd.DataFrame(link_rows).to_csv(os.path.join(exp_res_path, "dma-link-bandwidth.csv"), index=False)
+    print(pd.DataFrame(link_rows).pivot_table(index="Link [GB/s]", columns="Kind", values="Throughput [GiB/s]"))
 
     plt.tight_layout(pad=0.3)
     plt.savefig(os.path.join(exp_res_path, "dma-pipelining.png"), bbox_inches="tight", dpi=200)

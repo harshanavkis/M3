@@ -463,6 +463,7 @@ def run_img_class_distinf_secure(exp_res_path, int_latency):
 # varies the number of AES-GCM engines per AIU.
 P2P_INFLIGHT = [1, 2, 4, 8, 16]
 P2P_ENGINES = [1, 2, 4]
+P2P_XBAR_WIDTHS = [8, 16, 32]  # 16, 32, 64 GB/s; beyond that the tile datapath (~61 GB/s) limits, not the link
 
 def run_p2p_dma(exp_res_path, int_latency, inflight, secure, engines=None, xbar_width=None):
     encr = "15" if secure else "0"
@@ -495,12 +496,14 @@ def p2p_dma_benchmarks():
             (lambda n: lambda path, lat: run_p2p_dma(path, lat, n, False))(n)
         benchs["p2p-dma-secure-{}".format(n)] = \
             (lambda n: lambda path, lat: run_p2p_dma(path, lat, n, True))(n)
-    # 64 GB/s link: native and IronBus with 1, 2 and 4 engines (32 packets in flight)
-    benchs["p2p-dma-64gbs-non-secure"] = \
-        lambda path, lat: run_p2p_dma(path, lat, 32, False, xbar_width=32)
-    for k in P2P_ENGINES:
-        benchs["p2p-dma-64gbs-secure-eng{}".format(k)] = \
-            (lambda k: lambda path, lat: run_p2p_dma(path, lat, 32, True, engines=k, xbar_width=32))(k)
+    # link bandwidth sweep (crossbar width in bytes/cycle at 2 GHz: 8 -> 16 GB/s ... 64 -> 128
+    # GB/s): native and IronBus with 1, 2 and 4 engines, enough packets in flight for all links
+    for w in P2P_XBAR_WIDTHS:
+        benchs["p2p-dma-link{}-non-secure".format(w)] = \
+            (lambda w: lambda path, lat: run_p2p_dma(path, lat, 64, False, xbar_width=w))(w)
+        for k in P2P_ENGINES:
+            benchs["p2p-dma-link{}-secure-eng{}".format(w, k)] = \
+                (lambda w, k: lambda path, lat: run_p2p_dma(path, lat, 64, True, engines=k, xbar_width=w))(w, k)
     return benchs
 
 BENCHMARKS = {}
@@ -688,7 +691,7 @@ def main():
     plot_ipc_cycles(cycle_ipc, exp_res_path)
 
     # Plot DMA pipelining (packets in flight, crypto engines)
-    plot_dma_pipelining(completed_exp, INT_LATENCY, P2P_INFLIGHT, P2P_ENGINES, exp_res_path)
+    plot_dma_pipelining(completed_exp, INT_LATENCY, P2P_INFLIGHT, P2P_ENGINES, P2P_XBAR_WIDTHS, exp_res_path)
 
     # Process the filesystem data
     # print("Bitch")
