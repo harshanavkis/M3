@@ -67,6 +67,8 @@ def generate_env_vars(
     os.environ["M3_SIGN_VER_LATENCY"] = sign_ver_latency
     os.environ["M3_INT_TRA_LATENCY"] = "{}".format(int_transfer_latency)
     os.environ["M3_GEM5_CFG"] = cfg_file
+    for k, v in PLATFORM_ENV.items():
+        os.environ[k] = v
 
     env_var["M3_BUILD"] = os.environ["M3_BUILD"]
     env_var["M3_TARGET"] = os.environ["M3_TARGET"]
@@ -82,15 +84,23 @@ def generate_env_vars(
     env_var["M3_SIGN_VER_LATENCY"] = os.environ["M3_SIGN_VER_LATENCY"]
     env_var["M3_INT_TRA_LATENCY"] = os.environ["M3_INT_TRA_LATENCY"]
     env_var["M3_GEM5_CFG"] = os.environ["M3_GEM5_CFG"]
+    for k in PLATFORM_ENV:
+        env_var[k] = os.environ[k]
 
     return dict(env_var)
 
+# set by main(): skip the build step in each run (the build is done once up front) and use a
+# separate output directory per run, so that runs can execute in parallel
+SKIP_BUILD = False
+
 def run_gem5(exp, out_file, apps=False, mlapp=False):
-    cmd = [
-            os.path.join(os.path.realpath("."), "b"),
-            "run",
-            os.path.join(os.path.realpath("."), "boot/bench-{}.xml".format(exp))
-        ]
+    cmd = [os.path.join(os.path.realpath("."), "b")]
+    if SKIP_BUILD:
+        cmd.append("-n")
+        os.environ["M3_OUT"] = os.path.join(
+            os.path.realpath("."), "run", os.path.basename(out_file).replace(".log", ""))
+        pathlib.Path(os.environ["M3_OUT"]).mkdir(parents=True, exist_ok=True)
+    cmd += ["run", os.path.join(os.path.realpath("."), "boot/bench-{}.xml".format(exp))]
 
     with open(out_file, "w+") as f:
         subprocess.run(
@@ -448,6 +458,9 @@ def run_img_class_distinf_secure(exp_res_path, int_latency):
 
     return perf_res
 
+def _run_one(bench, lat, exp_res_path):
+    return globals()["run_" + bench.replace("-", "_")](exp_res_path, lat)
+
 def main():
     # Used to resume experiments if the script stops unexpectedly
     try:
@@ -500,6 +513,13 @@ def main():
         "img-class-distinf-secure": run_img_class_distinf_secure,
     }
 
+    # --parallel N: build once, then run up to N experiments concurrently (each in its own
+    # process, since the benchmark functions configure the environment globally)
+    parallel = 1
+    if "--parallel" in sys.argv:
+        parallel = int(sys.argv[sys.argv.index("--parallel") + 1])
+
+    todo = []
     for l in INT_LATENCY:
         if l not in completed_exp:
                 completed_exp[l] = {}
@@ -511,16 +531,32 @@ def main():
                 if b in completed_exp[l]:
                     print("Skipping: {}, {}".format(b, l))
                     continue
-            res = f(exp_res_path, l)
+            todo.append((b, l))
+
+    def save_snapshot():
+        for name in ("snapshot.json", SNAPSHOT_FILE_NAME):
+            with open(name, "w") as f:
+                f.truncate(0)
+                json.dump(completed_exp, f)
+
+    if parallel > 1 and len(todo) > 0:
+        global SKIP_BUILD
+        # build once up front
+        generate_env_vars()
+        subprocess.run([os.path.join(os.path.realpath("."), "b")], env=os.environ, check=True)
+        SKIP_BUILD = True
+
+        import multiprocessing
+        with multiprocessing.get_context("fork").Pool(parallel) as pool:
+            results = pool.starmap(_run_one, [(b, l, exp_res_path) for b, l in todo])
+        for (b, l), res in zip(todo, results):
             completed_exp[l][b] = res
+        save_snapshot()
+    else:
+        for b, l in todo:
+            completed_exp[l][b] = benchmark_list[b](exp_res_path, l)
             # Snapshot current completed experiments before moving to next one
-            with open("snapshot.json", "w") as f:
-                f.truncate(0)
-                json.dump(completed_exp, f)
-            
-            with open(SNAPSHOT_FILE_NAME, "w") as f:
-                f.truncate(0)
-                json.dump(completed_exp, f)
+            save_snapshot()
     
     # Grouped cycle data
     cycle_fs = {}
