@@ -116,13 +116,23 @@ fn deprivilege_tiles() {
         ktcu::deprivilege_tile(tile).expect("Unable to deprivilege tile");
     }
 
-    // let mem = crate::mem::borrow_mut();
-
-    // for m in mem.mods() {
-    //     // Attest memory tile
-    //     attest_tile_master(m.addr().tile());
-    //     // attest_tile(m.addr().tile(), &mut kern_chain_info);
-    // }
+    // Attest the memory tiles as well, so that their AIUs take part in the trusted data channels
+    // (i.e., encrypt the data they serve). Memory tiles are not deprivileged since no code runs
+    // on them. Collect the tile ids first to not hold the memory borrow while attesting.
+    let mem_tiles: Vec<TileId> = {
+        let mem = crate::mem::borrow_mut();
+        let mut tiles = Vec::new();
+        for m in mem.mods() {
+            let tile = m.addr().tile();
+            if !tiles.contains(&tile) {
+                tiles.push(tile);
+            }
+        }
+        tiles
+    };
+    for tile in mem_tiles {
+        attest_tile_master(tile);
+    }
 
     att_done();
 }
