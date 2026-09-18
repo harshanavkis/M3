@@ -177,3 +177,21 @@ Parse `total:` and per-rank `comm/compute/wait` → CSV → plots (matplotlib, s
 - Days 9–10: sanity checks (§5), fix scaling factors.
 - Days 10–14: Part A matrix first (fast, and its N=2/4 all-reduce doubles as the sanity check), then Part B; meanwhile write §7 methodology/workload table text.
 - Days 14–16: parse, plot, write results paragraphs; decide what goes in the paper vs. the response letter.
+
+---
+
+# Status (2026-09-18)
+
+**Step 1 — tile config: done.** `config/default.py` takes `M3_GEM5_SPM` (number of SPM core tiles, default 4). `M3_CORES=24 M3_GEM5_SPM=18` gives tiles 1–5 cached, 6–23 SPM; verified with `hello.xml` and `bench-p2p-spm.xml` (29 GiB/s, as with the default config). Commit `b870486fa`.
+
+**Step 2 — tooling and traces: done** (all outside the repos, under `/scratch/harshanavkis/ironbus/tools/`):
+- `venv/` (Python 3.13; protobuf 7.36, numpy, sympy, pandas, tqdm, networkx, pydot, graphviz). Use inside `nix-shell -p python3 gcc zlib` with `source tools/env.sh` (sets `LD_LIBRARY_PATH` for the binary wheels).
+- Chakra: protobuf bindings generated with nix `protoc` (`schema/protobuf/et_def_pb2.py` in the vendored copy under `astra-sim/extern/graph_frontend/chakra`); exposed as package `chakra` via `tools/chakra-pkg` (symlinks + `chakra.pth`) — avoids the grpc-based setup.py and the HolisticTraceAnalysis dependency. `venv/bin/chakra_converter` wraps `chakra.src.converter.converter`.
+- STAGE: `tools/stage` (clone of astra-sim/symbolic_tensor_graph, run from that directory).
+- Traces (`tools/traces/`):
+  - `collectives/<coll>_<N>/<coll>.<rank>.et` for all_reduce, all_gather, reduce_scatter, all_to_all × N = 2, 4, 8, 16, 1 MiB each (ASTRA-sim generator scripts; need `PYTHONPATH=astra-sim`).
+  - `astra1/*.txt`: ASTRA-sim 1.0 workloads (Transformer_HybridParallel, DLRM_HybridParallel, Resnet50_DataParallel, MLP_HybridParallel_Data_Model, microAllReduce/AllToAll) plus `.et` conversions for DLRM/ResNet/microAllReduce at 4 NPUs. `chakra_converter Text` does **not** support `HYBRID_TRANSFORMER` and has no comm groups (every collective spans all NPUs), so `chakra2m3` reads the text format directly for these workloads (TP groups of 4 for fwd/ig comms, DP groups across for wg comms; DLRM: all-to-all embedding over all ranks).
+  - `stage/llama7b_<layout>/`: Llama-7B dims (dmodel 4096, dff 11008, 32 heads, vocab 32000), **4 layers** (`--num_stacks 4`, replay window), batch 1, seq 512 (prefill) or seq 1 (decode); layouts tp4, tp2pp2, dp4 (N=4), tp4pp2, dp8 (N=8). STAGE emits Chakra v0.0.4 protobuf ETs regardless of the `json` option; comm groups in `<name>.json` (`pg_name` → ranks). STAGE uses TP+SP by default, so TP collectives appear as all-gather/reduce-scatter pairs. Rank 0 of `llama7b_tp4_s512` (4 layers, training graph): 96 nodes, 22 collectives, 272 MiB moved, 222 GFLOP.
+- Compute time: text traces carry cycles in `duration_micros`-free COMP nodes (converter puts the cycle count in `duration_micros`); STAGE COMP nodes carry `num_ops`/`tensor_size` (roofline in `chakra2m3`).
+
+Next: step 3, `chakra2m3` (`M3/src/tools/chakra2m3/`).
