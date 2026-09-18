@@ -82,13 +82,21 @@ impl Drop for RunningDeviceActivity {
 /// The activity for [`ChildActivity::run`] and [`ChildActivity::exec`].
 pub struct RunningProgramActivity {
     act: ChildActivity,
-    _file: BufReader<FileRef<dyn File>>,
+    // the executable's file session is only needed after the start on tiles with virtual
+    // memory (the pager maps its pages on demand); on scratchpad tiles the whole program has
+    // been copied, and keeping the session would occupy one of the file server's sessions per
+    // running child
+    _file: Option<BufReader<FileRef<dyn File>>>,
 }
 
 impl RunningProgramActivity {
     /// Creates a new `ExecActivity` for the given activity and executable.
     pub fn new(act: ChildActivity, file: BufReader<FileRef<dyn File>>) -> Self {
-        Self { act, _file: file }
+        let keep = act.tile_desc().has_virtmem();
+        Self {
+            act,
+            _file: if keep { Some(file) } else { None },
+        }
     }
 }
 

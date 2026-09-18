@@ -5,8 +5,9 @@
  *   numbers concurrent instances)
  *
  * The coordinator starts one activity per rank on scratchpad tiles (and, in host-centric mode,
- * a relay activity), wires up the channels and starts the replay. Every rank executes its
- * program /traces/<name>.<rank>.m3t: COMP busy-waits, SEND writes the data into the peer's
+ * a relay activity), loads the ranks' programs /traces/<name>.<rank>.m3t into their buffers
+ * (the ranks themselves use no file system), wires up the channels and starts the replay.
+ * Every rank executes its program: COMP busy-waits, SEND writes the data into the peer's
  * inbound slot with a memory channel and notifies the peer with a message, RECV waits for the
  * matching notification and acknowledges it (which returns the sender's credit and frees the
  * slot). Modes: "native"/"ironbus" (direct rank-to-rank channels; encryption is a platform
@@ -88,6 +89,8 @@ struct Go {
     // per peer p: mem gate selector and send gate selector (0 = none)
     mgates: [u32; MAX_RANKS],
     sgates: [u32; MAX_RANKS],
+    // length of the program the coordinator wrote to the start of our inbound buffer
+    prog_len: u64,
 }
 
 #[repr(C)]
@@ -191,7 +194,8 @@ struct Op {
     arg: u64,
 }
 
-fn load_program(name: &str, rank: u64) -> Vec<Op> {
+// reads /traces/<name>.<rank>.m3t (coordinator side)
+fn read_program(name: &str, rank: usize) -> Vec<u8> {
     let path = format!("/traces/{}.{}.m3t", name, rank);
     let mut file = wv_assert_ok!(VFS::open(&path, OpenFlags::R));
     let mut data: Vec<u8> = Vec::new();
@@ -203,6 +207,11 @@ fn load_program(name: &str, rank: u64) -> Vec<Op> {
         }
         data.extend_from_slice(&buf[..n]);
     }
+    data
+}
+
+// decodes a program (24 B records, see chakra2m3)
+fn parse_program(data: &[u8]) -> Vec<Op> {
     let mut ops = Vec::new();
     let mut i = 0;
     while i + 24 <= data.len() {
@@ -231,8 +240,7 @@ fn rank_main() -> i32 {
     wv_assert_ok!(rgate.activate());
     let to_coord = SendGate::new_bind(coord_sel);
     let reply_gate = new_reply_gate(11);
-
-    let ops = load_program(&name, rank);
+    let _ = name;
 
     // announce our buffers
     let inbound = INBOUND.borrow().as_ptr() as u64;
@@ -242,13 +250,15 @@ fn rank_main() -> i32 {
         src: rank,
         dst: inbound,
         tag: sendbuf,
-        bytes: ops.len() as u64,
+        bytes: 0,
     });
 
-    // wait for the go message with our channel selectors
+    // wait for the go message with our channel selectors; by then the coordinator has written
+    // our program to the start of the inbound buffer (unused until START)
     let go: Go = words_to(&wait_for(&rgate, KIND_GO));
     let ranks = go.ranks as usize;
     let host = go.mode == MODE_HOST;
+    let ops = parse_program(&INBOUND.borrow()[..go.prog_len as usize]);
 
     let mut mgates: Vec<Option<MemGate>> = Vec::new();
     let mut sgates: Vec<Option<SendGate>> = Vec::new();
@@ -583,7 +593,6 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
         let mut act = wv_assert_ok!(ChildActivity::new_with(tile, ActivityArgs::new(&aname)));
         wv_assert_ok!(act.delegate_obj(rgates[m].sel()));
         wv_assert_ok!(act.delegate_obj(to_coord[m].sel()));
-        act.add_mount("/", "/");
         let mut sink = act.data_sink();
         sink.push(m as u64);
         sink.push(name);
@@ -612,18 +621,28 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
         done(&own_rgate, msg);
         got += 1;
     }
-    // setup time, part 2 starts here: all members are running and have loaded their programs
+    // the ranks' programs go to the start of their inbound buffers
+    let mut prog_lens = [0u64; MAX_RANKS + 1];
+    for m in 0..ranks {
+        let prog = read_program(name, m);
+        assert!(prog.len() <= SLOT, "program of rank {} too large", m);
+        let mg = wv_assert_ok!(acts[m].activity().get_mem(inbound[m], SLOT as u64, kif::Perm::W));
+        wv_assert_ok!(mg.write(&prog, 0));
+        prog_lens[m] = prog.len() as u64;
+    }
+    // setup time, part 2 starts here: all members are running and have their programs
     let t_loaded = CycleInstant::now();
 
     // memory channels and start messages
     let mut gos: Vec<Go> = Vec::new();
-    for _ in 0..members {
+    for m in 0..members {
         gos.push(Go {
             kind: KIND_GO,
             ranks: ranks as u64,
             mode: if host { MODE_HOST } else { MODE_DIRECT },
             mgates: [0; MAX_RANKS],
             sgates: [0; MAX_RANKS],
+            prog_len: prog_lens[m],
         });
     }
     // the selectors in the Go messages are the members' (see CHAN_SEL)
