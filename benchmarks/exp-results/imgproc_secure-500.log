@@ -3,9 +3,9 @@ gem5 Simulator System.  http://gem5.org
 gem5 is copyrighted software; use the --copyright option for details.
 
 gem5 version 21.0.0.0
-gem5 compiled Sep 17 2026 15:54:59
-gem5 started Sep 17 2026 17:16:54
-gem5 executing on amy, pid 2936000
+gem5 compiled Sep 18 2026 09:10:56
+gem5 started Sep 18 2026 09:12:30
+gem5 executing on amy, pid 4051289
 command line: platform/gem5/build/RISCV/gem5.opt --outdir=/scratch/harshanavkis/ironbus/M3/run/imgproc_secure-500 --debug-file=gem5.log --debug-flags=Tcu /scratch/harshanavkis/ironbus/M3/config/accels.py --cpu-type DerivO3CPU --isa riscv --cmd 'build/gem5-riscv-release/bin/kernel -f build/gem5-riscv-release/bench.img,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,build/gem5-riscv-release/bin/tilemux,' --mods /scratch/harshanavkis/ironbus/M3/run/imgproc_secure-500/boot.xml,build/gem5-riscv-release/bin/root,build/gem5-riscv-release/bin/m3fs,build/gem5-riscv-release/bin/pipes,build/gem5-riscv-release/bin/pager --cpu-clock=2GHz --sys-clock=2GHz --encr-latency=15 --par-pipe=1 --int-transfer-latency=500 --rng-latency=0 --sign-latency=0 --sign-ver-latency=0
 
 info: Standard input is not a terminal, disabling listeners.
@@ -208,10 +208,10 @@ warn: CoherentXBar T24.xbar has no snooping ports attached!
 warn: CoherentXBar T25.xbar has no snooping ports attached!
 warn: CoherentXBar T26.xbar has no snooping ports attached!
 info: Loaded 'boot.xml' to 0x9a00000030000000 .. 0x9a000000300003ce
-info: Loaded 'root' to 0x9a00000030001000 .. 0x9a00000030075758
-info: Loaded 'm3fs' to 0x9a00000030076000 .. 0x9a000000300cc348
-info: Loaded 'pipes' to 0x9a000000300cd000 .. 0x9a00000030112ba0
-info: Loaded 'pager' to 0x9a00000030113000 .. 0x9a00000030192c48
+info: Loaded 'root' to 0x9a00000030001000 .. 0x9a000000300757a0
+info: Loaded 'm3fs' to 0x9a00000030076000 .. 0x9a000000300cc390
+info: Loaded 'pipes' to 0x9a000000300cd000 .. 0x9a00000030112bd8
+info: Loaded 'pager' to 0x9a00000030113000 .. 0x9a00000030192c90
 info: Entering event queue @ 0.  Starting simulation...
 warn: T0,PMP-EP65535: invalid EP
 warn: T15,PMP-EP65535: invalid EP
@@ -359,169 +359,167 @@ warn: T1,PMP-EP65535: invalid EP
 [0m[0;31m[T0:kernel  @     153778] Attesting tile: 26
 [0m[0;31m[T0:kernel  @     158877] Attestation complete: 26, 10194742 cycles
 [0m[0;31m[T0:kernel  @     159091] Kernel is ready!
-[0m[0;32m[T1:root    @     159652] Boot modules:
-[0m[0;32m[T1:root    @     159667]   Mod[addr: G[Tile26+0x30000000], size: 0x3ce, name: boot.xml]
-[0m[0;32m[T1:root    @     159671]   Mod[addr: G[Tile26+0x30001000], size: 0x74758, name: root]
-[0m[0;32m[T1:root    @     159675]   Mod[addr: G[Tile26+0x30076000], size: 0x56348, name: m3fs]
-[0m[0;32m[T1:root    @     159678]   Mod[addr: G[Tile26+0x300cd000], size: 0x45ba0, name: pipes]
-[0m[0;32m[T1:root    @     159681]   Mod[addr: G[Tile26+0x30113000], size: 0x7fc48, name: pager]
-[0m[0;32m[T1:root    @     159683] Available tiles:
-[0m[0;32m[T1:root    @     159693]   Tile01: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159698]   Tile02: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159702]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159705]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159708]   Tile05: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159711]   Tile06: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159714]   Tile07: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159717]   Tile08: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159720]   Tile09: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159724]   Tile10: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159727]   Tile11: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159730]   Tile12: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159733]   Tile13: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159735]   Tile14: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159739]   Tile15: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159742]   Tile16: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159745]   Tile17: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159751]   Tile18: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159754]   Tile19: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159757]   Tile20: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159760]   Tile21: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159763]   Tile22: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159766]   Tile23: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159769]   Tile24: COMP_IMEM ACCEL_ROT13 (empty) 4096 KiB memory
-[0m[0;32m[T1:root    @     159772]   Tile25: COMP_IMEM SERIAL_DEV (empty) 0 KiB memory
-[0m[0;32m[T1:root    @     159776] Available memory:
-[0m[0;32m[T1:root    @     159785]   MemMod[sel: 35, res: true, addr: G[Tile26+0x0], size: 1264 MiB]
-[0m[0;32m[T1:root    @     159789]   MemMod[sel: 36, res: false, addr: G[Tile26+0x53600000], size: 959 MiB]
-[0m[0;32m[T1:root    @     159793] Parsed Config [
-[0m[0;32m[T1:root    @     159796]   root [
-[0m[0;32m[T1:root    @     159807]     Domain on core [
-[0m[0;32m[T1:root    @     159809]       m3fs mem 268435456 [
-[0m[0;32m[T1:root    @     159811]         Daemon,
-[0m[0;32m[T1:root    @     159818]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R | W | X | RW | RWX],
-[0m[0;32m[T1:root    @     159823]         Service[lname='m3fs', gname='m3fs'],
-[0m[0;32m[T1:root    @     159825]       ]
-[0m[0;32m[T1:root    @     159827]     ]
-[0m[0;32m[T1:root    @     159829]     Domain on core [
-[0m[0;32m[T1:root    @     159831]       pipes [
-[0m[0;32m[T1:root    @     159833]         Daemon,
-[0m[0;32m[T1:root    @     159836]         Service[lname='pipes', gname='pipes'],
-[0m[0;32m[T1:root    @     159838]       ]
-[0m[0;32m[T1:root    @     159839]     ]
-[0m[0;32m[T1:root    @     159841]     Domain on core [
-[0m[0;32m[T1:root    @     159844]       pager 268435456 [
-[0m[0;32m[T1:root    @     159847]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R],
-[0m[0;32m[T1:root    @     159850]         SessCreator[service='pipes', count=None],
-[0m[0;32m[T1:root    @     159855]         Session[lname='m3fs', gname='m3fs', arg='', dep=true],
-[0m[0;32m[T1:root    @     159859]         Tile[type=core, count=1, optional=false],
-[0m[0;32m[T1:root    @     159861]         Domain on core [
-[0m[0;32m[T1:root    @     159865]           /bin/imgproc -m dir -n 1 -r 8 /large.txt [
-[0m[0;32m[T1:root    @     159869]             Session[lname='pipes', gname='pipes', arg='', dep=true],
-[0m[0;32m[T1:root    @     159872]             Mount[fs='m3fs', path='/'],
-[0m[0;32m[T1:root    @     159875]             Tile[type=copy, count=3, optional=false],
-[0m[0;32m[T1:root    @     159877]           ]
-[0m[0;32m[T1:root    @     159879]         ]
-[0m[0;32m[T1:root    @     159881]       ]
-[0m[0;32m[T1:root    @     159882]     ]
-[0m[0;32m[T1:root    @     159884]   ]
-[0m[0;32m[T1:root    @     159885] ]
-[0m[0;32m[T1:root    @     159886] 
-[0m[0;32m[T1:root    @     160803] Starting boot module 'm3fs' on tile2 with arguments ["mem", "268435456"]
-[0m[0;32m[T1:root    @     161241] Starting boot module 'pipes' on tile3 with arguments []
-[0m[0;32m[T1:root    @     161626] pipes: reg_serv(srv_sel=59, sgate_sel=64, name=pipes, sessions=32)
-[0m[0;32m[T1:root    @     161634] Creating service 1:pipes
-[0m[0;32m[T1:root    @     162154] m3fs: reg_serv(srv_sel=51, sgate_sel=55, name=m3fs, sessions=32)
-[0m[0;32m[T1:root    @     162159] Creating service 2:m3fs
-[0m[0;32m[T1:root    @     162290] Creating service 1:pipes
-[0m[0;32m[T1:root    @     162315] Starting boot module 'pager' on tile4 with arguments ["268435456"]
-[0m[0;35m[T4:pager   @     162776] Boot modules:
-[0m[0;35m[T4:pager   @     162793]   Mod[addr: G[Tile26+0x80600000], size: 0x21d, name: boot.xml]
-[0m[0;35m[T4:pager   @     162796] Available tiles:
-[0m[0;35m[T4:pager   @     162806]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
-[0m[0;35m[T4:pager   @     162812]   Tile20: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
-[0m[0;35m[T4:pager   @     162816]   Tile21: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
-[0m[0;35m[T4:pager   @     162819]   Tile22: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
-[0m[0;35m[T4:pager   @     162823] Available memory:
-[0m[0;35m[T4:pager   @     162832]   MemMod[sel: 10, res: false, addr: G[Tile26+0x71800000], size: 119 MiB]
-[0m[0;35m[T4:pager   @     162834] Services:
-[0m[0;35m[T4:pager   @     162838]   Service[name=pipes, sessions=32]
-[0m[0;35m[T4:pager   @     162844] Creating service 1:pipes
-[0m[0;32m[T1:root    @     162866] pager: open_sess(dst_sel=78, name=m3fs)
-[0m[0;35m[T4:pager   @     163971] Starting boot module '/bin/imgproc' on tile5 with arguments ["-m", "dir", "-n", "1", "-r", "8", "/large.txt"]
-[0m[0;35m[T4:pager   @     164668] /bin/imgproc: open_sess(dst_sel=101, name=pipes)
-[0m[0;36m[T5:imgproc @     164775] Creating Activity FFT0
-[0m[0;36m[T5:imgproc @     164909] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     164998] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     165062] Connecting input and output...
-[0m[0;36m[T5:imgproc @     165122] Starting chain...
-[0m[0;35m[T4:pager   @     166671] /bin/imgproc: close_sess(sel=101)
-[0m[0;35m[T4:pager   @     166694] /bin/imgproc: open_sess(dst_sel=147, name=pipes)
-[0m[0;36m[T5:imgproc @     166728] Creating Activity FFT0
-[0m[0;36m[T5:imgproc @     166793] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     166849] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     166940] Connecting input and output...
-[0m[0;36m[T5:imgproc @     166988] Starting chain...
-[0m[0;35m[T4:pager   @     168460] /bin/imgproc: close_sess(sel=147)
-[0m[0;35m[T4:pager   @     168472] /bin/imgproc: open_sess(dst_sel=191, name=pipes)
-[0m[0;36m[T5:imgproc @     168502] Creating Activity FFT0
-[0m[0;36m[T5:imgproc @     168576] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     168673] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     168731] Connecting input and output...
-[0m[0;36m[T5:imgproc @     168779] Starting chain...
-[0m[0;35m[T4:pager   @     170253] /bin/imgproc: close_sess(sel=191)
-[0m[0;35m[T4:pager   @     170262] /bin/imgproc: open_sess(dst_sel=235, name=pipes)
-[0m[0;36m[T5:imgproc @     170292] Creating Activity FFT0
-[0mwarn: PowerState: More than one power state change request encountered within the same simulation tick
-[0;36m[T5:imgproc @     170364] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     170421] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     170480] Connecting input and output...
-[0m[0;36m[T5:imgproc @     170528] Starting chain...
-[0m[0;35m[T4:pager   @     171993] /bin/imgproc: close_sess(sel=235)
-[0m[0;35m[T4:pager   @     172002] /bin/imgproc: open_sess(dst_sel=279, name=pipes)
-[0m[0;36m[T5:imgproc @     172030] Creating Activity FFT0
-[0mwarn: PowerState: More than one power state change request encountered within the same simulation tick
-[0;36m[T5:imgproc @     172097] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     172159] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     172216] Connecting input and output...
-[0m[0;36m[T5:imgproc @     172263] Starting chain...
-[0m[0;35m[T4:pager   @     173722] /bin/imgproc: close_sess(sel=279)
-[0m[0;35m[T4:pager   @     173731] /bin/imgproc: open_sess(dst_sel=323, name=pipes)
-[0m[0;36m[T5:imgproc @     173759] Creating Activity FFT0
-[0m[0;36m[T5:imgproc @     173823] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     173881] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     173969] Connecting input and output...
-[0m[0;36m[T5:imgproc @     174017] Starting chain...
-[0m[0;35m[T4:pager   @     175480] /bin/imgproc: close_sess(sel=323)
-[0m[0;35m[T4:pager   @     175489] /bin/imgproc: open_sess(dst_sel=367, name=pipes)
-[0m[0;36m[T5:imgproc @     175518] Creating Activity FFT0
-[0m[0;36m[T5:imgproc @     175587] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     175652] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     175752] Connecting input and output...
-[0m[0;36m[T5:imgproc @     175803] Starting chain...
-[0m[0;35m[T4:pager   @     177283] /bin/imgproc: close_sess(sel=367)
-[0m[0;35m[T4:pager   @     177293] /bin/imgproc: open_sess(dst_sel=411, name=pipes)
-[0m[0;36m[T5:imgproc @     177323] Creating Activity FFT0
-[0m[0;36m[T5:imgproc @     177392] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     177455] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     177541] Connecting input and output...
-[0m[0;36m[T5:imgproc @     177591] Starting chain...
-[0m[0;35m[T4:pager   @     179059] /bin/imgproc: close_sess(sel=411)
-[0m[0;35m[T4:pager   @     179069] /bin/imgproc: open_sess(dst_sel=455, name=pipes)
-[0m[0;36m[T5:imgproc @     179098] Creating Activity FFT0
-[0m[0;36m[T5:imgproc @     179168] Creating Activity MUL0
-[0m[0;36m[T5:imgproc @     179230] Creating Activity IFFT0
-[0m[0;36m[T5:imgproc @     179317] Connecting input and output...
-[0m[0;36m[T5:imgproc @     179367] Starting chain...
-[0m[0;35m[T4:pager   @     180831] /bin/imgproc: close_sess(sel=455)
-[0m! src/apps/bench/imgproc/imgproc.cc:105  PERF "imgproc-dir (1 chains)": 2655538 cycles (+/- 7403 cycles with 8 runs)
-[0;32m[T1:root    @     181338] Sending SHUTDOWN to service 2:m3fs
-[0m[0;32m[T1:root    @     181365] Sending SHUTDOWN to service 1:pipes
-[0m[0;32m[T1:root    @     181378] m3fs: unreg_serv(sel=51)
-[0m[0;32m[T1:root    @     181383] Removing service 2:m3fs
-[0m[0;32m[T1:root    @     181404] pipes: unreg_serv(sel=59)
-[0m[0;32m[T1:root    @     181406] Removing service 1:pipes
-[0m[0;32m[T1:root    @     181648] All childs gone. Exiting.
-[0m[0;31m[T0:kernel  @     181745] Shutting down
-[0mExiting @ tick 181756992500 because m5_exit instruction encountered
+[0m[0;32m[T1:root    @     159659] Boot modules:
+[0m[0;32m[T1:root    @     159675]   Mod[addr: G[Tile26+0x30000000], size: 0x3ce, name: boot.xml]
+[0m[0;32m[T1:root    @     159679]   Mod[addr: G[Tile26+0x30001000], size: 0x747a0, name: root]
+[0m[0;32m[T1:root    @     159682]   Mod[addr: G[Tile26+0x30076000], size: 0x56390, name: m3fs]
+[0m[0;32m[T1:root    @     159686]   Mod[addr: G[Tile26+0x300cd000], size: 0x45bd8, name: pipes]
+[0m[0;32m[T1:root    @     159689]   Mod[addr: G[Tile26+0x30113000], size: 0x7fc90, name: pager]
+[0m[0;32m[T1:root    @     159691] Available tiles:
+[0m[0;32m[T1:root    @     159702]   Tile01: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159707]   Tile02: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159710]   Tile03: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159713]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159716]   Tile05: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159720]   Tile06: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159723]   Tile07: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159726]   Tile08: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159729]   Tile09: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159733]   Tile10: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159736]   Tile11: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159739]   Tile12: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159742]   Tile13: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159745]   Tile14: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159748]   Tile15: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159751]   Tile16: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159754]   Tile17: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159761]   Tile18: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159764]   Tile19: COMP_IMEM ACCEL_INDIR (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159767]   Tile20: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159770]   Tile21: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159773]   Tile22: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159776]   Tile23: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159780]   Tile24: COMP_IMEM ACCEL_ROT13 (empty) 4096 KiB memory
+[0m[0;32m[T1:root    @     159783]   Tile25: COMP_IMEM SERIAL_DEV (empty) 0 KiB memory
+[0m[0;32m[T1:root    @     159787] Available memory:
+[0m[0;32m[T1:root    @     159795]   MemMod[sel: 35, res: true, addr: G[Tile26+0x0], size: 1264 MiB]
+[0m[0;32m[T1:root    @     159800]   MemMod[sel: 36, res: false, addr: G[Tile26+0x53600000], size: 959 MiB]
+[0m[0;32m[T1:root    @     159804] Parsed Config [
+[0m[0;32m[T1:root    @     159808]   root [
+[0m[0;32m[T1:root    @     159819]     Domain on core [
+[0m[0;32m[T1:root    @     159822]       m3fs mem 268435456 [
+[0m[0;32m[T1:root    @     159824]         Daemon,
+[0m[0;32m[T1:root    @     159831]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R | W | X | RW | RWX],
+[0m[0;32m[T1:root    @     159836]         Service[lname='m3fs', gname='m3fs'],
+[0m[0;32m[T1:root    @     159839]       ]
+[0m[0;32m[T1:root    @     159841]     ]
+[0m[0;32m[T1:root    @     159843]     Domain on core [
+[0m[0;32m[T1:root    @     159845]       pipes [
+[0m[0;32m[T1:root    @     159847]         Daemon,
+[0m[0;32m[T1:root    @     159850]         Service[lname='pipes', gname='pipes'],
+[0m[0;32m[T1:root    @     159852]       ]
+[0m[0;32m[T1:root    @     159853]     ]
+[0m[0;32m[T1:root    @     159855]     Domain on core [
+[0m[0;32m[T1:root    @     159858]       pager 268435456 [
+[0m[0;32m[T1:root    @     159861]         PhysMem[addr=0x0, size=0x40000 KiB, perm=R],
+[0m[0;32m[T1:root    @     159865]         SessCreator[service='pipes', count=None],
+[0m[0;32m[T1:root    @     159870]         Session[lname='m3fs', gname='m3fs', arg='', dep=true],
+[0m[0;32m[T1:root    @     159874]         Tile[type=core, count=1, optional=false],
+[0m[0;32m[T1:root    @     159876]         Domain on core [
+[0m[0;32m[T1:root    @     159880]           /bin/imgproc -m dir -n 1 -r 8 /large.txt [
+[0m[0;32m[T1:root    @     159884]             Session[lname='pipes', gname='pipes', arg='', dep=true],
+[0m[0;32m[T1:root    @     159887]             Mount[fs='m3fs', path='/'],
+[0m[0;32m[T1:root    @     159891]             Tile[type=copy, count=3, optional=false],
+[0m[0;32m[T1:root    @     159893]           ]
+[0m[0;32m[T1:root    @     159894]         ]
+[0m[0;32m[T1:root    @     159896]       ]
+[0m[0;32m[T1:root    @     159898]     ]
+[0m[0;32m[T1:root    @     159899]   ]
+[0m[0;32m[T1:root    @     159900] ]
+[0m[0;32m[T1:root    @     159901] 
+[0m[0;32m[T1:root    @     160961] Starting boot module 'm3fs' on tile2 with arguments ["mem", "268435456"]
+[0m[0;32m[T1:root    @     161399] Starting boot module 'pipes' on tile3 with arguments []
+[0m[0;32m[T1:root    @     161785] pipes: reg_serv(srv_sel=59, sgate_sel=64, name=pipes, sessions=32)
+[0m[0;32m[T1:root    @     161794] Creating service 1:pipes
+[0m[0;32m[T1:root    @     162306] m3fs: reg_serv(srv_sel=51, sgate_sel=55, name=m3fs, sessions=32)
+[0m[0;32m[T1:root    @     162311] Creating service 2:m3fs
+[0m[0;32m[T1:root    @     162443] Creating service 1:pipes
+[0m[0;32m[T1:root    @     162467] Starting boot module 'pager' on tile4 with arguments ["268435456"]
+[0m[0;35m[T4:pager   @     162931] Boot modules:
+[0m[0;35m[T4:pager   @     162947]   Mod[addr: G[Tile26+0x80600000], size: 0x21d, name: boot.xml]
+[0m[0;35m[T4:pager   @     162950] Available tiles:
+[0m[0;35m[T4:pager   @     162961]   Tile04: COMP_EMEM RISCV (empty) 0 KiB memory
+[0m[0;35m[T4:pager   @     162966]   Tile20: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;35m[T4:pager   @     162970]   Tile21: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;35m[T4:pager   @     162973]   Tile22: COMP_IMEM ACCEL_COPY (empty) 4096 KiB memory
+[0m[0;35m[T4:pager   @     162977] Available memory:
+[0m[0;35m[T4:pager   @     162986]   MemMod[sel: 10, res: false, addr: G[Tile26+0x71800000], size: 119 MiB]
+[0m[0;35m[T4:pager   @     162988] Services:
+[0m[0;35m[T4:pager   @     162991]   Service[name=pipes, sessions=32]
+[0m[0;35m[T4:pager   @     162998] Creating service 1:pipes
+[0m[0;32m[T1:root    @     163019] pager: open_sess(dst_sel=78, name=m3fs)
+[0m[0;35m[T4:pager   @     164120] Starting boot module '/bin/imgproc' on tile5 with arguments ["-m", "dir", "-n", "1", "-r", "8", "/large.txt"]
+[0m[0;35m[T4:pager   @     164817] /bin/imgproc: open_sess(dst_sel=101, name=pipes)
+[0m[0;36m[T5:imgproc @     164928] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     165065] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     165155] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     165219] Connecting input and output...
+[0m[0;36m[T5:imgproc @     165279] Starting chain...
+[0m[0;35m[T4:pager   @     166798] /bin/imgproc: close_sess(sel=101)
+[0m[0;35m[T4:pager   @     166821] /bin/imgproc: open_sess(dst_sel=147, name=pipes)
+[0m[0;36m[T5:imgproc @     166855] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     166919] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     166977] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     167068] Connecting input and output...
+[0m[0;36m[T5:imgproc @     167117] Starting chain...
+[0m[0;35m[T4:pager   @     168564] /bin/imgproc: close_sess(sel=147)
+[0m[0;35m[T4:pager   @     168576] /bin/imgproc: open_sess(dst_sel=191, name=pipes)
+[0m[0;36m[T5:imgproc @     168606] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     168679] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     168778] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     168836] Connecting input and output...
+[0m[0;36m[T5:imgproc @     168884] Starting chain...
+[0m[0;35m[T4:pager   @     170330] /bin/imgproc: close_sess(sel=191)
+[0m[0;35m[T4:pager   @     170340] /bin/imgproc: open_sess(dst_sel=235, name=pipes)
+[0m[0;36m[T5:imgproc @     170370] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     170442] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     170500] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     170559] Connecting input and output...
+[0m[0;36m[T5:imgproc @     170607] Starting chain...
+[0m[0;35m[T4:pager   @     172045] /bin/imgproc: close_sess(sel=235)
+[0m[0;35m[T4:pager   @     172054] /bin/imgproc: open_sess(dst_sel=279, name=pipes)
+[0m[0;36m[T5:imgproc @     172083] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     172150] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     172213] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     172269] Connecting input and output...
+[0m[0;36m[T5:imgproc @     172316] Starting chain...
+[0m[0;35m[T4:pager   @     173750] /bin/imgproc: close_sess(sel=279)
+[0m[0;35m[T4:pager   @     173759] /bin/imgproc: open_sess(dst_sel=323, name=pipes)
+[0m[0;36m[T5:imgproc @     173787] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     173850] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     173909] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     173996] Connecting input and output...
+[0m[0;36m[T5:imgproc @     174044] Starting chain...
+[0m[0;35m[T4:pager   @     175483] /bin/imgproc: close_sess(sel=323)
+[0m[0;35m[T4:pager   @     175493] /bin/imgproc: open_sess(dst_sel=367, name=pipes)
+[0m[0;36m[T5:imgproc @     175522] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     175592] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     175656] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     175757] Connecting input and output...
+[0m[0;36m[T5:imgproc @     175809] Starting chain...
+[0m[0;35m[T4:pager   @     177263] /bin/imgproc: close_sess(sel=367)
+[0m[0;35m[T4:pager   @     177273] /bin/imgproc: open_sess(dst_sel=411, name=pipes)
+[0m[0;36m[T5:imgproc @     177304] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     177374] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     177436] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     177524] Connecting input and output...
+[0m[0;36m[T5:imgproc @     177573] Starting chain...
+[0m[0;35m[T4:pager   @     179016] /bin/imgproc: close_sess(sel=411)
+[0m[0;35m[T4:pager   @     179026] /bin/imgproc: open_sess(dst_sel=455, name=pipes)
+[0m[0;36m[T5:imgproc @     179055] Creating Activity FFT0
+[0m[0;36m[T5:imgproc @     179126] Creating Activity MUL0
+[0m[0;36m[T5:imgproc @     179189] Creating Activity IFFT0
+[0m[0;36m[T5:imgproc @     179275] Connecting input and output...
+[0m[0;36m[T5:imgproc @     179325] Starting chain...
+[0m[0;35m[T4:pager   @     180766] /bin/imgproc: close_sess(sel=455)
+[0m! src/apps/bench/imgproc/imgproc.cc:105  PERF "imgproc-dir (1 chains)": 2605159 cycles (+/- 6621 cycles with 8 runs)
+[0;32m[T1:root    @     181268] Sending SHUTDOWN to service 2:m3fs
+[0m[0;32m[T1:root    @     181297] Sending SHUTDOWN to service 1:pipes
+[0m[0;32m[T1:root    @     181310] m3fs: unreg_serv(sel=51)
+[0m[0;32m[T1:root    @     181316] Removing service 2:m3fs
+[0m[0;32m[T1:root    @     181336] pipes: unreg_serv(sel=59)
+[0m[0;32m[T1:root    @     181338] Removing service 1:pipes
+[0m[0;32m[T1:root    @     181578] All childs gone. Exiting.
+[0m[0;31m[T0:kernel  @     181675] Shutting down
+[0mExiting @ tick 181686882000 because m5_exit instruction encountered
 stty: 'standard input': Inappropriate ioctl for device

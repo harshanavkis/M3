@@ -127,6 +127,25 @@ Take-aways for the paper: (i) the AIU must keep packets in flight — this is wh
 security tax vanish for bulk transfers; (ii) the number of engines an AIU needs is
 ⌈link bandwidth / 32 GB/s⌉ at 2 GHz (R1.2, performance half; area half from OpenTitan synthesis).
 
+**Engine model (since 2026-09-18):** engines are counted *per link direction*, as in PCIe IDE
+implementations (Tx encrypts outgoing packets, Rx decrypts incoming; `M3_GEM5_CRYPTO_ENGINES=k`
+= k per direction; `M3_GEM5_CRYPTO_SHARED=1` = the old single pool for both directions). The
+single-stream numbers above are unaffected (only one direction is busy per tile), so the table
+reads "engines per direction". Platform: 1 per direction.
+
+**Engine-scaling matrix (R1.2) — the configurations to run and report, kept in sync with
+`reproduce.py` (E1) and `src/tools/replay/sweep-engines.sh` (E2):**
+
+| | workload | link (GB/s) | engines | answers |
+|---|---|---|---|---|
+| E1 | `bp2pspm` single stream, 64 in flight | 16, 32, 64 | 1, 2, 4 per direction; native | engines needed = ⌈link/32 GB/s⌉ per direction |
+| E2a | all_reduce N=4, N=8 (replay, off-chip) | 32 | native; 1 shared; 1/dir; 2/dir | full duplex needs one per direction; 2/dir buys nothing at 32 GB/s |
+| E2b | all_reduce N=4, N=8 (replay, off-chip) | 64 | native; 1/dir; 2/dir | count scales with link rate, not with N |
+| E3 | OpenTitan AES-GCM synthesis | — | k = 1, 2, 4 | area/power = base + 2k × AES |
+
+First E2a numbers (N=4): native 128.5k cycles, 1 shared 223.8k (+74 %), 1/dir 138.3k (+7.6 %),
+2 shared (old "eng2") 133.3k (+3.7 %); 2/dir and N=8 pending.
+
 ## 5. OS service and application workloads — Fig. app-bench
 
 m3fs (in-memory file system service on another tile; client reads/writes a 2 MiB file in 4 KiB
@@ -137,7 +156,7 @@ chunks through trusted message and memory channels) and the four accelerator app
 |---|---|---|
 | m3fs read (GiB/s) | 5.71 → 4.93 (1.16×) | 3.24 → 2.91 (1.11×) |
 | m3fs write (GiB/s) | 1.98 → 1.79 (1.11×) | 0.86 → 0.73 (1.17×) |
-| imgproc (FFT→mul→iFFT chain, 640 KB) | 1.45× | 1.13× |
+| imgproc (FFT→mul→iFFT chain, 640 KB) | 1.37× (was 1.45× with one shared engine) | 1.11× (was 1.13×) |
 | facever (GPU, 256 images) | 1.06× | 1.04× |
 | imgclass (systolic array) | 1.01× | 1.01× |
 | dist (2 systolic arrays) | 1.01× | 1.00× |
@@ -145,7 +164,11 @@ chunks through trusted message and memory channels) and the four accelerator app
 Explanation: m3fs and imgproc move data in 4 KiB chunks over cached tiles (2 packets per command)
 and are dominated by the per-packet cost of §3 plus capability/metadata messages; the three
 compute-heavy applications spend < 5 % of their time on the interconnect. Off-chip, imgproc's
-overhead drops from 45 % to 13 % because link latency, not crypto, dominates. (The submitted text's
+overhead drops from 37 % to 11 % because link latency, not crypto, dominates. imgproc is the one
+application whose stage tiles receive and send at the same time: with one AES-GCM engine per
+direction (§4, since 2026-09-18) it is 5.7 % (on-chip) / 1.9 % (off-chip) faster than with the
+single shared engine; the other three and the OS services are identical (single direction per
+tile). (The submitted text's
 absolute m3fs numbers — 5.3/4.3 and 2.16/1.92 GiB/s reads — must be replaced by the values above.)
 
 ## 6. Host-centric comparison — `bremote_ipc` chain tests, Fig. host-centric

@@ -496,8 +496,9 @@ def p2p_dma_benchmarks():
             (lambda n: lambda path, lat: run_p2p_dma(path, lat, n, False))(n)
         benchs["p2p-dma-secure-{}".format(n)] = \
             (lambda n: lambda path, lat: run_p2p_dma(path, lat, n, True))(n)
-    # link bandwidth sweep (crossbar width in bytes/cycle at 2 GHz: 8 -> 16 GB/s ... 64 -> 128
-    # GB/s): native and IronBus with 1, 2 and 4 engines, enough packets in flight for all links
+    # E1, engine scaling (R1.2): link bandwidth sweep (crossbar width in bytes/cycle at 2 GHz:
+    # 8 -> 16 GB/s ... 64 -> 128 GB/s): native and IronBus with 1, 2 and 4 AES-GCM engines per
+    # link direction, enough packets in flight for all links (see docs/revision/RESULTS.md §4)
     for w in P2P_XBAR_WIDTHS:
         benchs["p2p-dma-link{}-non-secure".format(w)] = \
             (lambda w: lambda path, lat: run_p2p_dma(path, lat, 64, False, xbar_width=w))(w)
