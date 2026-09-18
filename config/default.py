@@ -13,7 +13,11 @@ num_eps = 128 if os.environ.get('M3_TARGET') == 'hw' else 192
 num_mem = 1
 num_sto = 1 # Number of tiles for IDE storage
 num_tiles = int(os.environ.get('M3_GEM5_TILES'))
-num_spm = 4 if num_tiles >= 4 else 4 - num_tiles
+# number of core tiles with scratchpad memory (SPM) instead of caches; the remaining core tiles
+# are cached. M3_GEM5_SPM overrides the default of 4 (e.g., for experiments that place many
+# accelerator-like ranks on SPM tiles).
+num_spm = int(os.environ.get('M3_GEM5_SPM', '4'))
+num_spm = min(num_spm, num_tiles - 1) if num_tiles > 1 else 0
 
 fsimg = os.environ.get('M3_GEM5_FS')
 fsimgnum = os.environ.get('M3_GEM5_FSNUM', '1')
