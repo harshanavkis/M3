@@ -489,6 +489,29 @@ def verify(programs):
 # output
 # --------------------------------------------------------------------------------------------
 
+def split_transfers(programs, max_transfer):
+    """Splits SEND/RECV ops larger than max_transfer into chunks with consecutive tags, so that
+    the replay can use a fixed inbound slot size per peer. Applied identically on both sides
+    of a transfer, so SEND/RECV pairing is preserved."""
+    out = {}
+    for rank, ops in programs.items():
+        new = []
+        for op in ops:
+            if op.op in (OP_SEND, OP_RECV) and op.arg > max_transfer:
+                chunks = (op.arg + max_transfer - 1) // max_transfer
+                left = op.arg
+                for i in range(chunks):
+                    b = min(max_transfer, left)
+                    left -= b
+                    new.append(Op(op.op, op.peer, (op.tag * 64 + i) & 0xFFFF, b, op.id))
+            else:
+                if op.op in (OP_SEND, OP_RECV):
+                    op = Op(op.op, op.peer, (op.tag * 64) & 0xFFFF, op.arg, op.id)
+                new.append(op)
+        out[rank] = new
+    return out
+
+
 def write_programs(name, outdir, programs, stats, args, source):
     os.makedirs(outdir, exist_ok=True)
     manifest = {"name": name, "source": source, "ranks": len(programs), "ranks_info": {},
@@ -544,6 +567,7 @@ def main():
     p.add_argument("--bytes-scale", type=float, default=1.0, help="scale factor for all transfer sizes")
     p.add_argument("--comp-scale", type=float, default=None, help="scale factor for compute (default: = bytes scale)")
     p.add_argument("--min-bytes", type=int, default=64, help="minimum bytes per transfer")
+    p.add_argument("--max-transfer", type=int, default=1 << 20, help="split larger transfers into chunks (replay slot size)")
     p.add_argument("--comp-unit", choices=["cycles", "us"], default="cycles", help="unit of duration_micros in ETs")
     p.add_argument("--sim-freq-ghz", type=float, default=2.0)
     p.add_argument("--bw-ref-gbs", type=float, default=32.0, help="reference link (PCIe Gen4 x16)")
@@ -568,6 +592,7 @@ def main():
         programs, stats = convert_pattern(args)
         source = "pattern:" + args.pattern
 
+    programs = split_transfers(programs, args.max_transfer)
     if not args.no_verify:
         verify(programs)
     manifest = write_programs(args.name, args.out, programs, stats, args, source)

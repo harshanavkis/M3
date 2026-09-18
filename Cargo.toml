@@ -9,6 +9,7 @@ members = [
     "src/apps/bench/bencrmgate",
     "src/apps/bench/bmgatelarge",
     "src/apps/bench/bp2pspm",
+    "src/apps/bench/tracereplay",
     "src/apps/bench/encrsyscall",
     "src/apps/bench/netlat",
     "src/apps/bench/rustbenchs",

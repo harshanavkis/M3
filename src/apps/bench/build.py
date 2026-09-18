@@ -14,6 +14,7 @@ dirs = [
     'bencrmgate',
     'bmgatelarge',
     'bp2pspm',
+    'tracereplay',
     'encrsyscall',
     'loadgen',
     'netlat',

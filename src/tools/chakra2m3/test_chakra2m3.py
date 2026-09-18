@@ -16,7 +16,7 @@ def args(**kw):
                               layers=0, size=1 << 20, iterations=1, comp_cycles=0,
                               comp_unit="cycles", sim_freq_ghz=2.0, bw_ref_gbs=32.0,
                               bw_sim_gbs=32.0, peak_tflops=312.0, mem_bw_gbs=1935.0,
-                              pattern=None, forward_only=False, drop_ops='')
+                              pattern=None, forward_only=False, drop_ops='', max_transfer=1 << 20)
     for k, v in kw.items():
         setattr(a, k, v)
     return a
@@ -140,6 +140,15 @@ def test_chain_pattern():
     print("chain pattern ok")
 
 
+def test_split_transfers():
+    progs = {0: [c.Op(c.OP_SEND, 1, 5, 2 * 1024 * 1024 + 10)], 1: [c.Op(c.OP_RECV, 0, 5, 2 * 1024 * 1024 + 10)]}
+    sp = c.split_transfers(progs, 1 << 20)
+    assert len(sp[0]) == 3 and [o.arg for o in sp[0]] == [1 << 20, 1 << 20, 10]
+    assert [o.tag for o in sp[0]] == [o.tag for o in sp[1]] and len(set(o.tag for o in sp[0])) == 3
+    c.verify(sp)
+    print("split transfers ok")
+
+
 def test_deadlock_detection():
     # two ranks that both RECV first must be reported
     progs = {0: [c.Op(c.OP_RECV, 1, 0, 64), c.Op(c.OP_SEND, 1, 0, 64)],
@@ -161,5 +170,6 @@ if __name__ == "__main__":
     test_text_data_parallel_and_dlrm()
     test_scaling_and_min_bytes()
     test_chain_pattern()
+    test_split_transfers()
     test_deadlock_detection()
     print("all tests passed")
