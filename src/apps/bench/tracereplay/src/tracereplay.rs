@@ -1,7 +1,8 @@
 /*
  * tracereplay: replays per-rank op programs produced by chakra2m3 on a set of tiles.
  *
- *   tracereplay coord <name> <ranks> <mode>      (started from the boot script)
+ *   tracereplay coord <name> <ranks> <mode> [inst]   (started from the boot script; inst
+ *   numbers concurrent instances)
  *
  * The coordinator starts one activity per rank on scratchpad tiles (and, in host-centric mode,
  * a relay activity), wires up the channels and starts the replay. Every rank executes its
@@ -518,8 +519,9 @@ fn delegate_chan(act: &RunningProgramActivity, next: &mut kif::CapSel, sel: kif:
     dst as u32
 }
 
-fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
+fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
     assert!(ranks >= 2 && ranks <= MAX_RANKS);
+    let t_begin = CycleInstant::now();
     let host = mode == "host";
     let members = if host { ranks + 1 } else { ranks }; // + relay
     let relay = ranks; // index of the relay
@@ -595,6 +597,8 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
         };
         acts.push(run);
     }
+    // setup time, part 1: tiles, activities, programs loaded
+    let t_started = CycleInstant::now();
 
     // collect the buffer addresses
     let mut inbound = [0u64; MAX_RANKS + 1];
@@ -608,6 +612,8 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
         done(&own_rgate, msg);
         got += 1;
     }
+    // setup time, part 2 starts here: all members are running and have loaded their programs
+    let t_loaded = CycleInstant::now();
 
     // memory channels and start messages
     let mut gos: Vec<Go> = Vec::new();
@@ -683,6 +689,11 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
         got += 1;
     }
     let t0 = CycleInstant::now();
+    // setup time: activities = tiles allocated, activities created, programs loaded (until all
+    // members reported in); channels = memory/send gates created, delegated and activated
+    let t_activities = t_loaded.duration_since(t_begin).as_raw();
+    let t_channels = t0.duration_since(t_loaded).as_raw();
+    let _ = t_started;
     for m in 0..ranks {
         send_struct_retry(&go_gates[m], &reply_gate, Notify {
             kind: KIND_START,
@@ -722,6 +733,12 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
         done(&own_rgate, msg);
     }
 
+    // concurrent instances share the console: print one after the other
+    busy_wait(inst as u64 * 20_000_000);
+    println!(
+        "setup {} ranks={} mode={} inst={}: activities {} channels {} cycles",
+        name, ranks, mode, inst, t_activities, t_channels
+    );
     let mut max_total = 0;
     stats.sort_by_key(|s| s.rank);
     for s in &stats {
@@ -731,7 +748,10 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
         );
         max_total = cmp::max(max_total, s.total);
     }
-    println!("replay {} ranks={} mode={}: total: {} cycles (wall {} cycles)", name, ranks, mode, max_total, wall);
+    println!(
+        "replay {} ranks={} mode={} inst={}: total: {} cycles (wall {} cycles)",
+        name, ranks, mode, inst, max_total, wall
+    );
 
     for m in 0..ranks {
         send_struct_retry(&go_gates[m], &reply_gate, Notify {
@@ -752,9 +772,10 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
 pub fn main() -> i32 {
     let args: Vec<&str> = env::args().collect();
     if args.len() < 5 || args[1] != "coord" {
-        println!("Usage: {} coord <name> <ranks> <native|ironbus|host>", args[0]);
+        println!("Usage: {} coord <name> <ranks> <native|ironbus|host> [inst]", args[0]);
         return 1;
     }
     let ranks: usize = args[3].parse().expect("ranks");
-    coord_main(args[2], ranks, args[4])
+    let inst: usize = if args.len() > 5 { args[5].parse().expect("inst") } else { 0 };
+    coord_main(args[2], ranks, args[4], inst)
 }
