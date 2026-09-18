@@ -196,9 +196,44 @@ length. Unchanged from the submission.
 10.2 M cycles per tile (ECDSA signature generation 762 k, verification 482 k cycles — OpenTitan
 numbers), one-time at boot.
 
-## 8. Pending experiments
+## 8. Collectives vs. number of tiles and tenants — trace replay Part A, Fig. collectives (new)
 
-- Collective communication patterns vs. number of tiles (own figure) and application traces —
-  LLM inference/training, DLRM, ResNet-50 — on N = 4/8 tiles (own figure): see
-  `trace-replay-plan.md`.
-- OpenTitan synthesis (AES-GCM, OTBN, CSRNG, keystore SRAM) for the AIU area/power table.
+`src/tools/replay/sweep-collectives.sh` (2026-09-18): all-reduce, all-gather, reduce-scatter,
+all-to-all (1 MiB each) and a PP send/recv chain, N = 2, 4, 8, 16 SPM tiles, native / IronBus /
+host-centric, on-chip and off-chip; plus k = 1, 2, 4 concurrent all-reduce N=4 instances sharing
+one kernel/HAL. `collect.py` → `tools/replay-runs/replay.csv`, `plot_collectives.py` →
+`benchmarks/exp-results/collectives.{csv,pdf,png}` and `collectives-setup.{pdf,png}`.
+
+| pattern (off-chip) | N=2 | N=4 | N=8 | N=16 |
+|---|---|---|---|---|
+| all-reduce, native (µs) | 38.0 | 64.4 | 93.3 | 137.3 |
+| IronBus / host vs. native | 1.03× / 2.9× | 1.08× / 4.4× | 1.11× / 7.7× | 1.15× / 15.0× |
+| all-gather | 1.03× / 3.8× | 1.07× / 4.8× | 1.06× / 7.7× | 1.15× / 14.0× |
+| reduce-scatter | 1.03× / 3.8× | 1.07× / 4.8× | 1.07× / 7.7× | 1.14× / 13.9× |
+| all-to-all | 1.03× / 3.8× | 1.06× / 4.8× | 1.10× / 7.8× | 1.13× / 14.3× |
+| PP chain | 1.00× / 1.3× | 1.02× / 2.3× | 1.01× / 3.1× | 1.01× / 3.8× |
+
+On-chip IronBus is 1.04× (N=2) to 1.20–1.25× (N=16); host 3.9× to 15–16×. The IronBus overhead
+grows with N because the per-step transfer shrinks (1 MiB/N: 64 KiB at N=16, each command paying
+the crypto pipeline fill, cf. §4: −0.3 % at 1 MiB, −4 % at 64 KiB commands) and because the
+line-rate engines queue under many simultaneous senders (§4 E2: 2 engines per direction bring
+N=8 from +10 % to +3 %); it is in the send phase (recv waits are small). Host-centric scales with
+N: one relay serializes all 2·N·(N−1)/N transfers.
+
+Tenants (k = 1, 2, 4 concurrent all-reduce N=4, IronBus): per-instance time 69.2 / 69.2 / 69.1 µs
+off-chip (60.1 / 60.2 / 60.4 on-chip) — no interference once channels exist; channel setup per
+instance 0.27 / 0.53 / 1.06 ms off-chip (0.15 / 0.28 / 0.45 on-chip): the kernel serializes the
+tenants' channel-creation syscalls. Channel setup vs. N (all-reduce, IronBus): 0.05 / 0.27 / 1.2 /
+5.0 ms off-chip for N = 2 / 4 / 8 / 16 — quadratic, N(N−1) channels of two gates each, ~10 µs
+per channel (activity creation + program load is separate and dominated by loading: 26 ms for
+N=4 off-chip). This is the R1.1 "tenants / key storage" half.
+
+Run-to-run noise ≈ 1 % (ring phase alignment); all setup syscalls are outside the measured replay.
+
+## 9. Pending experiments
+
+- Application traces — LLM inference/training, DLRM, ResNet-50 — on N = 4/8 tiles (own figure):
+  trace replay Part B, see `trace-replay-plan.md`.
+- E2 at N=16 (2 engines per direction) and larger collectives (8 MiB) as the mitigation points
+  for the N=16 overhead.
+- OpenTitan synthesis (AES-GCM, OTBN, CSRNG, keystore SRAM) for the AIU area/power table (E3).
