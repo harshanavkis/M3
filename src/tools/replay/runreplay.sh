@@ -7,6 +7,8 @@ export M3_BUILD=release M3_TARGET=gem5 M3_ISA=riscv LD_LIBRARY_PATH=build/cross-
 export M3_GEM5_CPUFREQ=2GHz M3_GEM5_MEMFREQ=2GHz M3_PAR_PIPE=1 M3_RNG_LATENCY=0 M3_SIGN_LATENCY=0 M3_SIGN_VER_LATENCY=0
 export M3_GEM5_INFLIGHT=16 M3_GEM5_BUFCOUNT=16 M3_GEM5_CRYPTO_ENGINES=1 M3_GEM5_CRYPTO_WIRE=32B
 export M3_INT_TRA_LATENCY=$lat
+# no TCU trace (gem5.log) by default: it only costs wall time
+export M3_GEM5_DBG=${M3_GEM5_DBG:-TcuCredits}
 if [ "$mode" = native ]; then export M3_ENCR_LATENCY=0; else export M3_ENCR_LATENCY=15; fi
 members=$ranks; [ "$mode" = host ] && members=$((ranks+1))
 export M3_CORES=$((members+7)) M3_GEM5_SPM=$((members+1))

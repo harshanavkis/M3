@@ -180,7 +180,7 @@ Parse `total:` and per-rank `comm/compute/wait` → CSV → plots (matplotlib, s
 
 ---
 
-# Status (2026-09-18)
+# Status (2026-09-18, updated)
 
 **Step 1 — tile config: done.** `config/default.py` takes `M3_GEM5_SPM` (number of SPM core tiles, default 4). `M3_CORES=24 M3_GEM5_SPM=18` gives tiles 1–5 cached, 6–23 SPM; verified with `hello.xml` and `bench-p2p-spm.xml` (29 GiB/s, as with the default config). Commit `b870486fa`.
 
@@ -196,6 +196,14 @@ Parse `total:` and per-rank `comm/compute/wait` → CSV → plots (matplotlib, s
 
 Next: step 3, `chakra2m3` (`M3/src/tools/chakra2m3/`).
 
-**Steps 3–4 (2026-09-18): `chakra2m3` and `tracereplay` implemented** (commits `8e63739a1`, `e83549457`). All 34 workloads convert and verify; native/ironbus replays run. First results (off-chip cycles): all_reduce N=4 native 264k / IronBus 1 engine 355k / **2 engines 270k**; all_reduce N=8 native 527k / IronBus 2 engines 546k; Llama-7B TP4 prefill native 2.38M / IronBus 1 engine 3.44M. Finding: collectives are full-duplex, so one AES-GCM engine (32 GB/s) is the bottleneck and the AIU needs one engine per direction — the answer to R1.2's engine-cost question; the platform default should probably become 2 engines.
+**Steps 3–4 (2026-09-18): `chakra2m3` and `tracereplay` implemented** (commits `8e63739a1`, `e83549457`). All 34 workloads convert and verify; native/ironbus replays run. Run one configuration with `src/tools/replay/runreplay.sh <tag> <trace> <ranks> <mode> <lat> [ENV=val]` (outputs under `tools/replay-runs/out/<tag>/`; `M3_GEM5_DBG` defaults to `TcuCredits`, i.e., no TCU trace — a run takes ~3 min instead of ~15).
 
-Open: (1) host mode — the relay panics with `ALLOC_EP failed: Selector already in use`: gates delegated to running children with the parent's selector numbers collide with selectors the child allocated itself (reply gate); fix with `delegate_to` into a reserved high selector range passed in the Go message. (2) all_to_all N=8 is ~10× slower than expected in both modes (native 1.69M cycles for 0.9 MiB per rank) while all_reduce N=8 is fine — investigate pairwise schedule vs. crossbar/TCU behaviour and EP activations. Run one configuration with `src/tools/replay/runreplay.sh <tag> <trace> <ranks> <mode> <lat> [ENV=val]`.
+**Host mode and measurement fixes (2026-09-18, later):**
+- *Selector collision* (`ALLOC_EP failed: Selector already in use`): channels delegated to running members went in with the coordinator's selector numbers, which collided with selectors the member allocates itself (EPs on first use). Now delegated with `delegate_to` into a reserved range (`CHAN_SEL` = 2000+) that the Go message carries.
+- *Relay deadlock*: the relay had one notification gate per destination with one credit, shared by all sources; a notification parked at the destination (waiting for a later RECV) blocked the one the destination was waiting for. Now the relay→rank gates have `ranks` credits and the relay keeps one notification in flight per (source, destination) pair — the verifier's model — using the destination's reply (the `done` reply echoes the message) on one reply gate per destination (≤ 32 slots per receive buffer is a TCU limit: 32-bit occupied/unread masks). The relay credits the source as soon as the data is copied (a host with buffers) and forwards eagerly; sequential, one copy at a time. libm3: `RGateArgs::replies(false)` creates a receive gate without reply endpoints (a reply-only gate costs 1 EP instead of slots+1).
+- *Lost transfers before Go*: the coordinator sent Go to the relay last, so ranks' first transfers reached the relay while it was still waiting for Go and were dropped. Now a READY/START barrier: members activate all channels (`MemGate/SendGate::activate`, the latter made public), report READY, the coordinator releases the ranks with START; ranks leave only after a final STOP (all credits back before teardown).
+- *Channel setup was inside the measurement*: gates were activated lazily on first use, i.e., ~6 kernel syscalls per rank, serialized at the kernel, inside the timed region — ~130k of the 265k cycles of all_reduce N=4 native. **All numbers before this fix (264k/355k/270k, Llama +44 %) are void.**
+
+**Results with the fixed replay (all_reduce N=4, 1 MiB, off-chip, cycles):** native 128.5k (24.6 GB/s per rank, 84 % of the link), IronBus 1 engine 225.9k (+76 %), host-centric 809.7k (6.3× native; relay forwards 24 transfers sequentially). IronBus 2 engines 133.3k (+3.7 %): one engine per direction is what a full-duplex collective needs (R1.2).
+
+Open: all_to_all N=8 was ~10× slower than expected in both modes (native 1.69M cycles for 0.9 MiB per rank) while all_reduce N=8 was fine — re-check with the fixed replay (the lazy activations may explain part of it), then pairwise schedule vs. crossbar/TCU behaviour.

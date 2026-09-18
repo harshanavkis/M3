@@ -48,6 +48,7 @@ pub struct RecvGate {
     buf_addr: Option<usize>,
     order: u32,
     msg_order: u32,
+    replies: bool,
 }
 
 impl fmt::Debug for RecvGate {
@@ -69,6 +70,7 @@ pub struct RGateArgs {
     msg_order: u32,
     sel: Selector,
     flags: CapFlags,
+    replies: bool,
 }
 
 impl Default for RGateArgs {
@@ -78,6 +80,7 @@ impl Default for RGateArgs {
             msg_order: DEF_MSG_ORD,
             sel: INVALID_SEL,
             flags: CapFlags::empty(),
+            replies: true,
         }
     }
 }
@@ -109,6 +112,14 @@ impl RGateArgs {
         self.flags = flags;
         self
     }
+
+    /// Sets whether the `RecvGate` can reply to received messages (default: true). A `RecvGate`
+    /// that only receives replies (see [`SendGate::send`](crate::com::SendGate::send)) does not
+    /// need reply endpoints, which saves one endpoint per message slot.
+    pub fn replies(mut self, replies: bool) -> Self {
+        self.replies = replies;
+        self
+    }
 }
 
 impl RecvGate {
@@ -134,6 +145,7 @@ impl RecvGate {
             buf_addr: Some(addr),
             order,
             msg_order: order,
+            replies: true,
         }
     }
 
@@ -163,6 +175,7 @@ impl RecvGate {
             buf_addr: None,
             order: args.order,
             msg_order: args.msg_order,
+            replies: args.replies,
         })
     }
 
@@ -176,6 +189,7 @@ impl RecvGate {
             buf_addr: None,
             order,
             msg_order,
+            replies: true,
         })
     }
 
@@ -188,6 +202,7 @@ impl RecvGate {
             buf_addr: None,
             order,
             msg_order,
+            replies: true,
         }
     }
 
@@ -227,8 +242,8 @@ impl RecvGate {
             }
 
             let buf = self.buf.as_ref().unwrap();
-            let replies = 1 << (self.order - self.msg_order);
-            self.gate.activate_rgate(buf.mem(), buf.off(), replies)?;
+            self.gate
+                .activate_rgate(buf.mem(), buf.off(), self.reply_eps())?;
         }
 
         Ok(())
@@ -241,10 +256,22 @@ impl RecvGate {
         off: goff,
         addr: usize,
     ) -> Result<(), Error> {
-        let replies = 1 << (self.order - self.msg_order);
-        self.gate.activate_rgate(mem, off, replies).map(|_| {
-            self.buf_addr = Some(addr);
-        })
+        self.gate
+            .activate_rgate(mem, off, self.reply_eps())
+            .map(|_| {
+                self.buf_addr = Some(addr);
+            })
+    }
+
+    /// Returns the number of reply endpoints: one per message slot, or none if the gate does not
+    /// reply
+    fn reply_eps(&self) -> u32 {
+        if self.replies {
+            1 << (self.order - self.msg_order)
+        }
+        else {
+            0
+        }
     }
 
     /// Deactivates this gate.

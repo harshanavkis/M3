@@ -151,7 +151,9 @@ impl SendGate {
         self.gate.ep()
     }
 
-    pub(crate) fn activate(&self) -> Result<tcu::EpId, Error> {
+    /// Activates the gate, if not already done, and returns the chosen endpoint number. Gates
+    /// are activated on first use; this allows to take the setup out of a measured section.
+    pub fn activate(&self) -> Result<tcu::EpId, Error> {
         self.gate.activate()
     }
 

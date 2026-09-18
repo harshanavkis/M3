@@ -11,6 +11,11 @@
  * slot). Modes: "native"/"ironbus" (direct rank-to-rank channels; encryption is a platform
  * setting) and "host" (every transfer is written to the relay, which forwards it to the
  * destination, i.e., the 2N-2 transfers of a host-mediated design with per-link protection).
+ *
+ * Flow control is one transfer in flight per (source, destination) pair, which is what the
+ * converter's verifier assumes: the sender's notification is credited back when the receiver
+ * has consumed it. In host mode the relay keeps that invariant per pair on the second hop and
+ * buffers transfers that are not yet deliverable, like a host with ample memory would.
  */
 
 #![no_std]
@@ -22,9 +27,10 @@ use m3::com::{MemGate, RGateArgs, RecvGate, SGateArgs, SendGate};
 use m3::errors::{Code, Error};
 use m3::io::Read;
 use m3::kif;
+use m3::kif::{CapRngDesc, CapType};
 use m3::mem::{AlignedBuf, MsgBuf};
 use m3::tiles::{Activity, ActivityArgs, ChildActivity, RunningActivity, RunningProgramActivity, Tile};
-use m3::time::{CycleInstant, Duration, Instant};
+use m3::time::{CycleInstant, Duration};
 use m3::vfs::{OpenFlags, VFS};
 use m3::{env, format, println, wv_assert_ok};
 
@@ -46,9 +52,16 @@ const KIND_GO: u64 = 2;
 const KIND_ADDR: u64 = 3;
 const KIND_STATS: u64 = 4;
 const KIND_STOP: u64 = 5;
+const KIND_READY: u64 = 6;
+const KIND_START: u64 = 7;
 
 const LABEL_COORD: u32 = 0xFFFF;
 const LABEL_RELAY: u32 = 0xFFFE;
+
+// Channels are delegated to the members after they started, i.e., into a selector space the
+// member allocates from at the same time (reply gate, EPs on first use of a gate, files).
+// Hence, they go into a reserved high range that the member's own allocator never reaches.
+const CHAN_SEL: kif::CapSel = 2000;
 
 // inbound slots (one per peer; the relay uses one per source) and the local send buffer
 static INBOUND: StaticRefCell<AlignedBuf<{ MAX_RANKS * SLOT }>> =
@@ -96,12 +109,18 @@ fn words_to<T: Copy>(words: &[u64]) -> T {
 }
 
 // Credits of a send gate are returned to the sender by the receiver's reply. Hence, every
-// received message is answered with an empty reply (`done`), replies are collected on a
-// per-activity reply gate, and senders drain that gate (`drain`) before sending.
+// received message is answered with a reply (`done`) that echoes the message (so that the relay
+// can tell which transfer was consumed), replies are collected on a per-activity reply gate,
+// and senders drain that gate (`drain`) before sending.
+
+const REPLY_WORDS: usize = 5; // the words of Notify
 
 fn done(rgate: &RecvGate, msg: &'static m3::tcu::Message) {
+    let w = msg.as_words();
+    let mut echo = [0u64; REPLY_WORDS];
+    echo.copy_from_slice(&w[..REPLY_WORDS]);
     let mut reply = MsgBuf::new();
-    reply.set(0u64);
+    reply.set(echo);
     wv_assert_ok!(rgate.reply(&reply, msg));
 }
 
@@ -128,10 +147,31 @@ fn send_struct_retry<T: Copy>(sgate: &SendGate, reply_gate: &RecvGate, v: T) {
     }
 }
 
-fn new_reply_gate() -> RecvGate {
-    let mut rg = wv_assert_ok!(RecvGate::new_with(RGateArgs::default().order(11).msg_order(6)));
+// a gate for 2^(order-6) replies of 64 B; replies need no reply endpoints
+fn new_reply_gate(order: u32) -> RecvGate {
+    let mut rg = wv_assert_ok!(RecvGate::new_with(
+        RGateArgs::default().order(order).msg_order(6).replies(false)
+    ));
     wv_assert_ok!(rg.activate());
     rg
+}
+
+// waits for a message of `kind` on `rgate` (other messages are acknowledged and skipped)
+fn wait_for(rgate: &RecvGate, kind: u64) -> [u64; 32] {
+    loop {
+        let msg = wv_assert_ok!(rgate.receive(None));
+        let words = msg.as_words();
+        let mut copy = [0u64; 32];
+        let n = cmp::min(words.len(), copy.len());
+        copy[..n].copy_from_slice(&words[..n]);
+        let found = words[0] == kind;
+        // transfers cannot arrive before the start (READY/START barrier); do not drop them
+        assert!(words[0] != KIND_DATA, "unexpected transfer while waiting for kind {}", kind);
+        done(rgate, msg);
+        if found {
+            return copy;
+        }
+    }
 }
 
 fn busy_wait(cycles: u64) {
@@ -189,7 +229,7 @@ fn rank_main() -> i32 {
     let mut rgate = RecvGate::new_bind(rgate_sel, RG_ORDER, RG_MSG_ORDER);
     wv_assert_ok!(rgate.activate());
     let to_coord = SendGate::new_bind(coord_sel);
-    let reply_gate = new_reply_gate();
+    let reply_gate = new_reply_gate(11);
 
     let ops = load_program(&name, rank);
 
@@ -204,17 +244,8 @@ fn rank_main() -> i32 {
         bytes: ops.len() as u64,
     });
 
-    // wait for the start message with our channel selectors
-    let go: Go = loop {
-        let msg = wv_assert_ok!(rgate.receive(None));
-        let words = msg.as_words();
-        if words[0] == KIND_GO {
-            let g: Go = words_to(words);
-            done(&rgate, msg);
-            break g;
-        }
-        done(&rgate, msg);
-    };
+    // wait for the go message with our channel selectors
+    let go: Go = words_to(&wait_for(&rgate, KIND_GO));
     let ranks = go.ranks as usize;
     let host = go.mode == MODE_HOST;
 
@@ -224,6 +255,22 @@ fn rank_main() -> i32 {
         mgates.push(if go.mgates[p] != 0 { Some(MemGate::new_bind(go.mgates[p] as kif::CapSel)) } else { None });
         sgates.push(if go.sgates[p] != 0 { Some(SendGate::new_bind(go.sgates[p] as kif::CapSel)) } else { None });
     }
+    // channel setup (endpoint activation) is not part of the replay: activate, report ready
+    // and wait for the start
+    for mg in mgates.iter().flatten() {
+        wv_assert_ok!(mg.activate());
+    }
+    for sg in sgates.iter().flatten() {
+        wv_assert_ok!(sg.activate());
+    }
+    send_struct_retry(&to_coord, &reply_gate, Notify {
+        kind: KIND_READY,
+        src: rank,
+        dst: 0,
+        tag: 0,
+        bytes: 0,
+    });
+    wait_for(&rgate, KIND_START);
     // in host mode, index 0 holds the channel to the relay
     let chan = |p: usize| if host { 0 } else { p };
 
@@ -312,14 +359,31 @@ fn rank_main() -> i32 {
         ops: ops.len() as u64,
         bytes,
     });
+    // leave only when all members are done, so that every credit has returned to its gate
+    wait_for(&rgate, KIND_STOP);
     0
 }
 
 // ------------------------------------------------------------------------------------------
 // relay (host-centric mode): forwards every transfer from its per-source slot to the
-// destination's inbound slot; non-blocking, so that a destination that is not ready does not
-// stall the forwarding for the other destinations
+// destination's inbound slot and notifies the destination. The source is credited as soon as
+// the data has been copied; the notification to the destination waits until the destination
+// has consumed the previous transfer of the same source (one in flight per pair, as on a
+// direct channel), so a destination that is not ready does not stall the other destinations.
 // ------------------------------------------------------------------------------------------
+
+// acknowledges the replies to our notifications: the echoed Notify tells which pair is free
+fn relay_drain(reply_gates: &[RecvGate], outstanding: &mut [[bool; MAX_RANKS]; MAX_RANKS]) {
+    for rg in reply_gates {
+        while let Some(r) = rg.fetch() {
+            let w = r.as_words();
+            if w[0] == KIND_DATA {
+                outstanding[w[1] as usize][w[2] as usize] = false;
+            }
+            wv_assert_ok!(rg.ack_msg(r));
+        }
+    }
+}
 
 fn relay_main() -> i32 {
     let mut src = Activity::own().data_source();
@@ -331,7 +395,7 @@ fn relay_main() -> i32 {
     let mut rgate = RecvGate::new_bind(rgate_sel, RG_ORDER, RG_MSG_ORDER);
     wv_assert_ok!(rgate.activate());
     let to_coord = SendGate::new_bind(coord_sel);
-    let reply_gate = new_reply_gate();
+    let reply_gate = new_reply_gate(11);
 
     let inbound = INBOUND.borrow().as_ptr() as u64;
     send_struct_retry(&to_coord, &reply_gate, Notify {
@@ -342,43 +406,57 @@ fn relay_main() -> i32 {
         bytes: 0,
     });
 
-    let go: Go = loop {
-        let msg = wv_assert_ok!(rgate.receive(None));
-        let words = msg.as_words();
-        if words[0] == KIND_GO {
-            let g: Go = words_to(words);
-            done(&rgate, msg);
-            break g;
-        }
-        done(&rgate, msg);
-    };
+    let go: Go = words_to(&wait_for(&rgate, KIND_GO));
     let ranks = go.ranks as usize;
     let mut mgates: Vec<MemGate> = Vec::new();
     let mut sgates: Vec<SendGate> = Vec::new();
+    // one reply gate per destination: up to ranks-1 notifications (one per source) can be
+    // outstanding per destination and a receive buffer has at most 32 slots
+    let mut reply_gates: Vec<RecvGate> = Vec::new();
     for p in 0..ranks {
         mgates.push(MemGate::new_bind(go.mgates[p] as kif::CapSel));
         sgates.push(SendGate::new_bind(go.sgates[p] as kif::CapSel));
+        reply_gates.push(new_reply_gate(11));
+        wv_assert_ok!(mgates[p].activate());
+        wv_assert_ok!(sgates[p].activate());
     }
+    send_struct_retry(&to_coord, &reply_gate, Notify {
+        kind: KIND_READY,
+        src: LABEL_RELAY as u64,
+        dst: 0,
+        tag: 0,
+        bytes: 0,
+    });
 
     let slots = INBOUND.borrow();
-    // transfers whose data has been forwarded but whose notification could not be sent yet
-    let mut pending: Vec<(&'static m3::tcu::Message, Notify)> = Vec::new();
+    // outstanding[s][d]: the destination has not consumed the last notification of the pair
+    let mut outstanding = [[false; MAX_RANKS]; MAX_RANKS];
+    // forwarded transfers whose notification waits for the pair to become free (in order)
+    let mut pending: Vec<Notify> = Vec::new();
     let mut forwarded = 0u64;
     loop {
-        // retry pending notifications
+        relay_drain(&reply_gates, &mut outstanding);
+        // deliver pending notifications in order, at most one per pair
         let mut i = 0;
         while i < pending.len() {
-            let (m, n) = pending[i];
-            match send_struct(&sgates[n.dst as usize], &reply_gate, n) {
+            let n = pending[i];
+            let (s, d) = (n.src as usize, n.dst as usize);
+            if outstanding[s][d] {
+                i += 1;
+                continue;
+            }
+            let mut msg = MsgBuf::new();
+            msg.set(n);
+            match sgates[d].send(&msg, &reply_gates[d]) {
                 Ok(_) => {
-                    done(&rgate, m);
+                    outstanding[s][d] = true;
                     pending.remove(i);
                 },
-                Err(e) if e.code() == Code::NoCredits => i += 1,
+                // cannot happen with one credit per source, but keep the pair order if it does
+                Err(e) if e.code() == Code::NoCredits => break,
                 Err(e) => panic!("relay send failed: {:?}", e),
             }
         }
-        drain(&reply_gate);
         let msg = if pending.is_empty() {
             wv_assert_ok!(rgate.receive(None))
         }
@@ -404,18 +482,17 @@ fn relay_main() -> i32 {
             tag: w[3],
             bytes: w[4],
         };
-        let s = n.src as usize;
+        let (s, d) = (n.src as usize, n.dst as usize);
         let len = cmp::min(n.bytes as usize, SLOT);
-        // second hop: from our slot for the source into the destination's slot for the source
-        let off = (s * SLOT) as u64;
-        wv_assert_ok!(mgates[n.dst as usize].write(&slots[s * SLOT..s * SLOT + len], off));
+        // second hop: from our slot for the source into the destination's slot for the source;
+        // then the source's slot is free again
+        wv_assert_ok!(mgates[d].write(&slots[s * SLOT..s * SLOT + len], (s * SLOT) as u64));
+        done(&rgate, msg);
         forwarded += 1;
-        match send_struct(&sgates[n.dst as usize], &reply_gate, n) {
-            Ok(_) => done(&rgate, msg),
-            Err(e) if e.code() == Code::NoCredits => pending.push((msg, n)),
-            Err(e) => panic!("relay send failed: {:?}", e),
-        }
+        // the notification: now, unless the pair is busy or has earlier pending transfers
+        pending.push(n);
     }
+    assert!(pending.is_empty(), "relay: {} transfers not delivered", pending.len());
     send_struct_retry(&to_coord, &reply_gate, Stats {
         kind: KIND_STATS,
         rank: LABEL_RELAY as u64,
@@ -433,6 +510,14 @@ fn relay_main() -> i32 {
 // coordinator
 // ------------------------------------------------------------------------------------------
 
+// delegates the gate `sel` to the running member `act` at its next channel selector
+fn delegate_chan(act: &RunningProgramActivity, next: &mut kif::CapSel, sel: kif::CapSel) -> u32 {
+    let dst = *next;
+    *next += 1;
+    wv_assert_ok!(act.activity().delegate_to(CapRngDesc::new(CapType::OBJECT, sel, 1), dst));
+    dst as u32
+}
+
 fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
     assert!(ranks >= 2 && ranks <= MAX_RANKS);
     let host = mode == "host";
@@ -443,7 +528,7 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
         RGateArgs::default().order(RG_ORDER).msg_order(RG_MSG_ORDER)
     ));
     wv_assert_ok!(own_rgate.activate());
-    let reply_gate = new_reply_gate();
+    let reply_gate = new_reply_gate(11);
 
     // receive gates of all members, send gates member -> coordinator
     let mut rgates: Vec<RecvGate> = Vec::new();
@@ -475,9 +560,10 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
                 s != d
             };
             row.push(if create {
-                let label = if s == relay { LABEL_RELAY } else { s as u32 };
+                // the relay's channel to a rank carries the transfers of all sources
+                let (label, credits) = if s == relay { (LABEL_RELAY, ranks as u32) } else { (s as u32, 1) };
                 Some(wv_assert_ok!(SendGate::new_with(
-                    SGateArgs::new(&rgates[d]).credits(1).label(label)
+                    SGateArgs::new(&rgates[d]).credits(credits).label(label)
                 )))
             }
             else {
@@ -534,6 +620,8 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
             sgates: [0; MAX_RANKS],
         });
     }
+    // the selectors in the Go messages are the members' (see CHAN_SEL)
+    let mut next_sel = [CHAN_SEL; MAX_RANKS + 1];
     let mut mem_channels: Vec<MemGate> = Vec::new();
     if !host {
         for s in 0..ranks {
@@ -547,9 +635,9 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
                     SLOT as u64,
                     kif::Perm::W
                 ));
-                wv_assert_ok!(acts[s].activity().delegate_obj(mg.sel()));
-                gos[s].mgates[d] = mg.sel() as u32;
-                gos[s].sgates[d] = notify[s][d].as_ref().unwrap().sel() as u32;
+                gos[s].mgates[d] = delegate_chan(&acts[s], &mut next_sel[s], mg.sel());
+                gos[s].sgates[d] =
+                    delegate_chan(&acts[s], &mut next_sel[s], notify[s][d].as_ref().unwrap().sel());
                 mem_channels.push(mg);
             }
         }
@@ -562,9 +650,9 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
                 SLOT as u64,
                 kif::Perm::W
             ));
-            wv_assert_ok!(acts[s].activity().delegate_obj(mg.sel()));
-            gos[s].mgates[0] = mg.sel() as u32;
-            gos[s].sgates[0] = notify[s][relay].as_ref().unwrap().sel() as u32;
+            gos[s].mgates[0] = delegate_chan(&acts[s], &mut next_sel[s], mg.sel());
+            gos[s].sgates[0] =
+                delegate_chan(&acts[s], &mut next_sel[s], notify[s][relay].as_ref().unwrap().sel());
             mem_channels.push(mg);
             // relay -> whole inbound area of s
             let mg = wv_assert_ok!(acts[s].activity().get_mem(
@@ -572,24 +660,37 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
                 (ranks * SLOT) as u64,
                 kif::Perm::W
             ));
-            wv_assert_ok!(acts[relay].activity().delegate_obj(mg.sel()));
-            gos[relay].mgates[s] = mg.sel() as u32;
-            gos[relay].sgates[s] = notify[relay][s].as_ref().unwrap().sel() as u32;
+            gos[relay].mgates[s] = delegate_chan(&acts[relay], &mut next_sel[relay], mg.sel());
+            gos[relay].sgates[s] = delegate_chan(
+                &acts[relay],
+                &mut next_sel[relay],
+                notify[relay][s].as_ref().unwrap().sel()
+            );
             mem_channels.push(mg);
         }
     }
-    // the send gates were created by us; delegate them to their users
-    for s in 0..members {
-        for d in 0..members {
-            if let Some(sg) = notify[s][d].as_ref() {
-                wv_assert_ok!(acts[s].activity().delegate_obj(sg.sel()));
-            }
-        }
-    }
 
-    let t0 = CycleInstant::now();
     for m in 0..members {
         send_struct_retry(&go_gates[m], &reply_gate, gos[m]);
+    }
+    // barrier: all members have set up their channels
+    let mut got = 0;
+    while got < members {
+        let msg = wv_assert_ok!(own_rgate.receive(None));
+        let w = msg.as_words();
+        assert!(w[0] == KIND_READY);
+        done(&own_rgate, msg);
+        got += 1;
+    }
+    let t0 = CycleInstant::now();
+    for m in 0..ranks {
+        send_struct_retry(&go_gates[m], &reply_gate, Notify {
+            kind: KIND_START,
+            src: 0,
+            dst: 0,
+            tag: 0,
+            bytes: 0,
+        });
     }
 
     // results
@@ -632,6 +733,15 @@ fn coord_main(name: &str, ranks: usize, mode: &str) -> i32 {
     }
     println!("replay {} ranks={} mode={}: total: {} cycles (wall {} cycles)", name, ranks, mode, max_total, wall);
 
+    for m in 0..ranks {
+        send_struct_retry(&go_gates[m], &reply_gate, Notify {
+            kind: KIND_STOP,
+            src: 0,
+            dst: 0,
+            tag: 0,
+            bytes: 0,
+        });
+    }
     for a in acts {
         wv_assert_ok!(a.wait());
     }
