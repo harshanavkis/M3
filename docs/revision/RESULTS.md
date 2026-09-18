@@ -151,6 +151,10 @@ reads "engines per direction". Platform: 1 per direction.
 | N=4 | 64 GB/s | 96.1k | — | 142.0k (+48 %) | 99.9k (+3.9 %) |
 | N=8 | 32 GB/s | 186.4k | 300.4k (+61 %) | 204.6k (+9.8 %) | 192.5k (+3.3 %) |
 | N=8 | 64 GB/s | 140.1k | — | 216.9k (+55 %) | 158.9k (+13 %) |
+| N=16 | 32 GB/s | 274.7k | 380.6k (+39 %) | 315.1k (+14.7 %) | 290.8k (+5.9 %) |
+| N=16 | 64 GB/s | 234.9k | — | 347.7k (+48 %) | 243.1k (+3.5 %) |
+| all_to_all N=16 | 32 GB/s | 144.7k | 201.4k (+39 %) | 163.0k (+12.6 %) | 151.5k (+4.7 %) |
+| all_to_all N=16 | 64 GB/s | 134.9k | — | 176.0k (+30 %) | 136.2k (+1.0 %) |
 
 (2 shared engines, the old "eng2" pool, N=4 at 32 GB/s: 133.3k, +3.7 %.) Reading: a shared
 engine costs +61–74 %; the count scales with the link rate, not with N (same overhead within 2
@@ -234,6 +238,6 @@ Run-to-run noise ≈ 1 % (ring phase alignment); all setup syscalls are outside 
 
 - Application traces — LLM inference/training, DLRM, ResNet-50 — on N = 4/8 tiles (own figure):
   trace replay Part B, see `trace-replay-plan.md`.
-- E2 at N=16 (2 engines per direction) and larger collectives (8 MiB) as the mitigation points
-  for the N=16 overhead.
+- Larger collectives (8 MiB) at N=16 as a second mitigation point (E2 at N=16 is done: 2 engines
+  per direction give +5.9 % / +4.7 %).
 - OpenTitan synthesis (AES-GCM, OTBN, CSRNG, keystore SRAM) for the AIU area/power table (E3).
