@@ -143,8 +143,21 @@ reads "engines per direction". Platform: 1 per direction.
 | E2b | all_reduce N=4, N=8 (replay, off-chip) | 64 | native; 1/dir; 2/dir | count scales with link rate, not with N |
 | E3 | OpenTitan AES-GCM synthesis | — | k = 1, 2, 4 | area/power = base + 2k × AES |
 
-First E2a numbers (N=4): native 128.5k cycles, 1 shared 223.8k (+74 %), 1/dir 138.3k (+7.6 %),
-2 shared (old "eng2") 133.3k (+3.7 %); 2/dir and N=8 pending.
+**E2 results (all_reduce, off-chip, 1 MiB, cycles; `sweep-engines.sh`, 2026-09-18):**
+
+| | link | native | 1 shared | 1 per direction (platform) | 2 per direction |
+|---|---|---|---|---|---|
+| N=4 | 32 GB/s | 128.5k | 223.8k (+74 %) | 138.3k (+7.6 %) | 130.5k (+1.5 %) |
+| N=4 | 64 GB/s | 96.1k | — | 142.0k (+48 %) | 99.9k (+3.9 %) |
+| N=8 | 32 GB/s | 186.4k | 300.4k (+61 %) | 204.6k (+9.8 %) | 192.5k (+3.3 %) |
+| N=8 | 64 GB/s | 140.1k | — | 216.9k (+55 %) | 158.9k (+13 %) |
+
+(2 shared engines, the old "eng2" pool, N=4 at 32 GB/s: 133.3k, +3.7 %.) Reading: a shared
+engine costs +61–74 %; the count scales with the link rate, not with N (same overhead within 2
+points at N=4 and N=8); an engine at exactly line rate leaves a residual 8–10 % (bursts of
+in-flight packets and the 40 B notifications queue behind data on the Rx engine), 2× headroom
+brings it to 2–4 %. Recommendation for the paper: ⌈link / 32 GB/s⌉ engines per direction, one
+more for the last few percent — priced by E3.
 
 ## 5. OS service and application workloads — Fig. app-bench
 
