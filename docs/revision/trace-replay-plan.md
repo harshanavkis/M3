@@ -206,4 +206,6 @@ Next: step 3, `chakra2m3` (`M3/src/tools/chakra2m3/`).
 
 **Results with the fixed replay (all_reduce N=4, 1 MiB, off-chip, cycles):** native 128.5k (24.6 GB/s per rank, 84 % of the link), IronBus 1 engine 225.9k (+76 %), host-centric 809.7k (6.3× native; relay forwards 24 transfers sequentially). IronBus 2 engines 133.3k (+3.7 %): one engine per direction is what a full-duplex collective needs (R1.2).
 
-Open: all_to_all N=8 was ~10× slower than expected in both modes (native 1.69M cycles for 0.9 MiB per rank) while all_reduce N=8 was fine — re-check with the fixed replay (the lazy activations may explain part of it), then pairwise schedule vs. crossbar/TCU behaviour.
+**N=8 with the fixed replay (off-chip, cycles):** all_to_all native 97.0k (0.875 MiB per rank, 18.9 GB/s per rank), IronBus 2 engines 100.5k (+3.6 %); all_reduce native 186.4k (1.75 MiB per rank, 19.7 GB/s). The earlier "all_to_all N=8 is 10× too slow" (1.69M) was the lazy endpoint activation: 14 activations per rank × 8 ranks, serialized at the kernel. Resolved.
+
+Next: Part A sweep (collectives × N × modes × on/off-chip) with `M3_GEM5_CRYPTO_ENGINES=2`, then Part B.
