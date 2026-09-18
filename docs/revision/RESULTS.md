@@ -234,10 +234,40 @@ N=4 off-chip). This is the R1.1 "tenants / key storage" half.
 
 Run-to-run noise ≈ 1 % (ring phase alignment); all setup syscalls are outside the measured replay.
 
-## 9. Pending experiments
+## 9. Application traces — trace replay Part B, Fig. apps (new)
 
-- Application traces — LLM inference/training, DLRM, ResNet-50 — on N = 4/8 tiles (own figure):
-  trace replay Part B, see `trace-replay-plan.md`.
+`src/tools/replay/sweep-apps.sh` (2026-09-18): 14 Chakra workloads replayed at their layouts
+(STAGE Llama-7B, 4 layers, batch 1, seq 512 prefill / seq 1 decode, training at batch 8 / seq 2048;
+ASTRA-sim 1.0 Transformer hybrid, DLRM hybrid, ResNet-50 DP — traffic scaled, see
+`trace-replay-plan.md`), native / IronBus / host-centric, on-chip and off-chip; `plot_apps.py` →
+`benchmarks/exp-results/apps.{csv,pdf,png}`.
+
+| workload (N) | native off-chip (µs) | IronBus vs. native on / off | host vs. IronBus on / off |
+|---|---|---|---|
+| Llama-7B prefill TP4 (4) | 1138 | 1.03× / 1.05× | 2.8× / 2.8× |
+| Llama-7B prefill TP2·PP2 (4) | 1306 | 1.01× / 1.01× | 1.6× / 1.6× |
+| Llama-7B prefill TP4·PP2 (8) | 1071 | 1.04× / 1.05× | 3.0× / 3.0× |
+| Llama-7B decode TP4 (4) | 199 | 1.06× / 1.04× | 1.8× / 2.8× |
+| Llama-7B train TP4 (4) | 5171 | 1.02× / 1.02× | 2.8× / 2.7× |
+| Llama-7B train DP4 (4) | 3624 | 1.01× / 1.01× | 2.0× / 2.1× |
+| Llama-7B train TP4·PP2 (8) | 5017 | 1.01× / 1.02× | 2.9× / 2.9× |
+| Llama-7B train DP8 (8) | 4158 | 1.02× / 1.01× | 5.8× / 5.9× |
+| Transformer hybrid (4) | 18844 | 1.00× / 1.01× | 1.2× / 1.3× |
+| Transformer hybrid (8) | 21414 | 1.01× / 1.01× | 2.2× / 2.2× |
+| DLRM (4) | 106 | 1.27× / 1.04× | 3.4× / 3.9× |
+| DLRM (8) | 223 | 1.21× / 1.07× | 8.6× / 8.2× |
+| ResNet-50 DP (4) | 986 | 1.16× / 1.10× | 3.3× / 3.6× |
+| ResNet-50 DP (8) | 1823 | 1.26× / 1.09× | 6.8× / 7.8× |
+
+Reading: on the LLM and Transformer workloads (large, pipelined tensor exchanges) IronBus costs
+0–6 %; DLRM and ResNet-50 (embedding exchanges of ~2.5 KiB, gradient chunks of ~11 KiB) pay the
+per-packet cost of §3 — 4–10 % off-chip, 16–27 % on-chip where link latency does not hide the
+crypto store-and-forward. Host-centric is 1.6–8.6× slower than IronBus, growing with the number
+of accelerators and the communication share (DP8, DLRM 8). Compute is replayed from the traces
+(busy-wait), so the ratios are conservative for compute-heavier runs (Transformer: 1.2–2.2×).
+
+## 10. Pending experiments
+
 - Larger collectives (8 MiB) at N=16 as a second mitigation point (E2 at N=16 is done: 2 engines
   per direction give +5.9 % / +4.7 %).
 - OpenTitan synthesis (AES-GCM, OTBN, CSRNG, keystore SRAM) for the AIU area/power table (E3).
