@@ -16,12 +16,12 @@ csv = sys.argv[1] if len(sys.argv) > 1 else "/scratch/harshanavkis/ironbus/tools
 out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../benchmarks/exp-results")
 FREQ = 2e9
 WORKLOADS = [  # (trace, label)
-    ("llama7b_inf_tp4_s512", "Llama-7B prefill\nTP4"), ("llama7b_inf_tp2pp2_s512", "Llama-7B prefill\nTP2·PP2"),
-    ("llama7b_inf_tp4pp2_s512", "Llama-7B prefill\nTP4·PP2 (8)"), ("llama7b_inf_tp4_s1", "Llama-7B decode\nTP4"),
-    ("llama7b_train_tp4", "Llama-7B train\nTP4"), ("llama7b_train_dp4", "Llama-7B train\nDP4"),
-    ("llama7b_train_tp4pp2", "Llama-7B train\nTP4·PP2 (8)"), ("llama7b_train_dp8", "Llama-7B train\nDP8 (8)"),
-    ("transformer_4", "Transformer\nhybrid (4)"), ("transformer_8", "Transformer\nhybrid (8)"),
-    ("dlrm_4", "DLRM (4)"), ("dlrm_8", "DLRM (8)"), ("resnet50_4", "ResNet-50 (4)"), ("resnet50_8", "ResNet-50 (8)"),
+    ("llama7b_inf_tp4_s512", "Llama-7B prefill\nTP4, 4 acc."), ("llama7b_inf_tp2pp2_s512", "Llama-7B prefill\nTP2·PP2, 4 acc."),
+    ("llama7b_inf_tp4pp2_s512", "Llama-7B prefill\nTP4·PP2, 8 acc."), ("llama7b_inf_tp4_s1", "Llama-7B decode\nTP4, 4 acc."),
+    ("llama7b_train_tp4", "Llama-7B train\nTP4, 4 acc."), ("llama7b_train_dp4", "Llama-7B train\nDP4, 4 acc."),
+    ("llama7b_train_tp4pp2", "Llama-7B train\nTP4·PP2, 8 acc."), ("llama7b_train_dp8", "Llama-7B train\nDP8, 8 acc."),
+    ("transformer_4", "Transformer\nhybrid, 4 acc."), ("transformer_8", "Transformer\nhybrid, 8 acc."),
+    ("dlrm_4", "DLRM\n4 acc."), ("dlrm_8", "DLRM\n8 acc."), ("resnet50_4", "ResNet-50\n4 acc."), ("resnet50_8", "ResNet-50\n8 acc."),
 ]
 palette = sns.color_palette("colorblind")
 

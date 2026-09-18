@@ -1,9 +1,12 @@
 # IronBus evaluation — platform, methodology and results (TACO revision)
 
-Working notes for §7 of the revised paper. Everything here was measured on 2026-09-17 with the
-code at M3 commit `96a691dc0` (gem5 submodule `b0d732bc2`) via `python3 reproduce.py`; raw
-numbers are in `snapshot.json` (`benchmarks/snapshot-stopwait.json` holds the numbers of the
-original submission for comparison), logs in `benchmarks/exp-results/`, figures alongside.
+Working notes for §7 of the revised paper. §2–§7 were measured on 2026-09-17/18 with
+`python3 reproduce.py` (raw numbers in `snapshot.json`; `snapshot-eng1.json` = the same before the
+per-direction engine model, `benchmarks/snapshot-stopwait.json` = the original submission), logs
+in `benchmarks/exp-results/`, figures alongside. §8–§9 (trace replay) were measured on 2026-09-18
+with the `src/tools/replay/sweep-*.sh` scripts (raw numbers in `tools/replay-runs/replay.csv`,
+outside the repo). Code: M3 branch `sec-acc`, gem5 submodule branch `gem5-sec-acc` (see `git log`
+for the exact commits; the engine model changed on 2026-09-18, see §1 and §4).
 Units: cycles at 2 GHz; throughput in GiB/s in the figures (the text below uses GB/s where it
 compares with link rates: 1 GiB/s = 1.074 GB/s).
 
@@ -27,18 +30,65 @@ compares with link rates: 1 GiB/s = 1.074 GB/s).
 - **AIU crypto model**: per packet, `L + (B−1) + L` cycles with `L = 15` (AES-GCM pipeline
   latency from OpenTitan) and `B` = 16-byte blocks: the sender encrypts the whole packet
   (store-and-forward), the receiver decrypts in parallel with reception and releases the packet
-  after tag verification (pp=1, "parallel pipelined"). In-flight packets share **one AES-GCM
-  engine** per AIU (one block per cycle = 32 GB/s at 2 GHz; sender and receiver each book the
-  engine for `B` cycles per packet). Every encrypted packet carries **32 B of IV+MAC** on the
-  wire. Memory tiles have AIUs too (attested at boot, after the user tiles), so DRAM read
+  after tag verification (pp=1, "parallel pipelined"). The AIU has **one AES-GCM engine per
+  link direction** (as in PCIe IDE implementations: a Tx engine encrypts outgoing packets, an Rx
+  engine decrypts incoming ones; each does one 16 B block per cycle = 32 GB/s at 2 GHz, and
+  in-flight packets of the same direction queue for it; `M3_GEM5_CRYPTO_ENGINES=k` = k per
+  direction, `M3_GEM5_CRYPTO_SHARED=1` = the naive single pool for both directions, §4 E2).
+  Every encrypted packet carries **32 B of IV+MAC** on the wire. Memory tiles have AIUs too (attested at boot, after the user tiles), so DRAM read
   responses are encrypted at the memory side and decrypted at the requester.
 - **Attestation cost**: 10.2 M cycles (5.1 ms) per tile, one-time at boot; 23 tiles → ~117 ms.
-- **Baselines**: *M3* = the same platform with encryption disabled (native, unprotected NoC);
+- **Baselines**: *M3* (native) = the same platform with encryption disabled (unprotected NoC);
   *host-centric* = every device-to-device transfer bounced through a host tile with per-link
-  encryption (2N−2 hops instead of N−1; `bremote_ipc` chain tests).
+  encryption (2 hops instead of 1; §6 `bremote_ipc` chain tests, §8–§9 the replay's relay). In the
+  replay the host is one tile of the same kind as the accelerators (scratchpad, 32 GB/s link) that
+  receives each transfer into a per-source buffer and forwards it to the destination, one copy at a
+  time, crediting the source as soon as its data is copied and keeping one notification in flight
+  per (source, destination) pair; it has no software cost beyond the copy and no IOMMU/root-complex
+  cost, i.e., it is a *favourable* host model.
 - Environment (`benchmarks/constants.py`): `M3_GEM5_CPUFREQ=2GHz M3_GEM5_MEMFREQ=2GHz
   M3_PAR_PIPE=1 M3_ENCR_LATENCY=15 (IronBus) / 0 (M3) M3_INT_TRA_LATENCY=0|500
-  M3_GEM5_INFLIGHT=16 M3_GEM5_BUFCOUNT=16 M3_GEM5_CRYPTO_ENGINES=1 M3_GEM5_CRYPTO_WIRE=32B`.
+  M3_GEM5_INFLIGHT=16 M3_GEM5_BUFCOUNT=16 M3_GEM5_CRYPTO_ENGINES=1 (per direction)
+  M3_GEM5_CRYPTO_WIRE=32B`.
+
+### Trace replay (§8–§9): methodology
+
+- **What is replayed.** Chakra execution traces are converted per rank into a program of COMP /
+  SEND / RECV ops (`src/tools/chakra2m3`, one program per accelerator tile). Taken from the trace:
+  compute durations, communication ops with peer and size (point-to-point as is; collectives
+  lowered over their communication group: ring reduce-scatter + all-gather for all-reduce, ring
+  all-gather / reduce-scatter, pairwise all-to-all), dependency order. **Not taken:** tensor
+  contents (dummy payload; AES-GCM cost is content-independent) and `MEM_LOAD/STORE` nodes — an
+  accelerator's reads of weights, activations and KV cache from its *own* HBM never cross the
+  interconnect, so they are part of the compute time, not of the bus traffic. **Compute time** is
+  taken from the trace where it carries cycles (ASTRA-sim 1.0 traces: Transformer, DLRM, ResNet-50)
+  and otherwise from a roofline on an A100-class reference (312 TFLOP/s dense FP16, 1935 GB/s
+  HBM: `t = ops / min(peak, HBM bandwidth × arithmetic intensity)`; STAGE Llama traces) — so
+  decode (seq 1) is memory-bound in its compute phases and prefill compute-bound — and scaled by
+  the ratio of the reference link (32 GB/s) to the simulated one so that the compute-to-
+  communication ratio of the trace is preserved; the rank busy-waits for it. Traces are replayed
+  as a window (Llama-7B: 4 of 32 layers, batch 1, seq 512 prefill / seq 1 decode; training at
+  batch 8, seq 2048; ASTRA-sim traces with their traffic scaled down; sizes per rank in
+  `trace-replay-plan.md`). A converter-side verifier checks every program set for deadlock freedom
+  under the replay's protocol.
+- **How it runs.** The coordinator (a cached tile) starts one activity per rank on scratchpad
+  accelerator tiles (plus the relay in host mode), loads the programs into the ranks' buffers,
+  creates the channels — per (source, destination) pair one memory gate into the destination's
+  inbound slot and one notification send gate with one credit — and delegates them; the ranks
+  activate all channels, report ready, and are released together. A SEND writes the data into the
+  peer's slot with a DMA command (up to 16 packets in flight) and sends a 40 B notification; a
+  RECV waits for the matching notification and acknowledges it with a reply, which returns the
+  sender's credit — one transfer in flight per pair, transfers larger than 1 MiB are split. In
+  host mode the source's channel goes to the relay and the relay's to the destination (see
+  Baselines). Modes are environment settings: native `M3_ENCR_LATENCY=0`, IronBus 15,
+  on-chip/off-chip `M3_INT_TRA_LATENCY=0|500`.
+- **What is measured.** Per rank the cycles from the start signal to its last op (and the split
+  into compute / send / receive waits); the reported completion time is the maximum over ranks.
+  Channel creation, endpoint activation and program loading are *before* the start signal and are
+  reported separately as setup time (§8: "HAL setup"), since they belong to the HAL's one-time
+  cost, not to the collective. N is the number of accelerator tiles (ranks); k concurrent
+  instances are k independent coordinators with their own tiles sharing one kernel/HAL.
+  Run-to-run noise ≈ 1 % (phase alignment of the ranks; gem5 is deterministic otherwise).
 
 ### What changed relative to the original submission (for the response letter)
 
@@ -48,8 +98,12 @@ compares with link rates: 1 GiB/s = 1.074 GB/s).
    switched off).
 2. DMA commands pipeline up to 16 packets (previously stop-and-wait per 2 KiB packet, which
    bounded any DMA to packet/RTT, e.g. 2.6 GB/s off-chip — no real DMA engine works that way).
-3. In-flight packets share the AIU's AES-GCM engine(s); IV+MAC bytes are counted on the wire.
+3. In-flight packets queue for the AIU's AES-GCM engines, **one per link direction** (a single
+   engine shared by both directions was the model until 2026-09-18 and costs +61–74 % on
+   collectives, §4); IV+MAC bytes are counted on the wire.
 4. Off-chip latency is 250 ns, not 500 ns (text error).
+5. New experiments: collectives vs. N and tenants (§8), application traces (§9), engine scaling
+   (§4 E1/E2), all from trace replay on the same platform.
 
 Effect on the submitted numbers (old → new, IronBus/M3 slowdown): single-packet DMA and IPC
 unchanged; 4 KiB DMA reads 1.35 → 1.18 (on-chip), 1.12 → 1.08 (off-chip); 4 KiB writes
@@ -242,7 +296,7 @@ ASTRA-sim 1.0 Transformer hybrid, DLRM hybrid, ResNet-50 DP — traffic scaled, 
 `trace-replay-plan.md`), native / IronBus / host-centric, on-chip and off-chip; `plot_apps.py` →
 `benchmarks/exp-results/apps.{csv,pdf,png}`.
 
-| workload (N) | native off-chip (µs) | IronBus vs. native on / off | host vs. IronBus on / off |
+| workload (N = accelerator tiles) | native off-chip (µs) | IronBus vs. native on / off | host vs. IronBus on / off |
 |---|---|---|---|
 | Llama-7B prefill TP4 (4) | 1138 | 1.03× / 1.05× | 2.8× / 2.8× |
 | Llama-7B prefill TP2·PP2 (4) | 1306 | 1.01× / 1.01× | 1.6× / 1.6× |
