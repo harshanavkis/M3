@@ -320,8 +320,72 @@ crypto store-and-forward. Host-centric is 1.6–8.6× slower than IronBus, growi
 of accelerators and the communication share (DP8, DLRM 8). Compute is replayed from the traces
 (busy-wait), so the ratios are conservative for compute-heavier runs (Transformer: 1.2–2.2×).
 
-## 10. Pending experiments
+## 10. AIU hardware cost — E3 (R1.2), Table aiu-cost (new)
+
+**Method.** The AIU has no RTL of its own; its cost is estimated from open RTL that implements
+the functions of §4 of the paper, synthesized out-of-context with Vivado 2023.2 for a Xilinx
+UltraScale+ device (XCZU7EV; the VCU118's XCVU9P needs a licence we do not have — same CLB/LUT6
+architecture, so LUT/FF counts are comparable) and reported next to the DTU's published FPGA
+utilization on the VCU118 (M3v, ASPLOS'22, Table 1: DTU 15.2k LUTs, 5.8k FFs, 0.5 BRAM; Rocket
+46.6k / BOOM 143.8k LUTs as anchors). Sources (all in `tools/aiu-syn/`, outside the repos):
+- *Data-path engine*: a line-rate AES-256-GCM engine — Hsing's fully pipelined AES-256 core
+  (`tiny_aes`, Apache-2.0; 14 unrolled rounds, one 16 B block per clock, 28-clock latency) in
+  counter mode, a bit-parallel GF(2^128) GHASH multiplier (one block per clock; `rtl/ghash.v`),
+  IV/J0/tag logic and the data delay line (`rtl/aes_gcm_engine.v`). Verified against the GCM
+  specification's AES-256 test cases 14 and 15 (ciphertext and tag, encrypt and decrypt). This
+  is the engine the performance model assumes (16 B/cycle = 32 GB/s at 2 GHz), synthesized twice
+  as the AIU has one per link direction; reported with the S-box/T-tables as logic (LUT only) and,
+  for reference, with the tables in block RAM. The model's per-packet latency L = 15 assumes
+  round keys ready at the pipeline (fixed key per endpoint); Hsing's core computes the schedule on
+  the fly and has 28 stages — area is what matters here, but the latency difference is disclosed.
+- *Control channel*: OpenTitan `aes` (iterative, **unmasked**, LUT S-box, GCM enabled, no
+  AES-192): 16 clocks per block, i.e., the 2 GB/s unit that decrypts configuration requests.
+- *Root of trust*: OpenTitan `otbn` (ECDSA), `csrng` + `edn` + `entropy_src` (RNG), `hmac`
+  (SHA-2 measurement / key derivation; the paper fixes no hash, SHA-2 is the smaller block and what
+  SPDM uses). OpenTitan at commit `aecc39ba9a` (2026-09-16), UltraScale primitive mapping, file
+  lists from fusesoc, `-max_bram 0` for the logic blocks.
+- *Keystore*: sized from the design (no synthesis): per endpoint a 256-bit AES key and a 96-bit
+  IV counter (an endpoint is send or receive), plus one 256-bit control key K_c per AIU.
+
+| block | LUTs | FFs | BRAM | LUTs / DTU |
+|---|---|---|---|---|
+| DTU (published, VCU118) | 15.2k | 5.8k | 0.5 | 1.00× |
+| AES-256-GCM engine, line rate, one direction (tables as logic) | 40.9k | 14.1k | 0 | 2.69× |
+| — same engine, T-tables in block RAM | 21.5k | 10.2k | 242 | 1.41× |
+| — of which GHASH (one GF(2^128) multiplier) | 15.7k | 0.4k | 0 | 1.03× |
+| — GHASH with 4 parallel multipliers (H…H^4, multi-GHz timing) | 39.0k | 0.8k | 0 | 2.57× |
+| **Two engines (Tx + Rx) = platform** | **81.7k** | **28.2k** | 0 | **5.4×** |
+| OpenTitan AES-256-GCM, iterative, unmasked (control channel) | 10.6k | 2.9k | 0 | 0.69× |
+| OpenTitan HMAC / SHA-2 | 11.3k | 4.9k | 0 | 0.75× |
+| OpenTitan CSRNG + EDN + entropy source | 24.3k | 14.9k | 0 | 1.60× |
+| OpenTitan OTBN (ECDSA) | 86.1k | 21.6k | 16.5 | 5.66× |
+| **AIU total** (2 engines + control AES + HMAC + RNG + OTBN) | **214k** | **72.5k** | 16.5 | **14.1×** |
+| AIU without OTBN (fixed-function P-256 verifier instead, see below) | 128k | 51k | 0 | 8.4× |
+
+Storage (192 endpoints): DTU endpoint state 192 × 256 bit = **6.0 KiB**; IronBus adds
+192 × 352 bit + 256 bit = **8.3 KiB (+138 %)**, 14.3 KiB in total = 2 BRAM36 or ~1.1k LUT-RAM
+cells (the DTU's register file is 2.0k LUTs / 1.0k FFs in Table 1). 64 / 512 endpoints: +2.8 /
++22.0 KiB, linear (R1.1).
+
+**Engine scaling (E3 with E1/E2).** One engine per direction (40.9k LUTs each, ≈ one Rocket
+core) sustains 32 GB/s; 64 GB/s needs two per direction (+81.7k LUTs) — E1 shows the link rate
+that each configuration reaches, E2 the collective overhead (1 per direction +8–15 %, 2 per
+direction +2–6 % at 32 GB/s). The "single shared engine" saves one engine (40.9k LUTs, 2.7 DTUs)
+and costs +61–74 % on collectives (§4): the false economy.
+
+**Reading.** (i) The line-rate crypto is the dominant cost and it is the price of IDE-class link
+encryption, not of IronBus: a TDISP/IDE device port needs the same AES-GCM datapath per direction;
+81 % of an engine is the GHASH multiplier and the unrolled rounds. (ii) The root of trust is
+dominated by OTBN, a general-purpose 256-bit coprocessor with instruction and data memories that
+is used only during attestation and channel setup; a fixed-function ECDSA-P256 verifier is
+several times smaller, and one root of trust can serve a device with several tiles/AIUs — we
+report OTBN as the upper bound. (iii) The IronBus-specific additions over an IDE port —
+keystore (8.3 KiB), endpoint permission checks and the control channel's iterative AES (10.6k
+LUTs) — are small. Power: not measured (FPGA power is not representative); it scales with the
+number of line-rate engines, i.e., with link bandwidth.
+
+## 11. Pending experiments
 
 - Larger collectives (8 MiB) at N=16 as a second mitigation point (E2 at N=16 is done: 2 engines
   per direction give +5.9 % / +4.7 %).
-- OpenTitan synthesis (AES-GCM, OTBN, CSRNG, keystore SRAM) for the AIU area/power table (E3).
+- (E3 done, §10.) Optional: a fixed-function ECDSA-P256 core instead of OTBN for the RoT row.
