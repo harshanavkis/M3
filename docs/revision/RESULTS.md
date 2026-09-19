@@ -410,28 +410,28 @@ Blocks:
   port with 16 selective streams holds ≈ 8.4 KiB.
 
 **Table aiu-cost — IronBus AIU vs. a TDISP/IDE device port, function by function.** Areas
-from the per-block synthesis below (UltraScale+ LUTs / FFs / BRAM36; [T1] = M3v Table 1, VCU118);
-the TDISP column is what the PCIe IDE / TDISP / SPDM specifications require of a device port,
-priced with the same blocks where the function is identical. Only functions with their own
-hardware are rows (packet framing is inside the engines; measurement uses the HMAC/SHA-2 block).
+from the per-block synthesis below (UltraScale+ LUTs / FFs / BRAM36) and, for the DTU's own
+blocks, from M3v Table 1 (VCU118, published, marked [T1]); the TDISP column is what the PCIe IDE /
+TDISP / SPDM specifications require of a device port, priced with the same blocks where the
+function is identical. The table lists the security functions only: the interface unit itself
+(the DTU, 15,200 LUTs / 5,800 FFs [T1]; on a PCIe device the endpoint controller and DMA
+engines) is the substrate both designs have and is not part of the comparison.
 
 | # | function | TDISP/IDE port | IronBus AIU | LUTs | FFs | BRAM | Δ IronBus − TDISP |
 |---|---|---|---|---:|---:|---:|---|
-| 1 | Interface unit: DMA/message engines, MMIO decode | PCIe endpoint controller + DMA engines | DTU minus endpoint register file | 13,200 [T1] | 4,800 [T1] | 0.5 | 0 — every device has one |
-| 2 | Line-rate encryption, Tx | IDE Tx: AES-256-GCM at link rate | engine (pipelined AES-256 + GHASH) | 40,866 | 14,086 | 0 | 0 |
-| 3 | Line-rate decryption / verification, Rx | IDE Rx: AES-256-GCM at link rate | engine | 40,866 | 14,086 | 0 | 0 |
-| 4 | Key storage | 12 keys per IDE stream (3 sub-streams × 2 directions × 2 refresh slots) ≈ 0.53 KiB/stream; 16 selective streams ≈ 8.4 KiB | 192 endpoints × (256-bit key + 96-bit IV counter) + 256-bit control key = 8.3 KiB | ≈ 1,100 LUT-RAM | — | 2 | ≈ 0 KiB; per endpoint instead of per stream |
-| 5 | Endpoint / capability store | per-TDI configuration + selective-IDE association registers | endpoint table 192 × 256 bit = 6.0 KiB | 2,000 [T1] | 1,000 [T1] | 0 | **+2,000 LUTs, +1,000 FFs, +6 KiB** (finer granularity) |
-| 6 | Per-transfer permission check | T-bit / stream-binding check per TLP, TDI lock | endpoint permission check on every DMA/message command | ≈ 1,000–3,000 (in row 1's controller) | — | 0 | **+1,000–3,000 LUTs** |
-| 7 | Secure management channel: authenticated configuration + key derivation | SPDM secure session (low-rate AES-GCM) + HKDF | control channel: OpenTitan AES-GCM (iterative, unmasked) + HMAC/SHA-2 (KDF; also measurement) | 21,876 | 7,764 | 0 | 0 |
-| 8 | Device identity, signed challenges | ECDSA signer (SPDM CHALLENGE, certificate) | ECDSA: OTBN (upper bound; a fixed-function P-256 core is several times smaller) | 86,083 | 21,567 | 16.5 | 0 |
-| 9 | Random numbers | DRBG for nonces and IVs | CSRNG + EDN + entropy source | 24,300 | 14,900 | 0 | 0 |
-| | **Total AIU** | | | **229,000** | **78,000** | **16.5 (+2)** | |
-| | **Total Δ over TDISP** | | | **+3,000–5,000** | **+1,000** | **0** | **+6 KiB; rows 5–6 only (≤ one DTU, 15,200 LUTs, as the upper bound); crypto and keys at parity** |
+| 1 | Line-rate encryption, Tx | IDE Tx: AES-256-GCM at link rate | engine (pipelined AES-256 + GHASH) | 40,866 | 14,086 | 0 | 0 |
+| 2 | Line-rate decryption / verification, Rx | IDE Rx: AES-256-GCM at link rate | engine | 40,866 | 14,086 | 0 | 0 |
+| 3 | Key storage | 12 keys per IDE stream (3 sub-streams × 2 directions × 2 refresh slots) = 0.53 KiB/stream; 16 selective streams = 8.4 KiB | 192 endpoints × (256-bit key + 96-bit IV counter) + 256-bit control key = 8.3 KiB (66 kbit) | — | — | 2 | 0 KiB (8.3 vs. 8.4 KiB); per endpoint instead of per stream |
+| 4 | Endpoint (capability) table and permission check | per-TDI configuration + selective-IDE association registers; T-bit / stream-binding check per TLP | endpoint table 192 × 256 bit = 6.0 KiB [T1: register file] + access-permission check [T1: memory mapper + PMP] | 2,600 [T1] | 1,200 [T1] | 0 | **+2,600 LUTs, +1,200 FFs, +6 KiB** (per-endpoint granularity; the DTU's command controller also checks endpoints, not separated in [T1] — one DTU, 15,200 LUTs, is the upper bound) |
+| 5 | Secure management channel: authenticated configuration + key derivation | SPDM secure session (low-rate AES-GCM) + HKDF | control channel: OpenTitan AES-GCM (iterative, unmasked) + HMAC/SHA-2 (KDF; also measurement) | 21,876 | 7,764 | 0 | 0 |
+| 6 | Device identity, signed challenges | ECDSA signer (SPDM CHALLENGE, certificate) | ECDSA: OTBN (upper bound; a fixed-function P-256 core is several times smaller) | 86,083 | 21,567 | 16.5 | 0 |
+| 7 | Random numbers | DRBG for nonces and IVs | CSRNG + EDN + entropy source | 24,300 | 14,900 | 0 | 0 |
+| | **AIU security hardware (rows 1–7)** | | | **216,591** | **73,603** | **18.5** | |
+| | **Δ over a TDISP/IDE port** | | | **+2,600** | **+1,200** | **0** | **+6 KiB (row 4 only); crypto and keys at parity** |
 
-Sums: rows 1–3 + 5–9 = 13,200 + 2 × 40,866 + 2,000 + (in row 1) + 21,876 + 86,083 + 24,300 =
-229,191 LUTs; FFs 4,800 + 2 × 14,086 + 1,000 + 7,764 + 21,567 + 14,900 = 78,203. Without OTBN:
-143,108 LUTs / 56,636 FFs.
+Sums: LUTs 2 × 40,866 + 2,600 + 21,876 + 86,083 + 24,300 = 216,591; FFs 2 × 14,086 + 1,200 +
+7,764 + 21,567 + 14,900 = 73,603; BRAM 16.5 (OTBN) + 2 (keystore). Without OTBN: 130,508 LUTs /
+52,036 FFs. With the DTU as substrate the whole tile interface is 231,791 LUTs / 79,403 FFs.
 
 Per-block synthesis results behind the table (`aiu-area.csv`):
 
@@ -460,15 +460,15 @@ costs +61–74 % on collectives (§4): the false economy. The engine count follo
 bandwidth, not the number of endpoints or tiles.
 
 **Explanation / reading for the paper.**
-1. *Against a TDISP/IDE device port the AIU adds no crypto hardware*: rows 2–3 and 7–9 are the
+1. *Against a TDISP/IDE device port the AIU adds no crypto hardware*: rows 1–2 and 5–7 are the
    same functions and, here, the same RTL; the keystore is the same size at a finer granularity.
-   The hardware delta is the per-endpoint capability store and the per-command permission check
-   (rows 5–6), ≈ 3–5k LUTs and 6 KiB, bounded above by one DTU — and on M3 these exist in the
+   The hardware delta is the per-endpoint capability table and permission check (row 4):
+   2,600 LUTs / 1,200 FFs / 6 KiB from M3v Table 1, bounded above by one DTU — and on M3 these exist in the
    native DTU already; IronBus makes them the policy store. The device-side DSM (TDISP responder
    firmware on an embedded controller) has no counterpart in the AIU: policy lives in the HAL,
    which the TCB accounting covers.
 2. *Against native M3* the AIU adds the two engines, the control-channel AES, the RoT and the
-   keystore — 214k LUTs, i.e., about 1.5 BOOM cores or 4.6 Rocket cores, dominated by the line-rate
+   keystore — 217k LUTs, i.e., about 1.5 BOOM cores or 4.6 Rocket cores, dominated by the line-rate
    crypto (82k; 81 % of an engine is the GHASH multiplier and the unrolled rounds) and by OTBN
    (86k, upper bound). This is the price of link encryption and attestation on a device, not of
    IronBus's design: an IDE/TDISP-capable device pays it too.
@@ -484,7 +484,7 @@ L = 15 (round keys on the fly vs. precomputed) without affecting area.
 **Paper-text consequences.** §4: the AIU's data-path engine is "a pipelined AES-256-GCM engine
 (16 B/cycle, ~15-cycle latency, IDE-class)"; OpenTitan supplies the root-of-trust blocks and the
 control-channel AES (the submission attributed the data-path AES to OpenTitan — clarify, and
-note it in the response letter). §7: Table aiu-cost (9 rows) with the Δ column, the engine-
+note it in the response letter). §7: Table aiu-cost (7 rows) with the Δ column, the engine-
 scaling sentence tied to E1/E2, and the storage line.
 
 ## 11. Pending experiments
