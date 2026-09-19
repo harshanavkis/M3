@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """plot_apps.py [replay.csv] [out-dir]
 
-Fig. B (applications, R1.3/R3.4) from the Part B replay runs (tag partB): per workload, IronBus's
-overhead vs. native and the host-centric design's slowdown vs. IronBus, off-chip (the on-chip
-numbers stay in apps.csv).
+Fig. B (applications, R1.3/R3.4) from the Part B replay runs (tag partB): per workload the
+completion time of native M3, IronBus and the host-centric design, off-chip, with IronBus's
+overhead and the host-centric slowdown over native annotated (the on-chip numbers stay in apps.csv).
 Same style as benchmarks/plot_utils.py. Also writes apps.csv."""
 import os, sys
 import numpy as np
@@ -47,25 +47,24 @@ labels = [l for w, l in WORKLOADS if w in names]
 # the application traces are multi-device workloads: the figure shows the off-chip interconnect
 # only (the on-chip numbers are in apps.csv / RESULTS.md)
 LAT = 500
-x = np.arange(len(names)); width = 0.6
-fig, axes = plt.subplots(2, 1, figsize=(0.42 * len(names) + 0.8, 2.4), sharex=True)
-for ax, key, ylab, ref in ((axes[0], "ironbus/native", "IronBus overhead\nvs. native (%)", 0),
-                           (axes[1], "host/ironbus", "Host-centric slowdown\nvs. IronBus (×)", 1)):
-    vals = []
-    for w in names:
-        v = t.loc[(w, LAT), key] if (w, LAT) in t.index else np.nan
-        vals.append((v - 1) * 100 if key == "ironbus/native" else v)
-    color = palette[1] if key == "ironbus/native" else palette[3]
-    ax.bar(x, vals, width, color=color, edgecolor="k", linewidth=0.4)
-    for xi, v in zip(x, vals):
-        if not np.isnan(v):
-            ax.text(xi, v, ("%.0f" % v) if key == "ironbus/native" else ("%.1f" % v), ha="center", va="bottom", fontsize=3.8)
-    style_axis(ax); ax.set_ylabel(ylab, fontsize=5, labelpad=1)
-    ax.set_ylim(0, np.nanmax(vals) * 1.18)
-    if ref:
-        ax.axhline(1, color="k", linewidth=0.4, linestyle=":")
-axes[0].set_title("Application traces, off-chip interconnect", fontsize=6, pad=2)
-axes[1].set_xticks(x); axes[1].set_xticklabels(labels, fontsize=4.5, rotation=45, ha="right")
+x = np.arange(len(names)); width = 0.27
+fig, ax = plt.subplots(1, 1, figsize=(0.55 * len(names) + 0.8, 1.7))
+systems = (("native", "M3 (native)", palette[-1], -1), ("ironbus", "IronBus", palette[1], 0), ("host", "Host-centric", palette[3], 1))
+for mode, label, color, off in systems:
+    vals = [t.loc[(w, LAT), mode] / FREQ * 1e6 if (w, LAT) in t.index else np.nan for w in names]
+    bars = ax.bar(x + off * width, vals, width, color=color, edgecolor="k", linewidth=0.4, label=label)
+    if mode != "native":
+        for w, b, v in zip(names, bars, vals):
+            nat = t.loc[(w, LAT), "native"]
+            r = t.loc[(w, LAT), mode] / nat
+            txt = ("+%.0f%%" % ((r - 1) * 100)) if mode == "ironbus" else ("%.1f×" % r)
+            ax.text(b.get_x() + b.get_width() / 2, v * 1.08, txt, ha="center", va="bottom", fontsize=3.6, rotation=90)
+ax.set_yscale("log", base=10)
+ax.set_ylim(ax.get_ylim()[0], ax.get_ylim()[1] * 3)
+style_axis(ax)
+ax.set_ylabel("Time, off-chip (µs)", fontsize=5, labelpad=1)
+ax.set_xticks(x); ax.set_xticklabels(labels, fontsize=4.5, rotation=45, ha="right")
+ax.legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="upper left", ncol=3)
 plt.tight_layout(pad=0.3)
 for ext in ("png", "pdf"):
     plt.savefig(os.path.join(out, "apps." + ext), bbox_inches="tight", dpi=200)

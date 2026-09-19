@@ -38,10 +38,10 @@ tab["ironbus/native"] = tab["ironbus"] / tab["native"]; tab["host/native"] = tab
 print(tab.round(3).to_string())
 tab.to_csv(os.path.join(out, "collectives.csv"))
 
-# ---- Fig. A ------------------------------------------------------------------------------
-fig, axes = plt.subplots(2, len(PATTERNS), figsize=(1.45 * len(PATTERNS), 2.4))
+# ---- Fig. A: completion time vs. N per pattern, off-chip, native / IronBus / host-centric -------
+fig, axes = plt.subplots(1, len(PATTERNS), figsize=(1.45 * len(PATTERNS), 1.35))
 for col, (pat, title) in enumerate(PATTERNS):
-    ax = axes[0][col]
+    ax = axes[col]
     sub = a[(a.pattern == pat) & (a.lat == 500)]
     for mode in ("native", "ironbus", "host"):
         d = sub[sub["mode"] == mode].sort_values("N")
@@ -50,21 +50,9 @@ for col, (pat, title) in enumerate(PATTERNS):
     ax.set_xticks(NS); ax.set_xticklabels([str(n) for n in NS])
     ax.yaxis.set_minor_formatter(NullFormatter())
     style_axis(ax); ax.set_title(title, fontsize=6, pad=2)
-    if col == 0:
-        ax.set_ylabel("Time, off-chip (µs)", fontsize=5, labelpad=1)
-        ax.legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="lower right")
-    ax = axes[1][col]
-    for lat, ls, lab in ((500, "-", "off-chip"), (0, "--", "on-chip")):
-        sub = a[(a.pattern == pat) & (a.lat == lat)]
-        t = sub.pivot_table(index="N", columns="mode", values="us")
-        if "ironbus" in t and "native" in t:
-            ov = (t["ironbus"] / t["native"] - 1) * 100
-            ax.plot(ov.index, ov.values, marker="s", markersize=2.5, linewidth=0.8, linestyle=ls, color=COLORS["ironbus"], label="IronBus, " + lab)
-    ax.set_xscale("log", base=2); ax.set_xticks(NS); ax.set_xticklabels([str(n) for n in NS])
-    ax.set_ylim(0, max(25, ax.get_ylim()[1])); style_axis(ax)
     ax.set_xlabel("Accelerator tiles N", fontsize=5, labelpad=1)
     if col == 0:
-        ax.set_ylabel("Overhead vs. native (%)", fontsize=5, labelpad=1)
+        ax.set_ylabel("Time, off-chip (µs)", fontsize=5, labelpad=1)
         ax.legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="upper left")
 plt.tight_layout(pad=0.3)
 for ext in ("png", "pdf"):
@@ -72,13 +60,13 @@ for ext in ("png", "pdf"):
 
 # ---- Fig. A2: setup vs. N, concurrency vs. k --------------------------------------------
 plt.clf()
-fig, axes = plt.subplots(1, 3, figsize=(4.5, 1.4))
+fig, axes = plt.subplots(1, 3, figsize=(5.2, 1.4))
 ax = axes[0]
 for lat, ls, lab in ((500, "-", "off-chip"), (0, "--", "on-chip")):
     s = a[(a.pattern == "all_reduce") & (a["mode"] == "ironbus") & (a.lat == lat)].sort_values("N")
     ax.plot(s.N, s.setup_channels / FREQ * 1e3, marker="s", markersize=2.5, linewidth=0.8, linestyle=ls, color=COLORS["ironbus"], label=lab)
 ax.set_xscale("log", base=2); ax.set_xticks(NS); ax.set_xticklabels([str(n) for n in NS])
-style_axis(ax); ax.set_title("Channel setup (HAL)", fontsize=6, pad=2)
+style_axis(ax); ax.set_title("(a) HAL setup vs. tiles", fontsize=6, pad=2)
 ax.set_xlabel("Accelerator tiles N", fontsize=5, labelpad=1); ax.set_ylabel("Time (ms)", fontsize=5, labelpad=1)
 ax.legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="upper left")
 
@@ -88,15 +76,15 @@ g = c.groupby(["lat", "k"]).agg(us=("us", "mean"), us_max=("us", "max"), setup=(
 print(g.to_string(index=False))
 g.to_csv(os.path.join(out, "collectives-concurrency.csv"), index=False)
 ks = sorted(g.k.unique())
-for ax, key, title, ylab in ((axes[1], "us", "k tenants: all-reduce N=4", "Time per instance (µs)"),
-                             (axes[2], "setup", "k tenants: channel setup", "Time per instance (ms)")):
+for ax, key, title, ylab in ((axes[1], "us", "(b) Runtime per tenant", "Time per tenant (µs)"),
+                             (axes[2], "setup", "(c) HAL setup per tenant", "Setup per tenant (ms)")):
     for lat, ls, lab in ((500, "-", "off-chip"), (0, "--", "on-chip")):
         s = g[g.lat == lat].sort_values("k")
         y = s[key] if key == "us" else s[key] / FREQ * 1e3
         ax.plot(s.k, y, marker="s", markersize=2.5, linewidth=0.8, linestyle=ls, color=COLORS["ironbus"], label=lab)
     ax.set_xscale("log", base=2); ax.set_xticks(ks); ax.set_xticklabels([str(k) for k in ks])
     ax.set_ylim(0, ax.get_ylim()[1] * 1.15); style_axis(ax); ax.set_title(title, fontsize=6, pad=2)
-    ax.set_xlabel("Concurrent instances k", fontsize=5, labelpad=1); ax.set_ylabel(ylab, fontsize=5, labelpad=1)
+    ax.set_xlabel("Concurrent tenants k", fontsize=5, labelpad=1); ax.set_ylabel(ylab, fontsize=5, labelpad=1)
 plt.tight_layout(pad=0.3)
 for ext in ("png", "pdf"):
     plt.savefig(os.path.join(out, "collectives-setup." + ext), bbox_inches="tight", dpi=200)
