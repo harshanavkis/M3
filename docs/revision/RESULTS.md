@@ -325,9 +325,41 @@ these are multi-device workloads — the on-chip numbers are in the table below 
 Reading: on the LLM and Transformer workloads (large, pipelined tensor exchanges) IronBus costs
 0–6 %; DLRM and ResNet-50 (embedding exchanges of ~2.5 KiB, gradient chunks of ~11 KiB) pay the
 per-packet cost of §3 — 4–10 % off-chip, 16–27 % on-chip where link latency does not hide the
-crypto store-and-forward. Host-centric is 1.6–8.6× slower than IronBus, growing with the number
+crypto store-and-forward. Host-centric is 1.3–8.6× slower than IronBus, growing with the number
 of accelerators and the communication share (DP8, DLRM 8). Compute is replayed from the traces
 (busy-wait), so the ratios are conservative for compute-heavier runs (Transformer: 1.2–2.2×).
+
+**Why the two figures differ (Fig. collectives vs. Fig. apps) — text for the paper.**
+- *The collectives are pure communication.* Their traces contain no compute: the ring steps are
+  back-to-back transfers, so every cycle of a collective is on the bus. Fig. collectives therefore
+  shows the *upper bound* of both effects: IronBus's per-transfer cost is hidden by nothing (+3 %
+  at N = 2, rising to +15 % at N = 16 as the per-step transfer shrinks to 1 MiB / N = 64 KiB and
+  each command pays the crypto pipeline fill), and the host relay is on the critical path for
+  100 % of the runtime (3× at N = 2 → 15× at N = 16, since one host serializes all N ranks'
+  transfers twice).
+- *The applications interleave compute and communication*, and two properties of a workload
+  decide how much of that bound it exposes: (1) its compute-to-communication ratio — Llama
+  prefill and training and the hybrid-parallel Transformer are compute-dominated, so IronBus
+  costs 0–6 % and host-centric 1.3–3×, with the Transformer (34 M compute cycles per rank) at the
+  low end; (2) its transfer sizes — DLRM (embedding exchanges of ~2.5 KiB) and ResNet-50
+  (gradient chunks of ~11 KiB) move little data but in many small transfers, so the per-packet
+  crypto latency (§3) and the relay's per-transfer handling both show (7–10 % and up to 8.7×),
+  while Llama's tensor exchanges are large and pipelined (§4) and therefore nearly free.
+- *Parallel layout matters as much as the model.* The same Llama-7B training job costs
+  host-centric 2.9× as TP4·PP2 on 8 tiles but 5.9× as DP8: data parallelism all-reduces the full
+  gradient across 8 replicas, i.e., far more bus traffic per step, and IronBus's overhead stays at
+  1–2 % in both layouts because that traffic is large and pipelined.
+- *Placing a new workload.* The workload table (bytes moved per rank, compute-to-communication
+  ratio, transfer sizes, number of tiles) is what lets a reader locate a workload between the two
+  figures: the collectives give the cost of the communication pattern itself as a function of N,
+  the applications show which fraction of it an actual workload exposes. One-line summary for §7:
+  *the collectives bound the overhead of the communication; the applications show how much of
+  that bound a workload exposes, which depends on its compute-to-communication ratio and on its
+  transfer sizes.*
+- *Interconnect.* Fig. apps shows the off-chip interconnect only: these are multi-device
+  workloads. On-chip (table above) the small-transfer workloads pay more (DLRM 21–27 %,
+  ResNet-50 16–26 %) because there is no link latency to hide the crypto store-and-forward behind,
+  which is the same effect as the on-chip rows of §3.
 
 ## 10. AIU hardware cost — E3 (R1.2), Table aiu-cost (new)
 
