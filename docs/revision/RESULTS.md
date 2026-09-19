@@ -278,21 +278,33 @@ line-rate engines queue under many simultaneous senders (§4 E2: 2 engines per d
 N=8 from +10 % to +3 %); it is in the send phase (recv waits are small). Host-centric scales with
 N: one relay serializes all 2·N·(N−1)/N transfers.
 
-Tenants (k = 1, 2, 4 concurrent all-reduce N=4; Fig. collectives-setup b): IronBus (k
-independent coordinators, `REPLAY_INSTANCES=k`) per-tenant time 69.2 / 69.2 / 69.1 µs off-chip
-(60.1 / 60.2 / 60.4 on-chip) — no interference once channels exist. Host-centric with **one host
-relaying for all tenants** (`REPLAY_GROUPS=k`: k groups under one coordinator sharing the relay):
-280 / 554 / 1108 µs off-chip, 250 / 498 / 1004 µs on-chip — per-tenant time grows linearly with
-k (2× and 4× on-chip), the single host being the shared data-path bottleneck; a rank of tenant k
-waits for the relay to serve the other tenants' transfers (96 transfers through one relay at
-k = 4). IronBus with 4 groups under one coordinator gives the same 69.2 µs as 4 coordinators
-(consistency check). IronBus channel setup per tenant 0.27 / 0.53 / 1.06 ms off-chip (0.15 /
-0.28 / 0.45 on-chip): the kernel serializes the tenants' channel-creation syscalls — the HAL's
-cost is one-time setup, not runtime, which is the answer to "a single HAL is centralized"
-(R3.1). Channel setup vs. N (all-reduce, IronBus): 0.05 / 0.27 / 1.2 /
-5.0 ms off-chip for N = 2 / 4 / 8 / 16 — quadratic, N(N−1) channels of two gates each, ~10 µs
-per channel (activity creation + program load is separate and dominated by loading: 26 ms for
-N=4 off-chip). This is the R1.1 "tenants / key storage" half.
+**Fig. collectives-setup (off-chip; M3 / IronBus / host-centric).**
+(a) *Channel setup vs. tiles* (all-reduce, N = 2 … 16): the time from "all ranks running" to the
+start signal, i.e., the coordinator creating the N(N−1) channels — memory gates, notification send
+gates, capability delegation — and the ranks activating their endpoints; **these are kernel
+capability operations that M3 performs identically**, so the M3 line (4.9 ms at N = 16) and the
+IronBus line (5.0 ms) almost coincide: IronBus adds only the endpoint-key configuration through
+the encrypted control path (+2–11 %). Both grow quadratically (0.05 ms at N = 2), ~10 µs per
+channel. Host-centric sets up 2N channels (each rank to and from the relay) and is therefore
+cheaper (1.0 ms at N = 16). **Attestation is not in these numbers**: the kernel attests tiles once
+at boot, before the coordinator starts, and the replay runs set the RNG/signature latencies to
+zero; the per-device attestation cost (ECDSA, 5.1 ms per tile, one-time) is §7.8 "trusted control
+channel creation", unchanged from the submission. Reading: IronBus's per-channel setup is
+ordinary capability setup plus key configuration; the expensive step, attesting a device, is paid
+once per device.
+(b) *Runtime per tenant* (k = 1, 2, 4 concurrent all-reduce jobs on 4 tiles each): M3 64.4 /
+64.4 / 65.9 µs and IronBus 69.2 / 69.2 / 69.1 µs (k independent coordinators, `REPLAY_INSTANCES=k`)
+— tenants do not interfere once channels exist; host-centric with **one host relaying for all
+tenants** (`REPLAY_GROUPS=k`: k groups under one coordinator sharing the relay) 280 / 554 /
+1108 µs — per-tenant time grows linearly with k, the single host being the shared data-path
+bottleneck (96 transfers through one relay at k = 4; on-chip: 250 / 498 / 1004 µs, exactly 2×
+and 4×). IronBus with 4 groups under one coordinator gives the same 69.2 µs as 4 coordinators
+(consistency check).
+(c) *Channel setup per tenant* (own coordinator each): M3 0.24 / 0.50 / 0.91 ms, IronBus 0.27 /
+0.53 / 1.06 ms — the kernel serializes the tenants' channel-creation syscalls, so setup, not
+runtime, is what sharing the HAL costs. This is the answer to "a single HAL is centralized"
+(R3.1): the HAL is a setup-time control plane, off the data path; the host-centric design has the
+single *data-path* bottleneck.
 
 Run-to-run noise ≈ 1 % (ring phase alignment); all setup syscalls are outside the measured replay.
 
