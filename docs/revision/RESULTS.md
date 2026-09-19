@@ -309,6 +309,12 @@ and 4×). IronBus with 4 groups under one coordinator gives the same 69.2 µs as
 runtime, is what sharing the HAL costs. This is the answer to "a single HAL is centralized"
 (R3.1): the HAL is a setup-time control plane, off the data path; the host-centric design has the
 single *data-path* bottleneck.
+The figure shows the all-reduce only; the other ring collectives (all-gather, reduce-scatter)
+and the pipeline chain behave identically, since they create the same N channels, and the
+tenant behaviour is a property of the channels and the relay rather than of the pattern (tenants
+own separate tiles and channels; the shared host serializes all transfers); the one pattern that
+differs is all-to-all, whose setup is quadratic (N(N−1) channels: 5.1 ms at N = 16 for IronBus,
+5.0 ms for M3).
 
 Run-to-run noise ≈ 1 % (ring phase alignment); all setup syscalls are outside the measured replay.
 
