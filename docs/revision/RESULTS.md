@@ -325,9 +325,17 @@ collective costs a tile 2 endpoints per tenant (to its successor, from its prede
 all-to-all over N tiles 2(N−1), the Llama TP4 layout 6. With 192 endpoints an accelerator can
 therefore hold 96 ring tenants, 32 TP4 tenants or 6 tenants running all-to-all over 16 tiles at
 once; beyond that the HAL swaps keys with the endpoint (§5's fallback), which the tenant
-experiments never approached (tenants use disjoint tiles: 2 endpoints per AIU). An IDE port's
-keystore grows the same way per stream (12 keys ≈ 0.53 KiB per selective stream); IronBus keys
-per endpoint instead, at the same total size.
+experiments never approached (tenants use disjoint tiles: 2 endpoints per AIU). Two comparisons,
+to be stated precisely: (i) a host-centric device holds keys only for its stream(s) to the host
+(12 per IDE stream, one stream per tenant/TDI on the device), independent of the number of
+peers — it never talks to a peer directly, so its keystore does not grow with edges; that is the
+flip side of routing every transfer through the host (3–16× on the collectives). IronBus's
+keystore grows with the direct channels a device uses because it *has* them. (ii) The fair
+comparison is a Selective-IDE port doing direct P2P, which needs a stream per peer pair and
+tenant, i.e., the same linear growth at 12 keys ≈ 0.53 KiB per stream (Table aiu-cost row 3:
+8.4 KiB for 16 streams vs. 8.3 KiB for 192 endpoints). Sentence for the paper: *key storage
+grows linearly with the direct channels a device uses, as in any design with direct
+device-to-device protection; host-centric avoids that growth only by having no direct channels.*
 
 Run-to-run noise ≈ 1 % (ring phase alignment); all setup syscalls are outside the measured replay.
 
