@@ -1,8 +1,9 @@
 /*
  * tracereplay: replays per-rank op programs produced by chakra2m3 on a set of tiles.
  *
- *   tracereplay coord <name> <ranks> <mode> [inst]   (started from the boot script; inst
- *   numbers concurrent instances)
+ *   tracereplay coord <name> <ranks> <mode> [inst] [groups]   (started from the boot script;
+ *   inst numbers concurrent coordinators; groups > 1 runs that many independent groups of
+ *   <ranks> ranks under one coordinator — in host mode they share the single relay)
  *
  * The coordinator starts one activity per rank on scratchpad tiles (and, in host-centric mode,
  * a relay activity), loads the ranks' programs /traces/<name>.<rank>.m3t into their buffers
@@ -86,11 +87,14 @@ struct Go {
     kind: u64,
     ranks: u64,
     mode: u64,
-    // per peer p: mem gate selector and send gate selector (0 = none)
+    // per peer p: mem gate selector and send gate selector (0 = none); ranks index by their
+    // group-local peer, the relay by the global rank
     mgates: [u32; MAX_RANKS],
     sgates: [u32; MAX_RANKS],
     // length of the program the coordinator wrote to the start of our inbound buffer
     prog_len: u64,
+    // global rank of this group's rank 0 (ranks are numbered globally across groups)
+    base: u64,
 }
 
 #[repr(C)]
@@ -258,6 +262,7 @@ fn rank_main() -> i32 {
     let go: Go = words_to(&wait_for(&rgate, KIND_GO));
     let ranks = go.ranks as usize;
     let host = go.mode == MODE_HOST;
+    let base = go.base;
     let ops = parse_program(&INBOUND.borrow()[..go.prog_len as usize]);
 
     let mut mgates: Vec<Option<MemGate>> = Vec::new();
@@ -315,7 +320,7 @@ fn rank_main() -> i32 {
                 send_struct_retry(sg, &reply_gate, Notify {
                     kind: KIND_DATA,
                     src: rank,
-                    dst: dst as u64,
+                    dst: base + dst as u64,
                     tag: op.tag as u64,
                     bytes: op.arg,
                 });
@@ -324,7 +329,7 @@ fn rank_main() -> i32 {
             },
             OP_RECV => {
                 let t = CycleInstant::now();
-                let want_src = op.peer as u64;
+                let want_src = base + op.peer as u64;
                 let want_tag = op.tag as u64;
                 // parked first
                 let mut found = None;
@@ -529,12 +534,14 @@ fn delegate_chan(act: &RunningProgramActivity, next: &mut kif::CapSel, sel: kif:
     dst as u32
 }
 
-fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
-    assert!(ranks >= 2 && ranks <= MAX_RANKS);
+fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize, groups: usize) -> i32 {
+    assert!(ranks >= 2 && groups >= 1 && ranks * groups <= MAX_RANKS);
     let t_begin = CycleInstant::now();
     let host = mode == "host";
-    let members = if host { ranks + 1 } else { ranks }; // + relay
-    let relay = ranks; // index of the relay
+    let total = ranks * groups; // ranks of all groups, numbered globally
+    let members = if host { total + 1 } else { total }; // + relay
+    let relay = total; // index of the relay
+    let group_of = |m: usize| m / ranks;
 
     let mut own_rgate = wv_assert_ok!(RecvGate::new_with(
         RGateArgs::default().order(RG_ORDER).msg_order(RG_MSG_ORDER)
@@ -566,14 +573,14 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
         let mut row = Vec::new();
         for d in 0..members {
             let create = if host {
-                (s < ranks && d == relay) || (s == relay && d < ranks)
+                (s < total && d == relay) || (s == relay && d < total)
             }
             else {
-                s != d
+                s != d && group_of(s) == group_of(d)
             };
             row.push(if create {
                 // the relay's channel to a rank carries the transfers of all sources
-                let (label, credits) = if s == relay { (LABEL_RELAY, ranks as u32) } else { (s as u32, 1) };
+                let (label, credits) = if s == relay { (LABEL_RELAY, total as u32) } else { (s as u32, 1) };
                 Some(wv_assert_ok!(SendGate::new_with(
                     SGateArgs::new(&rgates[d]).credits(credits).label(label)
                 )))
@@ -623,8 +630,8 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
     }
     // the ranks' programs go to the start of their inbound buffers
     let mut prog_lens = [0u64; MAX_RANKS + 1];
-    for m in 0..ranks {
-        let prog = read_program(name, m);
+    for m in 0..total {
+        let prog = read_program(name, m % ranks);
         assert!(prog.len() <= SLOT, "program of rank {} too large", m);
         let mg = wv_assert_ok!(acts[m].activity().get_mem(inbound[m], SLOT as u64, kif::Perm::W));
         wv_assert_ok!(mg.write(&prog, 0));
@@ -638,37 +645,41 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
     for m in 0..members {
         gos.push(Go {
             kind: KIND_GO,
-            ranks: ranks as u64,
+            // ranks see their group (local peers), the relay all ranks (global)
+            ranks: if m == relay && host { total as u64 } else { ranks as u64 },
             mode: if host { MODE_HOST } else { MODE_DIRECT },
             mgates: [0; MAX_RANKS],
             sgates: [0; MAX_RANKS],
             prog_len: prog_lens[m],
+            base: if m == relay && host { 0 } else { (group_of(m) * ranks) as u64 },
         });
     }
     // the selectors in the Go messages are the members' (see CHAN_SEL)
     let mut next_sel = [CHAN_SEL; MAX_RANKS + 1];
     let mut mem_channels: Vec<MemGate> = Vec::new();
     if !host {
-        for s in 0..ranks {
-            for d in 0..ranks {
-                if s == d {
+        for s in 0..total {
+            for d in 0..total {
+                if s == d || group_of(s) != group_of(d) {
                     continue;
                 }
-                // slot for source s in d's inbound area, writable by s
+                // slot for source s in d's inbound area, writable by s; the Go message indexes
+                // the channels by the group-local peer
                 let mg = wv_assert_ok!(acts[d].activity().get_mem(
                     inbound[d] + (s * SLOT) as u64,
                     SLOT as u64,
                     kif::Perm::W
                 ));
-                gos[s].mgates[d] = delegate_chan(&acts[s], &mut next_sel[s], mg.sel());
-                gos[s].sgates[d] =
+                let dl = d % ranks;
+                gos[s].mgates[dl] = delegate_chan(&acts[s], &mut next_sel[s], mg.sel());
+                gos[s].sgates[dl] =
                     delegate_chan(&acts[s], &mut next_sel[s], notify[s][d].as_ref().unwrap().sel());
                 mem_channels.push(mg);
             }
         }
     }
     else {
-        for s in 0..ranks {
+        for s in 0..total {
             // s -> relay slot s
             let mg = wv_assert_ok!(acts[relay].activity().get_mem(
                 inbound[relay] + (s * SLOT) as u64,
@@ -679,10 +690,10 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
             gos[s].sgates[0] =
                 delegate_chan(&acts[s], &mut next_sel[s], notify[s][relay].as_ref().unwrap().sel());
             mem_channels.push(mg);
-            // relay -> whole inbound area of s
+            // relay -> whole inbound area of s (slots of all global sources)
             let mg = wv_assert_ok!(acts[s].activity().get_mem(
                 inbound[s],
-                (ranks * SLOT) as u64,
+                (total * SLOT) as u64,
                 kif::Perm::W
             ));
             gos[relay].mgates[s] = delegate_chan(&acts[relay], &mut next_sel[relay], mg.sel());
@@ -713,7 +724,7 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
     let t_activities = t_loaded.duration_since(t_begin).as_raw();
     let t_channels = t0.duration_since(t_loaded).as_raw();
     let _ = t_started;
-    for m in 0..ranks {
+    for m in 0..total {
         send_struct_retry(&go_gates[m], &reply_gate, Notify {
             kind: KIND_START,
             src: 0,
@@ -726,7 +737,7 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
     // results
     let mut stats: Vec<Stats> = Vec::new();
     let mut got = 0;
-    while got < ranks {
+    while got < total {
         let msg = wv_assert_ok!(own_rgate.receive(None));
         let w = msg.as_words();
         if w[0] == KIND_STATS {
@@ -758,21 +769,24 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize) -> i32 {
         "setup {} ranks={} mode={} inst={}: activities {} channels {} cycles",
         name, ranks, mode, inst, t_activities, t_channels
     );
-    let mut max_total = 0;
+    // one result line per group (inst numbers groups when there are several)
     stats.sort_by_key(|s| s.rank);
-    for s in &stats {
+    for g in 0..groups {
+        let mut max_total = 0;
+        for s in stats.iter().filter(|s| group_of(s.rank as usize) == g) {
+            println!(
+                "rank {}: total {} comp {} send {} recv {} ops {} bytes {}",
+                s.rank, s.total, s.comp, s.send, s.recv, s.ops, s.bytes
+            );
+            max_total = cmp::max(max_total, s.total);
+        }
         println!(
-            "rank {}: total {} comp {} send {} recv {} ops {} bytes {}",
-            s.rank, s.total, s.comp, s.send, s.recv, s.ops, s.bytes
+            "replay {} ranks={} mode={} inst={}: total: {} cycles (wall {} cycles)",
+            name, ranks, mode, if groups > 1 { g } else { inst }, max_total, wall
         );
-        max_total = cmp::max(max_total, s.total);
     }
-    println!(
-        "replay {} ranks={} mode={} inst={}: total: {} cycles (wall {} cycles)",
-        name, ranks, mode, inst, max_total, wall
-    );
 
-    for m in 0..ranks {
+    for m in 0..total {
         send_struct_retry(&go_gates[m], &reply_gate, Notify {
             kind: KIND_STOP,
             src: 0,
@@ -796,5 +810,6 @@ pub fn main() -> i32 {
     }
     let ranks: usize = args[3].parse().expect("ranks");
     let inst: usize = if args.len() > 5 { args[5].parse().expect("inst") } else { 0 };
-    coord_main(args[2], ranks, args[4], inst)
+    let groups: usize = if args.len() > 6 { args[6].parse().expect("groups") } else { 1 };
+    coord_main(args[2], ranks, args[4], inst, groups)
 }

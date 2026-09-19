@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""gen-replay-boot.py <trace-name> <ranks> <native|ironbus|host> [out.xml] [instances]
+"""gen-replay-boot.py <trace-name> <ranks> <native|ironbus|host> [out.xml] [instances] [groups]
 
 Writes a boot script that runs the trace replay for <trace-name> on <ranks> scratchpad tiles
 (plus one for the relay in host mode); with <instances> = k, k independent instances run at the
@@ -12,13 +12,17 @@ name, ranks, mode = sys.argv[1], int(sys.argv[2]), sys.argv[3]
 members = ranks + (1 if mode == "host" else 0)
 out = sys.argv[4] if len(sys.argv) > 4 else "boot/replay-%s-%d-%s.xml" % (name, ranks, mode)
 instances = int(sys.argv[5]) if len(sys.argv) > 5 else 1
+# groups > 1: each coordinator runs that many independent groups of <ranks> ranks; in host mode
+# they share one relay (a single host for all tenants)
+groups = int(sys.argv[6]) if len(sys.argv) > 6 else 1
+members = ranks * groups + (1 if mode == "host" else 0)
 coords = "".join("""                    <dom>
-                        <app args="/bin/tracereplay coord %s %d %s %d">
+                        <app args="/bin/tracereplay coord %s %d %s %d %d">
                             <mount fs="m3fs" path="/" />
                             <tiles type="imem+riscv" count="%d" />
                         </app>
                     </dom>
-""" % (name, ranks, mode, i, members) for i in range(instances))
+""" % (name, ranks, mode, i, groups, members) for i in range(instances))
 xml = """<config>
     <kernel args="kernel -f $fs.path" />
     <dom>

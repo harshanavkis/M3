@@ -71,20 +71,40 @@ ax.set_xlabel("Accelerator tiles N", fontsize=5, labelpad=1); ax.set_ylabel("Tim
 ax.legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="upper left")
 
 c = df[df.tag == "partA-conc"].copy()
+# the single-tenant host-centric point is the Part A run (one coordinator, one relay)
+c = pd.concat([c, df[(df.tag == "partA") & (df.trace == "all_reduce_4") & (df["mode"] == "host")]], ignore_index=True)
 c["us"] = c.total / FREQ * 1e6
-g = c.groupby(["lat", "k"]).agg(us=("us", "mean"), us_max=("us", "max"), setup=("setup_channels", "mean")).reset_index()
+# tenants: IronBus = k independent coordinators (column k); host-centric = k groups sharing one
+# relay under one coordinator (column g) — a single host for all tenants
+c["tenants"] = c[["k", "g"]].max(axis=1)
+chk = c[(c["mode"] == "ironbus") & (c.g > 1)]
+if len(chk):
+    print("IronBus with groups under one coordinator (consistency check vs. instances):")
+    print(chk.groupby(["lat", "tenants"]).us.max().to_string())
+c = c[((c["mode"] == "ironbus") & (c.g == 1)) | ((c["mode"] == "host") & (c.k == 1))]
+g = c.groupby(["mode", "lat", "tenants"]).agg(us=("us", "mean"), us_max=("us", "max"), setup=("setup_channels", "mean")).reset_index()
 print(g.to_string(index=False))
 g.to_csv(os.path.join(out, "collectives-concurrency.csv"), index=False)
-ks = sorted(g.k.unique())
-for ax, key, title, ylab in ((axes[1], "us", "(b) Runtime per tenant", "Time per tenant (µs)"),
-                             (axes[2], "setup", "(c) HAL setup per tenant", "Setup per tenant (ms)")):
+ks = sorted(g.tenants.unique())
+ax = axes[1]
+for mode in ("ironbus", "host"):
     for lat, ls, lab in ((500, "-", "off-chip"), (0, "--", "on-chip")):
-        s = g[g.lat == lat].sort_values("k")
-        y = s[key] if key == "us" else s[key] / FREQ * 1e3
-        ax.plot(s.k, y, marker="s", markersize=2.5, linewidth=0.8, linestyle=ls, color=COLORS["ironbus"], label=lab)
-    ax.set_xscale("log", base=2); ax.set_xticks(ks); ax.set_xticklabels([str(k) for k in ks])
-    ax.set_ylim(0, ax.get_ylim()[1] * 1.15); style_axis(ax); ax.set_title(title, fontsize=6, pad=2)
-    ax.set_xlabel("Concurrent tenants k", fontsize=5, labelpad=1); ax.set_ylabel(ylab, fontsize=5, labelpad=1)
+        sel = g[(g["mode"] == mode) & (g.lat == lat)].sort_values("tenants")
+        if len(sel):
+            ax.plot(sel.tenants, sel.us_max, marker=MARKERS[mode], markersize=2.5, linewidth=0.8, linestyle=ls,
+                    color=COLORS[mode], label="%s, %s" % (LABELS[mode], lab))
+ax.set_xscale("log", base=2); ax.set_xticks(ks); ax.set_xticklabels([str(k) for k in ks])
+ax.set_yscale("log", base=10); ax.yaxis.set_minor_formatter(NullFormatter())
+style_axis(ax); ax.set_title("(b) Runtime per tenant", fontsize=6, pad=2)
+ax.set_xlabel("Concurrent tenants k", fontsize=5, labelpad=1); ax.set_ylabel("Time per tenant (µs)", fontsize=5, labelpad=1)
+ax.legend(fontsize=3.6, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="center right", ncol=1)
+ax = axes[2]
+for lat, ls, lab in ((500, "-", "off-chip"), (0, "--", "on-chip")):
+    sel = g[(g["mode"] == "ironbus") & (g.lat == lat)].sort_values("tenants")
+    ax.plot(sel.tenants, sel.setup / FREQ * 1e3, marker="s", markersize=2.5, linewidth=0.8, linestyle=ls, color=COLORS["ironbus"], label=lab)
+ax.set_xscale("log", base=2); ax.set_xticks(ks); ax.set_xticklabels([str(k) for k in ks])
+ax.set_ylim(0, ax.get_ylim()[1] * 1.15); style_axis(ax); ax.set_title("(c) HAL setup per tenant", fontsize=6, pad=2)
+ax.set_xlabel("Concurrent tenants k", fontsize=5, labelpad=1); ax.set_ylabel("Setup per tenant (ms)", fontsize=5, labelpad=1)
 plt.tight_layout(pad=0.3)
 for ext in ("png", "pdf"):
     plt.savefig(os.path.join(out, "collectives-setup." + ext), bbox_inches="tight", dpi=200)
