@@ -316,6 +316,19 @@ own separate tiles and channels; the shared host serializes all transfers); the 
 differs is all-to-all, whose setup is quadratic (N(N−1) channels: 5.1 ms at N = 16 for IronBus,
 5.0 ms for M3).
 
+**Keystore scalability with tenants and accelerators (R1.1, text only).** Each endpoint holds
+352 bits of key material (256-bit AES key, 96-bit IV counter), plus one 256-bit control key per
+AIU: 192 endpoints = 8.3 KiB, 64 → 2.8 KiB, 512 → 22 KiB — linear in the number of endpoints, on
+top of the 256 bits of endpoint state the DTU keeps anyway (+138 %, Table aiu-cost row 3). An AIU
+needs one endpoint per DFG edge it terminates, summed over the tenants that use the device: a ring
+collective costs a tile 2 endpoints per tenant (to its successor, from its predecessor),
+all-to-all over N tiles 2(N−1), the Llama TP4 layout 6. With 192 endpoints an accelerator can
+therefore hold 96 ring tenants, 32 TP4 tenants or 6 tenants running all-to-all over 16 tiles at
+once; beyond that the HAL swaps keys with the endpoint (§5's fallback), which the tenant
+experiments never approached (tenants use disjoint tiles: 2 endpoints per AIU). An IDE port's
+keystore grows the same way per stream (12 keys ≈ 0.53 KiB per selective stream); IronBus keys
+per endpoint instead, at the same total size.
+
 Run-to-run noise ≈ 1 % (ring phase alignment); all setup syscalls are outside the measured replay.
 
 ## 9. Application traces — trace replay Part B, Fig. apps (new)
