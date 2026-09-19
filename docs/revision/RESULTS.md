@@ -411,10 +411,10 @@ Blocks:
 
 **Table aiu-cost — IronBus AIU vs. a TDISP/IDE device port, function by function.** Areas
 from the per-block synthesis below (UltraScale+ LUTs / FFs / BRAM36) and, for the DTU's own
-blocks, from M3v Table 1 (VCU118, published, marked [T1]); the TDISP column is what the PCIe IDE /
+blocks, from M3v Table 1 (VCU118, published; "M3v Tab. 1" in the cells); the TDISP column is what the PCIe IDE /
 TDISP / SPDM specifications require of a device port, priced with the same blocks where the
 function is identical. The table lists the security functions only: the interface unit itself
-(the DTU, 15,200 LUTs / 5,800 FFs [T1]; on a PCIe device the endpoint controller and DMA
+(the DTU, 15,200 LUTs / 5,800 FFs per M3v Tab. 1; on a PCIe device the endpoint controller and DMA
 engines) is the substrate both designs have and is not part of the comparison.
 
 | # | function | TDISP/IDE port | IronBus AIU | LUTs | FFs | BRAM | Δ IronBus − TDISP |
@@ -422,7 +422,7 @@ engines) is the substrate both designs have and is not part of the comparison.
 | 1 | Line-rate encryption, Tx | IDE Tx: AES-256-GCM at link rate | engine (pipelined AES-256 + GHASH) | 40,866 | 14,086 | 0 | 0 |
 | 2 | Line-rate decryption / verification, Rx | IDE Rx: AES-256-GCM at link rate | engine | 40,866 | 14,086 | 0 | 0 |
 | 3 | Key storage | 12 keys per IDE stream (3 sub-streams × 2 directions × 2 refresh slots) = 0.53 KiB/stream; 16 selective streams = 8.4 KiB | 192 endpoints × (256-bit key + 96-bit IV counter) + 256-bit control key = 8.3 KiB (66 kbit) | — | — | 2 | 0 KiB (8.3 vs. 8.4 KiB); per endpoint instead of per stream |
-| 4 | Endpoint (capability) table and permission check | per-TDI configuration + selective-IDE association registers; T-bit / stream-binding check per TLP | endpoint table 192 × 256 bit = 6.0 KiB [T1: register file] + access-permission check [T1: memory mapper + PMP] | 2,600 [T1] | 1,200 [T1] | 0 | **+2,600 LUTs, +1,200 FFs, +6 KiB** (per-endpoint granularity; the DTU's command controller also checks endpoints, not separated in [T1] — one DTU, 15,200 LUTs, is the upper bound) |
+| 4 | Endpoint (capability) table and permission check | per-TDI configuration + selective-IDE association registers; T-bit / stream-binding check per TLP | endpoint table: 192 endpoints × 256 bit = 6.0 KiB of state (the DTU's endpoint register file) + access-permission check (the DTU's memory mapper + PMP) | 2,600 (M3v Tab. 1: register file 2.0k + memory mapper/PMP 0.6k) | 1,200 (M3v Tab. 1: 1.0k + 0.2k) | 0 | **+2,600 LUTs, +1,200 FFs, +6 KiB** (per-endpoint granularity; the DTU's command controller also checks endpoints, not separated in M3v Tab. 1 — one DTU, 15,200 LUTs, is the upper bound) |
 | 5 | Secure management channel: authenticated configuration + key derivation | SPDM secure session (low-rate AES-GCM) + HKDF | control channel: OpenTitan AES-GCM (iterative, unmasked) + HMAC/SHA-2 (KDF; also measurement) | 21,876 | 7,764 | 0 | 0 |
 | 6 | Device identity, signed challenges | ECDSA signer (SPDM CHALLENGE, certificate) | ECDSA: OTBN (upper bound; a fixed-function P-256 core is several times smaller) | 86,083 | 21,567 | 16.5 | 0 |
 | 7 | Random numbers | DRBG for nonces and IVs | CSRNG + EDN + entropy source | 24,300 | 14,900 | 0 | 0 |
