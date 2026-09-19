@@ -543,6 +543,20 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize, groups: usize) 
     let relay = total; // index of the relay
     let group_of = |m: usize| m / ranks;
 
+    // the programs, and the (source, destination) pairs they use: channels are created for
+    // those only (a HAL creates the channels the DFG needs, not all pairs)
+    let mut progs: Vec<Vec<u8>> = Vec::new();
+    let mut used = [[false; MAX_RANKS]; MAX_RANKS];
+    for m in 0..total {
+        let prog = read_program(name, m % ranks);
+        for op in parse_program(&prog) {
+            if op.op == OP_SEND {
+                used[m][group_of(m) * ranks + op.peer as usize] = true;
+            }
+        }
+        progs.push(prog);
+    }
+
     let mut own_rgate = wv_assert_ok!(RecvGate::new_with(
         RGateArgs::default().order(RG_ORDER).msg_order(RG_MSG_ORDER)
     ));
@@ -576,7 +590,7 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize, groups: usize) 
                 (s < total && d == relay) || (s == relay && d < total)
             }
             else {
-                s != d && group_of(s) == group_of(d)
+                s != d && group_of(s) == group_of(d) && used[s][d]
             };
             row.push(if create {
                 // the relay's channel to a rank carries the transfers of all sources
@@ -631,10 +645,10 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize, groups: usize) 
     // the ranks' programs go to the start of their inbound buffers
     let mut prog_lens = [0u64; MAX_RANKS + 1];
     for m in 0..total {
-        let prog = read_program(name, m % ranks);
+        let prog = &progs[m];
         assert!(prog.len() <= SLOT, "program of rank {} too large", m);
         let mg = wv_assert_ok!(acts[m].activity().get_mem(inbound[m], SLOT as u64, kif::Perm::W));
-        wv_assert_ok!(mg.write(&prog, 0));
+        wv_assert_ok!(mg.write(prog, 0));
         prog_lens[m] = prog.len() as u64;
     }
     // setup time, part 2 starts here: all members are running and have their programs
@@ -660,7 +674,7 @@ fn coord_main(name: &str, ranks: usize, mode: &str, inst: usize, groups: usize) 
     if !host {
         for s in 0..total {
             for d in 0..total {
-                if s == d || group_of(s) != group_of(d) {
+                if s == d || group_of(s) != group_of(d) || !used[s][d] {
                     continue;
                 }
                 // slot for source s in d's inbound area, writable by s; the Go message indexes
