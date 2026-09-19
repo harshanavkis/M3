@@ -62,12 +62,14 @@ for ext in ("png", "pdf"):
 plt.clf()
 LAT = 500
 fig, axes = plt.subplots(1, 3, figsize=(5.2, 1.4))
-# (a) channel setup vs. N (all-reduce): M3, IronBus, host-centric (channels to the relay only)
+# (a) channel setup vs. N for the all-reduce (the collective of all three panels): channels
+# follow the pattern's edges — a ring needs N channels, host-centric 2N (to and from the relay)
 ax = axes[0]
 for mode in ("native", "ironbus", "host"):
     sset = a[(a.pattern == "all_reduce") & (a["mode"] == mode) & (a.lat == LAT)].sort_values("N")
     ax.plot(sset.N, sset.setup_channels / FREQ * 1e3, marker=MARKERS[mode], markersize=2.5, linewidth=0.8, color=COLORS[mode], label=LABELS[mode])
 ax.set_xscale("log", base=2); ax.set_xticks(NS); ax.set_xticklabels([str(n) for n in NS])
+ax.set_ylim(0, ax.get_ylim()[1] * 1.15)
 style_axis(ax); ax.set_title("(a) Channel setup (capabilities + keys) vs. tiles", fontsize=6, pad=2)
 ax.set_xlabel("Accelerator tiles N", fontsize=5, labelpad=1); ax.set_ylabel("Setup time (ms)", fontsize=5, labelpad=1)
 ax.legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="upper left")
