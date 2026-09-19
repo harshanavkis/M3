@@ -294,7 +294,8 @@ Run-to-run noise ≈ 1 % (ring phase alignment); all setup syscalls are outside 
 (STAGE Llama-7B, 4 layers, batch 1, seq 512 prefill / seq 1 decode, training at batch 8 / seq 2048;
 ASTRA-sim 1.0 Transformer hybrid, DLRM hybrid, ResNet-50 DP — traffic scaled, see
 `trace-replay-plan.md`), native / IronBus / host-centric, on-chip and off-chip; `plot_apps.py` →
-`benchmarks/exp-results/apps.{csv,pdf,png}`.
+`benchmarks/exp-results/apps.{csv,pdf,png}`. The figure shows the off-chip interconnect only —
+these are multi-device workloads — the on-chip numbers are in the table below and in `apps.csv`.
 
 | workload (N = accelerator tiles) | native off-chip (µs) | IronBus vs. native on / off | host vs. IronBus on / off |
 |---|---|---|---|
