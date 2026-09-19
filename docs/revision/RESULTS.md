@@ -426,12 +426,12 @@ hardware are rows (packet framing is inside the engines; measurement uses the HM
 | 7 | Secure management channel: authenticated configuration + key derivation | SPDM secure session (low-rate AES-GCM) + HKDF | control channel: OpenTitan AES-GCM (iterative, unmasked) + HMAC/SHA-2 (KDF; also measurement) | 21,876 | 7,764 | 0 | 0 |
 | 8 | Device identity, signed challenges | ECDSA signer (SPDM CHALLENGE, certificate) | ECDSA: OTBN (upper bound; a fixed-function P-256 core is several times smaller) | 86,083 | 21,567 | 16.5 | 0 |
 | 9 | Random numbers | DRBG for nonces and IVs | CSRNG + EDN + entropy source | 24,300 | 14,900 | 0 | 0 |
-| | **Total AIU** | | | **229,000** | **74,000** | **16.5 (+2)** | |
+| | **Total AIU** | | | **229,000** | **78,000** | **16.5 (+2)** | |
 | | **Total Δ over TDISP** | | | **+3,000–5,000** | **+1,000** | **0** | **+6 KiB; rows 5–6 only (≤ one DTU, 15,200 LUTs, as the upper bound); crypto and keys at parity** |
 
 Sums: rows 1–3 + 5–9 = 13,200 + 2 × 40,866 + 2,000 + (in row 1) + 21,876 + 86,083 + 24,300 =
-229,191 LUTs; FFs 4,800 + 2 × 14,086 + 1,000 + 7,764 + 21,567 + 14,900 = 78,203 (74k in the
-text above rounds the RNG/HMAC FF counts; use 78k). Without OTBN: 143,108 LUTs / 56,636 FFs.
+229,191 LUTs; FFs 4,800 + 2 × 14,086 + 1,000 + 7,764 + 21,567 + 14,900 = 78,203. Without OTBN:
+143,108 LUTs / 56,636 FFs.
 
 Per-block synthesis results behind the table (`aiu-area.csv`):
 
