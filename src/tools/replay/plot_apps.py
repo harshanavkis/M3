@@ -2,7 +2,8 @@
 """plot_apps.py [replay.csv] [out-dir]
 
 Fig. B (applications, R1.3/R3.4) from the Part B replay runs (tag partB): per workload, IronBus's
-overhead vs. native (on-chip and off-chip) and the host-centric design's slowdown vs. IronBus.
+overhead vs. native and the host-centric design's slowdown vs. IronBus, off-chip (the on-chip
+numbers stay in apps.csv).
 Same style as benchmarks/plot_utils.py. Also writes apps.csv."""
 import os, sys
 import numpy as np
@@ -43,22 +44,27 @@ t.to_csv(os.path.join(out, "apps.csv"))
 
 names = [w for w, _ in WORKLOADS if w in t.index.get_level_values(0)]
 labels = [l for w, l in WORKLOADS if w in names]
-x = np.arange(len(names)); width = 0.38
-fig, axes = plt.subplots(2, 1, figsize=(0.55 * len(names) + 0.8, 2.6), sharex=True)
+# the application traces are multi-device workloads: the figure shows the off-chip interconnect
+# only (the on-chip numbers are in apps.csv / RESULTS.md)
+LAT = 500
+x = np.arange(len(names)); width = 0.6
+fig, axes = plt.subplots(2, 1, figsize=(0.42 * len(names) + 0.8, 2.4), sharex=True)
 for ax, key, ylab, ref in ((axes[0], "ironbus/native", "IronBus overhead\nvs. native (%)", 0),
                            (axes[1], "host/ironbus", "Host-centric slowdown\nvs. IronBus (×)", 1)):
-    for i, (lat, lab, color, hatch) in enumerate(((0, "on-chip", palette[1], ""), (500, "off-chip", palette[1], "//"))):
-        vals = []
-        for w in names:
-            v = t.loc[(w, lat), key] if (w, lat) in t.index else np.nan
-            vals.append((v - 1) * 100 if key == "ironbus/native" else v)
-        bars = ax.bar(x + (i - 0.5) * width, vals, width, color=color if i == 0 else "white", edgecolor=color,
-                      hatch=hatch, linewidth=0.6, label=lab)
+    vals = []
+    for w in names:
+        v = t.loc[(w, LAT), key] if (w, LAT) in t.index else np.nan
+        vals.append((v - 1) * 100 if key == "ironbus/native" else v)
+    color = palette[1] if key == "ironbus/native" else palette[3]
+    ax.bar(x, vals, width, color=color, edgecolor="k", linewidth=0.4)
+    for xi, v in zip(x, vals):
+        if not np.isnan(v):
+            ax.text(xi, v, ("%.0f" % v) if key == "ironbus/native" else ("%.1f" % v), ha="center", va="bottom", fontsize=3.8)
     style_axis(ax); ax.set_ylabel(ylab, fontsize=5, labelpad=1)
-    ax.set_ylim(0, np.nanmax([ax.get_ylim()[1], 1]) * 1.05)
+    ax.set_ylim(0, np.nanmax(vals) * 1.18)
     if ref:
         ax.axhline(1, color="k", linewidth=0.4, linestyle=":")
-axes[0].legend(fontsize=4, handletextpad=0.3, borderpad=0.3, edgecolor="k", loc="upper left", ncol=2)
+axes[0].set_title("Application traces, off-chip interconnect", fontsize=6, pad=2)
 axes[1].set_xticks(x); axes[1].set_xticklabels(labels, fontsize=4.5, rotation=45, ha="right")
 plt.tight_layout(pad=0.3)
 for ext in ("png", "pdf"):
